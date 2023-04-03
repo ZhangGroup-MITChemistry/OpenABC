@@ -1,0 +1,16 @@
+ Starting options...
+ System will be given a buffer of (in A): 
+   10.000000000000000        10.000000000000000        10.000000000000000     
+ Will NOT check pdb for unrecognized atoms.
+ BE CAREFUL IF YOU DISABLE CHECKING.
+ End of options.
+
+ input pdb: histone.29068.pdb                            
+ output .top: histone.29068.pdb.top                        
+ output .gro: histone.29068.pdb.gro                        
+ output .ndx: histone.29068.pdb.ndx                        
+ level of graining: CA        
+ contact file: histone.29068.pdb.contacts                   
+ LJ weight:    1.0000000000000000     
+ dihedral weight:    1.0000000000000000     
+ excluded distance:    4.0000000000000000     

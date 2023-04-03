@@ -1,0 +1,16 @@
+**/*.xml
+**/*.dcd
+**/*.pdf
+**/*.tar.gz
+
+__pycache__/
+my-tests/
+archive/
+slurm-output/
+REMO/
+backup/
+
+examples/minimal-example/
+
+
+
