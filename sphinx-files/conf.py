@@ -16,6 +16,10 @@ author = 'Zhang group'
 import sys
 import os
 sys.path.append(os.path.abspath('..'))
+from openabc import __version__
+
+version = __version__
+release = version
 
 extensions = ['sphinx.ext.autodoc']
 
