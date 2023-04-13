@@ -8,9 +8,11 @@ openabc.forcefields
 
 .. automodule:: openabc.forcefields.moff_mrg_model
     :members:
+    :show-inheritance:
 
 .. automodule:: openabc.forcefields.hps_model
     :members:
+    :show-inheritance:
 
 openabc.forcefields.parsers
 ---------------------------
@@ -41,6 +43,11 @@ openabc.utils.replica_exchange
 openabc.utils.shadow_map
 ------------------------
 .. automodule:: openabc.utils.shadow_map
+    :members:
+
+opeanbc.utils.insert
+--------------------
+.. automodule:: openabc.utils.insert
     :members:
 
 

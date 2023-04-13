@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import mdtraj
-import MDAnalysis
+import MDAnalysis as mda
 import networkx as nx
 import math
 import sys
@@ -65,7 +65,7 @@ def get_neighbor_pairs_and_distances(coord, cutoff=0.6, box=None, use_pbc=False)
     
     '''
     if use_pbc:
-        grid_search = MDAnalysis.lib.nsgrid.FastNS(cutoff, coord.astype(np.float32), box.astype(np.float32), use_pbc)
+        grid_search = mda.lib.nsgrid.FastNS(cutoff, coord.astype(np.float32), box.astype(np.float32), use_pbc)
     else:
         x_min, x_max = np.amin(coord[:, 0]), np.amax(coord[:, 0])
         y_min, y_max = np.amin(coord[:, 1]), np.amax(coord[:, 1])
@@ -76,7 +76,7 @@ def get_neighbor_pairs_and_distances(coord, cutoff=0.6, box=None, use_pbc=False)
         ly = max(1.1*(y_max - y_min), 2.1*cutoff)
         lz = max(1.1*(z_max - z_min), 2.1*cutoff)
         pseudo_box = np.array([lx, ly, lz, 90, 90, 90]).astype(np.float32) # build an orthogonal pseudo box
-        grid_search = MDAnalysis.lib.nsgrid.FastNS(cutoff, shifted_coord, pseudo_box, use_pbc)
+        grid_search = mda.lib.nsgrid.FastNS(cutoff, shifted_coord, pseudo_box, use_pbc)
     results = grid_search.self_search()
     neighbor_pairs = results.get_pairs()
     neighbor_pair_distances = results.get_pair_distances()

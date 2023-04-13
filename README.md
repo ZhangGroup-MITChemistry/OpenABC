@@ -38,8 +38,8 @@ Here is an example of setting up a MOFF system composed of 100 copies of protein
 ```python
 from openabc.forcefields.parsers import MOFFParser
 from openabc.forcefields import MOFFMRGModel
+from openabc.utils.insert import insert_molecules
 import simtk.openmm.app as app
-import os
 
 # Parse structural and topological information
 protein = MOFFParser.from_atomistic_pdb('all_atom.pdb', 'Calpha.pdb')
@@ -47,8 +47,7 @@ protein = MOFFParser.from_atomistic_pdb('all_atom.pdb', 'Calpha.pdb')
 # Build initial condensate configuration with N = 100 proteins
 N = 100
 a, b, c = 100, 100, 100 # box sizes
-cmd = f'gmx insert-molecules -ci Calpha.pdb -nmol {N} -box {a} {b} {c} -o start.pdb'
-os.system(cmd)
+insert_molecules('Calpha.pdb', 'start.pdb', n_mol=N, box=[a, b, c])
 
 # Create molecule container and OpenMM system
 condensate = MOFFMRGModel()
@@ -64,7 +63,7 @@ Please read the tutorials for more instructions.
 
 ## Extension
 
-If the user intends to add new force fields, then the user has to write new parsers, new models, and expressions of new forces. Take HPS model as an example, the main components are `openabc/forcefields/parsers/hps_parser.py` and `openabc/forcefields/hps_model.py`. `openabc/forcefields/parsers/hps_parser.py` includes a parser that can parse each individual protein and get all the bonded interactions. `openabc/forcefields/hps_model.py` includes a container-like class that can hold multiple protein parser objects and add forces. Definitions of different potentials are saved in `openabc/forcefields/functional_terms/*_terms.py`.
+If the user intends to add new force fields, then the user has to write new parsers, new models, and expressions of new forces. Take HPS model as an example, the main components are `openabc/forcefields/parsers/hps_parser.py` and `openabc/forcefields/hps_model.py`. `openabc/forcefields/parsers/hps_parser.py` includes a parser that can parse each individual protein and get all the bonded interactions. `openabc/forcefields/hps_model.py` includes a container-like class that can hold multiple protein parser objects and add forces. Definitions of different potentials are saved in `openabc/forcefields/functional_terms/*_terms.py`. 
 
 ## Citations
 

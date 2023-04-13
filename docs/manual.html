@@ -137,6 +137,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.shadow_map.load_ca_pairs_from_gmx_top"><code class="docutils literal notranslate"><span class="pre">load_ca_pairs_from_gmx_top()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#module-openabc.utils.insert">opeanbc.utils.insert</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#openabc.utils.insert.insert_molecules"><code class="docutils literal notranslate"><span class="pre">insert_molecules()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -322,7 +326,8 @@ Need to further add forces to this OpenMM system.</p>
 <span class="target" id="module-openabc.forcefields.moff_mrg_model"></span><dl class="py class">
 <dt class="sig sig-object py" id="openabc.forcefields.moff_mrg_model.MOFFMRGModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MOFFMRGModel</span></span><a class="headerlink" href="#openabc.forcefields.moff_mrg_model.MOFFMRGModel" title="Permalink to this definition"></a></dt>
-<dd><p>A class for MOFF+MRG model that represents a mixture of MOFF proteins and MRG DNA.</p>
+<dd><p>Bases: <a class="reference internal" href="#openabc.forcefields.cg_model.CGModel" title="openabc.forcefields.cg_model.CGModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CGModel</span></code></a></p>
+<p>A class for MOFF+MRG model that represents a mixture of MOFF proteins and MRG DNA.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openabc.forcefields.moff_mrg_model.MOFFMRGModel.add_all_default_forces">
 <span class="sig-name descname"><span class="pre">add_all_default_forces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.moff_mrg_model.MOFFMRGModel.add_all_default_forces" title="Permalink to this definition"></a></dt>
@@ -480,7 +485,8 @@ Need to further add forces to this OpenMM system.</p>
 <span class="target" id="module-openabc.forcefields.hps_model"></span><dl class="py class">
 <dt class="sig sig-object py" id="openabc.forcefields.hps_model.HPSModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HPSModel</span></span><a class="headerlink" href="#openabc.forcefields.hps_model.HPSModel" title="Permalink to this definition"></a></dt>
-<dd><p>A class for HPS model that represents a mixture of HPS model proteins.</p>
+<dd><p>Bases: <a class="reference internal" href="#openabc.forcefields.cg_model.CGModel" title="openabc.forcefields.cg_model.CGModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CGModel</span></code></a></p>
+<p>A class for HPS model that represents a mixture of HPS model proteins.</p>
 <p>This class inherits CGModel class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openabc.forcefields.hps_model.HPSModel.add_all_default_forces">
@@ -1286,6 +1292,36 @@ Note in GROMACS, atom indices start from 1, while in OpenMM, atom indices start 
 <h3>Returns<a class="headerlink" href="#id63" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>df_ca_pairs<span class="classifier">pd.DataFrame</span></dt><dd><p>Pandas DataFrame including CA atom pair indices and distances.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+<section id="module-openabc.utils.insert">
+<span id="opeanbc-utils-insert"></span><h2>opeanbc.utils.insert<a class="headerlink" href="#module-openabc.utils.insert" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="openabc.utils.insert.insert_molecules">
+<span class="sig-name descname"><span class="pre">insert_molecules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_pdb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'system.pdb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_mol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_pdb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n_attempts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[100,</span> <span class="pre">100,</span> <span class="pre">100]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.insert.insert_molecules" title="Permalink to this definition"></a></dt>
+<dd><p>Insert multiple copies of given molecule into an existing pdb or a new empty box. Note all the length parameter units are nm, though coordinates in pdb are in unit angstroms. Currently this function only supports using orthogonal box.</p>
+<section id="id64">
+<h3>Parameters<a class="headerlink" href="#id64" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>new_pdb<span class="classifier">str</span></dt><dd><p>Path of the new pdb file to be inserted.</p>
+</dd>
+<dt>output_pdb<span class="classifier">str</span></dt><dd><p>Path of the output pdb file.</p>
+</dd>
+<dt>n_mol<span class="classifier">int</span></dt><dd><p>Number of copies of the new molecule to be inserted.</p>
+</dd>
+<dt>radius<span class="classifier">float or int</span></dt><dd><p>Radius for each atom in unit nm. Insertion ensures the distance between any two atoms are larger than 2*radius.</p>
+</dd>
+<dt>existing_pdb<span class="classifier">None or str</span></dt><dd><p>Path of an existing pdb file. If None, the molecules will be inserted into a new empty box, otherwise, inserted into a copy of existing_pdb.</p>
+</dd>
+<dt>max_n_attempts<span class="classifier">int</span></dt><dd><p>Maximal number of attempts to insert. Ensure this value no smaller than n_mol.</p>
+</dd>
+<dt>reset_box<span class="classifier">bool</span></dt><dd><p>Whether to reset the box lengths.</p>
+</dd>
+<dt>box<span class="classifier">list or numpy array, shape = (3,)</span></dt><dd><p>New box size. This is effective if reset_box is True.</p>
 </dd>
 </dl>
 </section>
