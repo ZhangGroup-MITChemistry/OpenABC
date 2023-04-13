@@ -44,7 +44,7 @@ def insert_molecules(new_pdb, output_pdb='system.pdb', n_mol=100, radius=0.5, ex
         Whether to reset the box lengths. 
     
     box : list or numpy array, shape = (3,)
-        New box size. This is effective if reset_box is True. 
+        New box size in unit nm. This is effective if reset_box is True. 
     
     '''
     # determine if adding to a new or existing pdb_file:
