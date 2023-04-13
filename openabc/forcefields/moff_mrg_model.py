@@ -93,7 +93,6 @@ class MOFFMRGModel(CGModel):
     def add_dna_bonds(self, force_group=5):
         '''
         Add DNA bonds. 
-        The parameters are saved in self.dna_bonds. 
         
         Parameters
         ----------
@@ -109,7 +108,6 @@ class MOFFMRGModel(CGModel):
     def add_dna_angles(self, force_group=6):
         '''
         Add DNA angles. 
-        The parameters are saved in self.dna_angles. 
         
         Parameters
         ----------
@@ -125,7 +123,6 @@ class MOFFMRGModel(CGModel):
     def add_dna_fan_bonds(self, force_group=7):
         '''
         Add DNA fan bonds. 
-        The parameters are saved in self.dna_fan_bonds. 
         
         Parameters
         ----------
@@ -143,7 +140,9 @@ class MOFFMRGModel(CGModel):
                      force_group=8):
         '''
         Add nonbonded contacts for MOFF protein and MRG DNA. 
+        
         For amino acids, the CA atom type indices are 0-19, and CG nucleotide atom type index is 20. 
+        
         The potential expression is: alpha/r^12 - 0.5*epsilon*(1 + tanh(eta*(r0 - r)))
         
         Parameters
@@ -201,16 +200,17 @@ class MOFFMRGModel(CGModel):
                                                        epsilon_map, eta, r0, cutoff, force_group)
         self.system.addForce(force)
     
-    def add_elec_switch(self, salt_concentration=150.0*unit.millimolar, temperature=300.0*unit.kelvin, 
+    def add_elec_switch(self, salt_conc=150.0*unit.millimolar, temperature=300.0*unit.kelvin, 
                         cutoff1=1.2*unit.nanometer, cutoff2=1.5*unit.nanometer, switch_coeff=[1, 0, 0, -10, 15, -6], 
                         add_native_pair_elec=True, force_group=9):
         '''
         Add electrostatic interaction with switch function. 
+        
         The switch function switches potential to zero within range cutoff1 < r <= cutoff2. 
         
         Parameters
         ----------
-        salt_concentration : Quantity
+        salt_conc : Quantity
             Monovalent salt concentration. 
         
         temperature : Quantity
@@ -234,7 +234,7 @@ class MOFFMRGModel(CGModel):
         '''
         print('Add protein and DNA electrostatic interactions with distance-dependent dielectric and switch.')
         charges = self.atoms['charge'].tolist()
-        force1 = functional_terms.ddd_dh_elec_switch_term(charges, self.exclusions, self.use_pbc, salt_concentration, 
+        force1 = functional_terms.ddd_dh_elec_switch_term(charges, self.exclusions, self.use_pbc, salt_conc, 
                                                           temperature, cutoff1, cutoff2, switch_coeff, force_group)
         self.system.addForce(force1)
         if add_native_pair_elec and hasattr(self, 'native_pairs'):
@@ -245,7 +245,7 @@ class MOFFMRGModel(CGModel):
                 q1, q2 = float(charges[a1]), float(charges[a2])
                 if (q1 != 0) and (q2 != 0):
                     df_charge_bonds.loc[len(df_charge_bonds.index)] = [a1, a2, q1, q2]
-            force2 = functional_terms.ddd_dh_elec_switch_bond_term(df_charge_bonds, self.use_pbc, salt_concentration, 
+            force2 = functional_terms.ddd_dh_elec_switch_bond_term(df_charge_bonds, self.use_pbc, salt_conc, 
                                                                    temperature, cutoff1, cutoff2, switch_coeff, 
                                                                    force_group)
             self.system.addForce(force2)

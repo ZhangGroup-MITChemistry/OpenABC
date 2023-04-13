@@ -21,6 +21,7 @@ _kcal_to_kj = 4.184
 class HPSModel(CGModel):
     '''
     A class for HPS model that represents a mixture of HPS model proteins. 
+    
     This class inherits CGModel class. 
     '''
     def __init__(self):
@@ -45,9 +46,9 @@ class HPSModel(CGModel):
         self.system.addForce(force)
     
     def add_contacts(self, hydropathy_scale='Urry', epsilon=0.2*_kcal_to_kj, mu=1, delta=0.08, force_group=2):
-        print('Add nonbonded contacts.')
         '''
         Add nonbonded contacts. 
+        
         The raw hydropathy scale is scaled and shifted by: mu*lambda - delta
         
         Parameters
@@ -68,6 +69,7 @@ class HPSModel(CGModel):
             Force group. 
             
         '''
+        print('Add nonbonded contacts.')
         resname_list = self.atoms['resname'].tolist()
         atom_types = [_amino_acids.index(x) for x in resname_list]
         if hydropathy_scale == 'KR':

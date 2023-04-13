@@ -85,13 +85,13 @@ def hps_ah_term(atom_types, df_exclusions, use_pbc, epsilon, sigma_ah_map, lambd
     return contacts
 
 
-def ddd_dh_elec_term(charges, df_exclusions, use_pbc, salt_concentration=150.0*unit.millimolar, 
+def ddd_dh_elec_term(charges, df_exclusions, use_pbc, salt_conc=150.0*unit.millimolar, 
                      temperature=300.0*unit.kelvin, cutoff=4.0*unit.nanometer, force_group=6):
     '''
     Debye-Huckel potential with a distance-dependent dielectric.
     '''
     alpha = NA*EC**2/(4*np.pi*VEP)
-    gamma = VEP*kB*temperature/(2.0*NA*salt_concentration*EC**2)
+    gamma = VEP*kB*temperature/(2.0*NA*salt_conc*EC**2)
     # use a distance-dependent relative permittivity (dielectric)
     dielectric_water = 78.4
     A = -8.5525
@@ -123,7 +123,7 @@ def ddd_dh_elec_term(charges, df_exclusions, use_pbc, salt_concentration=150.0*u
     return elec
     
 
-def ddd_dh_elec_switch_term(charges, df_exclusions, use_pbc, salt_concentration=150.0*unit.millimolar, 
+def ddd_dh_elec_switch_term(charges, df_exclusions, use_pbc, salt_conc=150.0*unit.millimolar, 
                             temperature=300.0*unit.kelvin, cutoff1=1.2*unit.nanometer, cutoff2=1.5*unit.nanometer, 
                             switch_coeff=[1, 0, 0, -10, 15, -6], force_group=6):
     '''
@@ -132,7 +132,7 @@ def ddd_dh_elec_switch_term(charges, df_exclusions, use_pbc, salt_concentration=
     To make sure the switch function works properly, the zeroth order coefficient has to be 1, and the sum of all the coefficients in switch_coeff has to be 0. 
     '''
     alpha = NA*EC**2/(4*np.pi*VEP)
-    gamma = VEP*kB*temperature/(2.0*NA*salt_concentration*EC**2)
+    gamma = VEP*kB*temperature/(2.0*NA*salt_conc*EC**2)
     # use a distance-dependent relative permittivity (dielectric)
     dielectric_water = 78.4
     A = -8.5525

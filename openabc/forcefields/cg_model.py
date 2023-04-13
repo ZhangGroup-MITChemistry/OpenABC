@@ -12,6 +12,7 @@ import os
 class CGModel(object):
     '''
     The general class with general methods that can be inherited by any other CG model classes. 
+    
     Each child class of CGModel has to set self.bonded_attr_names, which is used to append molecules and set rigid bodies. 
     '''
     def __init__(self):
@@ -125,17 +126,22 @@ class CGModel(object):
             force = mm.CMMotionRemover()
             self.system.addForce(force)
     
-    def set_rigid_bodies(self, rigid_bodies, rigid_coord):
+    def set_rigid_bodies(self, rigid_coord, rigid_bodies, keep_unchanged=[]):
         '''
         Set rigid bodies and remove bonded interactions within the same rigid body. 
         
+        Directly run `createRigidBodies` if the user does not want to change any bonded interactions or exclusions.
+        
         Parameters
         ----------
+        rigid_coord : Quantity, shape = (n_atoms, 3)
+            Atom coordinates to build rigid body restrictions. 
+        
         rigid_bodies : list 
             A list includes many sublists. Atoms in each sublist are recognized as one rigid body. 
         
-        rigid_coord : np.ndarray, shape = (n_atoms, 3)
-            Atom coordinates to build rigid body restrictions. 
+        keep_unchanged : list
+            A list including attribute names that user intends to keep unchanged. 
         
         '''
         rigid_body_id_dict = {}
@@ -145,7 +151,7 @@ class CGModel(object):
             for j in rigid_bodies[i]:
                 rigid_body_id_dict[j] = i
         for each_attr_name in self.bonded_attr_names:
-            if hasattr(self, each_attr_name):
+            if hasattr(self, each_attr_name) and (each_attr_name not in keep_unchanged):
                 each_attr = getattr(self, each_attr_name)
                 if each_attr is not None:
                     new_attr = pd.DataFrame(columns=each_attr.columns)

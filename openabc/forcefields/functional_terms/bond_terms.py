@@ -59,14 +59,14 @@ def class2_bond_term(df_bonds, use_pbc, force_group=1):
     return bonds
 
 
-def ddd_dh_elec_switch_bond_term(df_bonds, use_pbc, salt_concentration=150.0*unit.millimolar, 
+def ddd_dh_elec_switch_bond_term(df_bonds, use_pbc, salt_conc=150.0*unit.millimolar, 
                                  temperature=300.0*unit.kelvin, cutoff1=1.2*unit.nanometer, cutoff2=1.5*unit.nanometer, 
                                  switch_coeff=[1, 0, 0, -10, 15, -6], force_group=6):
     '''
     A bonded potential with distance-dependent dielectric and a switch function. 
     '''
     alpha = NA*EC**2/(4*np.pi*VEP)
-    gamma = VEP*kB*temperature/(2.0*NA*salt_concentration*EC**2)
+    gamma = VEP*kB*temperature/(2.0*NA*salt_conc*EC**2)
     # use a distance-dependent relative permittivity (dielectric)
     dielectric_water = 78.4
     A = -8.5525

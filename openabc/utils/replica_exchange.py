@@ -20,6 +20,8 @@ class TemperatureReplicaExchange(object):
     '''
     Temperature replica exchange class for performing temperature replica exchange (TRE) simulations. 
     
+    Note only positions and scaled velocities are exchanged, while other internal states of the simulations are not exchanged. This means the class may not be properly applied to simulations involving other internal states. For example, Nose-Hoover integrator may not work properly as it includes internal chain states. 
+    
     The parallelization is achieved with `torch.distributed`. 
     
     An example of setting environment variables in a slurm job script:
@@ -122,14 +124,16 @@ class TemperatureReplicaExchange(object):
             self.simulation.reporters.append(state_reporter)
         if report_dcd:
             if output_dcd is None:
-                output_dcd = f'output.{self.rank}.dcd' # default name
+                output_dcd = f'output.{self.rank}.dcd'
             dcd_reporter = app.DCDReporter(output_dcd, report_interval, enforcePeriodicBox=use_pbc)
             self.simulation.reporters.append(dcd_reporter)
     
     def run_replica_exchange(self, n_steps, exchange_interval, verbose=True):
         '''
         Perform replica exchange simulation. 
-        Exchange atom positions and rescaled velocities. 
+        
+        Exchange atom positions and rescaled velocities. Other state variables are not exchanged. 
+        
         The temperature of each replica remains unchanged. 
         
         Parameters
