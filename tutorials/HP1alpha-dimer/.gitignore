@@ -1,5 +1,0 @@
-hp1alpha_dimer_CA.pdb
-run_NPT.slurm
-slab_NVT_relaxed.pdb
-slab_NVT_relaxed_AA.pdb
-

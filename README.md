@@ -31,19 +31,42 @@ If running replica exchange with `openabc.utils.replica_exchange`, then torch is
 
 ## Usage
 
-```python
-from openabc.forcefields.parsers import MOFFParser, MRGdsDNAParser
-from openabc.forcefields import MOFFMRGModel
+If openabc is not within the default python module searching paths, please add it to the searching paths. One way is to use `sys.path.append(dir_path)`, and replace `dir_path` with the directory path where openabc is saved. 
 
-# parse atomistic structure protein_AA.pdb, and the output CA model is protein_CA.pdb. 
-protein = MOFFParser.from_atomistic_pdb('protein_AA.pdb', 'protein_CA.pdb')
+Here is an example of setting up a MOFF system composed of 100 copies of proteins. 
+
+```python
+from openabc.forcefields.parsers import MOFFParser
+from openabc.forcefields import MOFFMRGModel
+import simtk.openmm.app as app
+import os
+
+# Parse structural and topological information
+protein = MOFFParser.from_atomistic_pdb('all_atom.pdb', 'Calpha.pdb')
+
+# Build initial condensate configuration with N = 100 proteins
+N = 100
+a, b, c = 100, 100, 100 # box sizes
+cmd = f'gmx insert-molecules -ci Calpha.pdb -nmol {N} -box {a} {b} {c} -o start.pdb'
+os.system(cmd)
+
+# Create molecule container and OpenMM system
+condensate = MOFFMRGModel()
+for i in range(N):
+    condensate.append_mol(protein)
+top = app.PDBFile('start.pdb').getTopology()
+condensate.create_system(top, box_a=a, box_b=b, box_c=c)
+condensate.add_all_default_forces()
+
 ```
 
 Please read the tutorials for more instructions. 
 
+## Extension
+
+If the user intend to add new force fields, then the user has to write new parsers, new models, and expressions of new forces. Take HPS model as an example, the main components are `openabc/forcefields/parsers/hps_parser.py` and `openabc/forcefields/hps_model.py`. `openabc/forcefields/parsers/hps_parser.py` includes parser that can parser each individual protein and get all the bonded interactions. `openabc/forcefields/hps_model.py` includes a container-like class that can hold multiple protein parser objects and add forces. Definitions of different potentials are saved in `openabc/forcefields/functional_terms/*_terms.py`. 
 
 ## Citations
 
-We will add citations after the paper is formally online. 
-
+We will add the citation for OpenABC after the paper is online. 
 

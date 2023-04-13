@@ -36,7 +36,7 @@ protein_dna.atoms_to_pdb('cg_protein_dna.pdb')
 
 top = app.PDBFile('cg_protein_dna.pdb').getTopology()
 protein_dna.create_system(top, box_a=100, box_b=100, box_c=100)
-salt_concentration = 82*unit.millimolar
+salt_conc = 82*unit.millimolar
 temperature = 300*unit.kelvin
 protein_dna.add_protein_bonds(force_group=1)
 protein_dna.add_protein_angles(force_group=2)
@@ -46,7 +46,7 @@ protein_dna.add_dna_bonds(force_group=5)
 protein_dna.add_dna_angles(force_group=6)
 protein_dna.add_dna_fan_bonds(force_group=7)
 protein_dna.add_contacts(force_group=8)
-protein_dna.add_elec_switch(salt_concentration, temperature, force_group=9)
+protein_dna.add_elec_switch(salt_conc, temperature, force_group=9)
 protein_dna.save_system('system.xml')
 collision = 1/unit.picosecond
 timestep = 10*unit.femtosecond

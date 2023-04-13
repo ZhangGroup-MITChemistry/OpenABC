@@ -15,8 +15,8 @@ merged_pairs = pd.merge(merged_pairs, pairs3, 'outer', on=['a1', 'a2'])
 merged_pairs = merged_pairs.fillna(0)
 merged_pairs.to_csv('merged_native_pairs.csv', index=False)
 
-for i, row in merged_pairs.iterrows():
-    if row['our shadow'] + row['smog'] + row['our legacy shadow'] < 3:
-        print(row)
+diff_pairs = merged_pairs[(merged_pairs['our shadow'] == 0) | (merged_pairs['smog'] == 0) | 
+                          (merged_pairs['our legacy shadow'] == 0)]
+print(diff_pairs)
 
 
