@@ -98,6 +98,7 @@ def single_chain_CA2AA(input_pdbfile, output_pdbfile, REMO_path=default_REMO_pat
     Yunqi Li and Yang Zhang. REMO: A new protocol to refine full atomic protein models from C-alpha traces by optimizing hydrogen-bonding networks. Proteins, 2009, 76: 665-676.
     https://zhanggroup.org/REMO/.
     '''
+    REMO_path = os.path.expanduser(REMO_path)
     if not os.path.exists(f'{REMO_path}/REMO.pl'):
         raise FileNotFoundError(f'REMO.pl not found in {REMO_path}')
     output_pdbfile_path = '/'.join(output_pdbfile.split('/')[:-1])
@@ -226,7 +227,7 @@ def multiple_chains_CA2AA(input_pdbfile, num_chains, num_residues, REMO_path=def
     if not debug:
         subprocess.run(['rm', '-r', pdb_name])
     return
-    
+
 
 if __name__ == '__main__':
     args = args_parse()
