@@ -1,0 +1,6 @@
+include src/openabc/forcefields/parameters/*.csv
+include src/openabc/forcefields/parameters/*.top
+
+prune */__pycache__
+
+

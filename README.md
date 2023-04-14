@@ -24,9 +24,14 @@ We recommend using openmm 7.5.1 for using OpenABC, as OpenABC is built based on 
 
 Install openmm 7.5.1 with the following command: `conda install -c conda-forge openmm=7.5.1`
 
-Other required packages: numpy, pandas, mdanalysis, mdtraj. 
+Other required packages: numpy, pandas, mdanalysis, mdtraj, openmmplumed. 
 
 If running replica exchange with `openabc.utils.replica_exchange`, then torch is also required. 
+
+
+## Installation
+
+The user can either download the package from github, or use pip install: `pip install openabc`. 
 
 
 ## Usage
