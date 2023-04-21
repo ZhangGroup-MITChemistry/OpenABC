@@ -22,7 +22,11 @@ Instructions for class methods and functions are also included as comments in th
 
 We recommend using openmm 7.5.1 for using OpenABC, as OpenABC is built based on openmm 7.5.1. 
 
-Install openmm 7.5.1 with the following command: `conda install -c conda-forge openmm=7.5.1`
+Install openmm 7.5.1 with the following command: 
+
+```
+conda install -c conda-forge openmm=7.5.1
+```
 
 Other required packages: numpy, pandas, mdanalysis, mdtraj, openmmplumed. 
 
@@ -31,7 +35,11 @@ If running replica exchange with `openabc.utils.replica_exchange`, then torch is
 
 ## Installation
 
-The user can either download the package from github, or use pip install: `pip install openabc`. 
+The user can either download the package from github, or use pip install:
+
+```
+pip install openabc
+```
 
 
 ## Usage
@@ -66,11 +74,24 @@ condensate.add_all_default_forces()
 
 Please read the tutorials for more instructions. 
 
+## Tip
+
+When using `openabc.utils.insert.insert_molecules`, users may see such warnings: `UserWarning: Found no information for attr: 'formalcharges' Using default value of '0'` and `warnings.warn("Found no information for attr: '{}'"`. Such warning can be ignored as atom charge is not required when we insert molecules. To suppress such warning, users can add such lines at the beginning of the script:
+
+```
+import warnings
+warnings.filterwarnings('ignore')
+```
+
+
 ## Extension
 
 If the user intends to add new force fields, then the user has to write new parsers, new models, and expressions of new forces. Take HPS model as an example, the main components are `openabc/forcefields/parsers/hps_parser.py` and `openabc/forcefields/hps_model.py`. `openabc/forcefields/parsers/hps_parser.py` includes a parser that can parse each individual protein and get all the bonded interactions. `openabc/forcefields/hps_model.py` includes a container-like class that can hold multiple protein parser objects and add forces. Definitions of different potentials are saved in `openabc/forcefields/functional_terms/*_terms.py`. 
 
 ## Citations
 
-We will add the citation for OpenABC after the paper is online. 
+Please cite the following paper if you use openabc package: 
+
+    "OpenABC Enables Flexible, Simplified, and Efficient GPU Accelerated Simulations of Biomolecular Condensates", doi: https://doi.org/10.1101/2023.04.19.537533
+
 

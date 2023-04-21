@@ -44,7 +44,7 @@ for i in range(n_frames):
         energy = state.getPotentialEnergy().value_in_unit(unit.kilojoule_per_mole)
         row.append(energy)
     df_openmm_energy.loc[len(df_openmm_energy.index)] = row
-df_openmm_energy.round(10).to_csv('DDX4_openmm_energy_zero_offset.csv', index=False)
+df_openmm_energy.round(2).to_csv('DDX4_openmm_energy_zero_offset.csv', index=False)
 
 
 

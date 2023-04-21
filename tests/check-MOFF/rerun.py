@@ -62,7 +62,7 @@ for i in range(n_frames):
 openmm_energies = np.array(openmm_energies)
 columns = ['bond', 'angle', 'dihedral', 'native pair', 'contact', 'elec switch', 'sum']
 df_openmm_energies = pd.DataFrame(openmm_energies, columns=columns).round(6)
-df_openmm_energies.to_csv('openmm_energies.csv', index=False)
+df_openmm_energies.round(2).to_csv('openmm_energies.csv', index=False)
 
 # compare with GROMACS output energies
 df_gmx_energies = pd.read_csv('gmx-data/gmx_energies.csv')
