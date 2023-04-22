@@ -31,12 +31,12 @@ _k_mrg_dna_fan_bonds = _kcal_to_kj*np.array([[4.67, 2.1, 1.46],
 _r0_mrg_dna_fan_bonds = np.array([1.71, 1.635, 1.47, 1.345, 1.23, 1.13, 0.99, 0.92, 1.02, 1.25, 1.69])
 
 class MRGdsDNAParser(object):
-    '''
+    """
     MRG dsDNA parser. 
     Note this parser only works on one dsDNA!
-    '''
+    """
     def __init__(self, cg_pdb, default_parse=True):
-        '''
+        """
         Initialize a dsDNA with MRG model. 
         
         Parameters
@@ -47,7 +47,7 @@ class MRGdsDNAParser(object):
         default_parse : bool
             Whether to parse with default settings. 
         
-        '''
+        """
         self.pdb = cg_pdb
         self.atoms = helper_functions.parse_pdb(self.pdb)
         # check if all the atoms are CG nucleotide atoms
@@ -70,7 +70,7 @@ class MRGdsDNAParser(object):
     
     @classmethod
     def from_atomistic_pdb(cls, atomistic_pdb, cg_pdb, write_TER=False, default_parse=True):
-        '''
+        """
         Initialize an MRG model dsDNA from atomistic pdb. 
         
         Parameters
@@ -87,12 +87,12 @@ class MRGdsDNAParser(object):
         default_parse : bool
             Whether to parse with default settings. 
         
-        '''
+        """
         helper_functions.atomistic_pdb_to_nucleotide_pdb(atomistic_pdb, cg_pdb, write_TER)
         return cls(cg_pdb, default_parse)
     
     def parse_exclusions(self, exclude12=True, exclude13=True):
-        '''
+        """
         Parse nonbonded exclusions based on bonds and angles. 
         Note nonbonded interactions are not excluded for atom pairs with fan bonds. 
         
@@ -104,7 +104,7 @@ class MRGdsDNAParser(object):
         exclude13 : bool
             Whether to exclude nonbonded interactions between 1-3 atom pairs. 
         
-        '''
+        """
         exclusions = []
         if exclude12 and hasattr(self, 'dna_bonds'):
             for i, row in self.dna_bonds.iterrows():
@@ -116,7 +116,7 @@ class MRGdsDNAParser(object):
         self.exclusions = pd.DataFrame(exclusions, columns=['a1', 'a2']).drop_duplicates(ignore_index=True)
     
     def parse_mol(self, exclude12=True, exclude13=True, bonded_energy_scale=0.9, mass=325, charge=-1):
-        '''
+        """
         Parse molecule.
         
         Parameters
@@ -136,7 +136,7 @@ class MRGdsDNAParser(object):
         charge : float or int
             Charge of each CG nucleotide bead. 
         
-        '''
+        """
         # set bonds and angles
         bonds, angles = [], []
         n_atoms = len(self.atoms.index)

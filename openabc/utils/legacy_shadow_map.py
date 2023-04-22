@@ -12,7 +12,7 @@ __location__ = os.path.dirname(os.path.abspath(__file__))
 __author__ = 'Shuming Liu'
 
 
-'''
+"""
 A python implementation of shadow map algorithm. The related reference is: 
 
 Noel, Jeffrey K., Paul C. Whitford, and José N. Onuchic. "The shadow map: a general contact definition for capturing the dynamics of biomolecular folding and function." The journal of physical chemistry B 116.29 (2012): 8692-8702.
@@ -22,7 +22,7 @@ This algorithm is applied to find contacts between residues (a residue can be an
 This script also includes some useful functions. 
 
 Legacy means a version to check with SMOG, as old version SMOG has some bugs. 
-'''
+"""
 
 _amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
                 'GLN', 'GLU', 'GLY', 'HIS', 'ILE',
@@ -31,13 +31,13 @@ _amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
 
 
 def get_neighbor_pairs_and_distances(coord, cutoff=0.6, box=None, use_pbc=False):
-    '''
+    """
     Reference: https://docs.mdanalysis.org/1.1.1/documentation_pages/lib/nsgrid.html
     coord is the coordinate, and cutoff is the cutoff distance.
     coord and cutoff should use the same length unit.
     If use_pbc is False, then the box has to be orthogonal. 
     If use_pbc is True, then specify box as np.array([lx, ly, lz, alpha1, alpha2, alpha3]). 
-    '''
+    """
     if use_pbc:
         grid_search = MDAnalysis.lib.nsgrid.FastNS(cutoff, coord.astype(np.float32), box.astype(np.float32), use_pbc)
     else:
@@ -58,9 +58,9 @@ def get_neighbor_pairs_and_distances(coord, cutoff=0.6, box=None, use_pbc=False)
 
 
 def get_bonded_neighbor_dict(atomistic_pdb):
-    '''
+    """
     Find atoms that are directly connected by bonds.
-    '''
+    """
     traj = mdtraj.load_pdb(atomistic_pdb)
     top = traj.topology
     bond_graph = top.to_bondgraph()
@@ -73,10 +73,10 @@ def get_bonded_neighbor_dict(atomistic_pdb):
 
 
 def legacy_light_is_blocked(d12, d13, d23, r2, r3):
-    '''
+    """
     Check if the light from atom1 to atom2 is blocked by atom3.
     This is the legacy version, which means it has bug and only used to compare with old SMOG version results. 
-    '''
+    """
     assert d12 > 0
     assert d13 > 0
     assert d23 > 0
@@ -95,13 +95,13 @@ def legacy_light_is_blocked(d12, d13, d23, r2, r3):
 
 def legacy_find_res_pairs_from_atomistic_pdb(atomistic_pdb, frame=0, radius=0.1, bonded_radius=0.05, cutoff=0.6, 
                                              box=None, use_pbc=False):
-    '''
+    """
     Find native pairs between residues following the shadow algorithm.
     They algorithm only searches native pairs between residues that do not have 1-2, 1-3, or 1-4 interactions. 
     If two heavy atoms from different residues are in contact, then the two residues are in contact.
     radius and bonded_radius are the shadow radii. 
     This is the legacy version, which means it has bug and only used to compare with old SMOG version results. 
-    '''
+    """
     traj = mdtraj.load_pdb(atomistic_pdb)
     top = traj.topology
     n_atoms = top.n_atoms
@@ -189,11 +189,11 @@ def legacy_find_res_pairs_from_atomistic_pdb(atomistic_pdb, frame=0, radius=0.1,
 
 def legacy_find_ca_pairs_from_atomistic_pdb(atomistic_pdb, frame=0, radius=0.1, bonded_radius=0.05, cutoff=0.6, 
                                             box=None, use_pbc=False):
-    '''
+    """
     Find protein CA atom pairs whose residues are in contact.
     CA atom indices are residue indices, as here CA atom contacts represent residue contacts.
     This is the legacy version, which means it has bug and only used to compare with old SMOG version results.
-    '''
+    """
     res_pairs, df_atoms = legacy_find_res_pairs_from_atomistic_pdb(atomistic_pdb, frame, radius, bonded_radius, cutoff, 
                                                                    box, use_pbc)
     # pick out CA atoms for each residue
@@ -216,10 +216,10 @@ def legacy_find_ca_pairs_from_atomistic_pdb(atomistic_pdb, frame=0, radius=0.1, 
 
 
 def load_ca_pairs_from_gmx_top(top_file, ca_pdb, frame=0, use_pbc=False):
-    '''
+    """
     Load native pairs from GROMACS topology file. 
     Note in GROMACS, atom indices start from 1, while in OpenMM, atom indices start from 0.
-    '''
+    """
     with open(top_file, 'r') as input_reader:
         top_file_lines = input_reader.readlines()
     flag = False

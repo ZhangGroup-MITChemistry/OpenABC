@@ -10,19 +10,19 @@ import sys
 import os
 
 class CGModel(object):
-    '''
+    """
     The general class with general methods that can be inherited by any other CG model classes. 
     
     Each child class of CGModel has to set self.bonded_attr_names, which is used to append molecules and set rigid bodies. 
-    '''
+    """
     def __init__(self):
-        '''
+        """
         Initialize. 
-        '''
+        """
         self.atoms = None
         
     def append_mol(self, new_mol, verbose=False):
-        '''
+        """
         The method can append new molecules by concatenating atoms and bonded interaction information saved in dataframes. 
         
         Parameters
@@ -33,7 +33,7 @@ class CGModel(object):
         verbose : bool
             Whether to report the appended attributes. 
         
-        '''
+        """
         new_atoms = new_mol.atoms.copy()
         if hasattr(self, 'atoms'):
             if self.atoms is None:
@@ -65,7 +65,7 @@ class CGModel(object):
                         setattr(self, each_attr_name, new_attr)
     
     def atoms_to_pdb(self, cg_pdb, reset_serial=True):
-        '''
+        """
         Save atoms to pdb as topology will be read from the pdb file.
         PDB file is required for OpenMM simulation.
         
@@ -77,7 +77,7 @@ class CGModel(object):
         reset_serial : bool
             Reset serial to 1, 2, ...
         
-        '''
+        """
         # do not write charge due to pdb space limit
         atoms = self.atoms.copy()
         atoms.loc[:, 'charge'] = ''
@@ -86,7 +86,7 @@ class CGModel(object):
         helper_functions.write_pdb(atoms, cg_pdb)
     
     def create_system(self, top, use_pbc=True, box_a=500, box_b=500, box_c=500, remove_cmmotion=True):
-        '''
+        """
         Create OpenMM system for simulation. 
         Need to further add forces to this OpenMM system. 
         
@@ -110,7 +110,7 @@ class CGModel(object):
         remove_cmmotion : bool
             Whether to add CMMotionRemover to remove center of mass motions. 
         
-        '''
+        """
         self.top = top
         self.use_pbc = use_pbc
         self.system = mm.System()
@@ -127,7 +127,7 @@ class CGModel(object):
             self.system.addForce(force)
     
     def set_rigid_bodies(self, rigid_coord, rigid_bodies, keep_unchanged=[]):
-        '''
+        """
         Set rigid bodies and remove bonded interactions within the same rigid body. 
         
         Directly run `createRigidBodies` if the user does not want to change any bonded interactions or exclusions.
@@ -143,7 +143,7 @@ class CGModel(object):
         keep_unchanged : list
             A list including attribute names that user intends to keep unchanged. 
         
-        '''
+        """
         rigid_body_id_dict = {}
         for i in range(len(self.atoms.index)):
             rigid_body_id_dict[i] = None
@@ -171,7 +171,7 @@ class CGModel(object):
         createRigidBodies(self.system, rigid_coord, rigid_bodies)
         
     def add_plumed(self, plumed_script_path):
-        '''
+        """
         Add OpenMM plumed. 
         
         Parameters
@@ -183,13 +183,13 @@ class CGModel(object):
         ---------
             PLUMED website: https://www.plumed.org/
         
-        '''
+        """
         with open(plumed_script_path, 'r') as input_reader:
             force = PlumedForce(input_reader.read())
         self.system.addForce(force)
     
     def save_system(self, system_xml='system.xml'):
-        '''
+        """
         Save system to readable xml format. 
         
         Parameters
@@ -197,12 +197,12 @@ class CGModel(object):
         system_xml : str
             Output system xml file path. 
         
-        '''
+        """
         with open(system_xml, 'w') as output_writer:
             output_writer.write(mm.XmlSerializer.serialize(self.system))
     
     def save_state(self, state_xml='state.xml'):
-        '''
+        """
         Save simulation state to readable xml format. 
         
         Parameters
@@ -210,7 +210,7 @@ class CGModel(object):
         state_xml : str
             Output state xml file path. 
         
-        '''
+        """
         with open(state_xml, 'w') as output_writer:
             state = self.simulation.context.getState(getPositions=True, getVelocities=True, getForces=True, 
                                                      getEnergy=True, getParameters=True, 
@@ -219,7 +219,7 @@ class CGModel(object):
     
     def set_simulation(self, integrator, platform_name='CPU', properties={'Precision': 'mixed'}, init_coord=None):
         platform = mm.Platform.getPlatformByName(platform_name)
-        '''
+        """
         Set OpenMM simulation.
         
         Parameters
@@ -236,7 +236,7 @@ class CGModel(object):
         init_coord : None or array-like
             Initial coordinate. 
         
-        '''
+        """
         print(f'Use platform: {platform_name}')
         if platform_name in ['CUDA', 'OpenCL']:
             if 'Precision' not in properties:
@@ -250,9 +250,9 @@ class CGModel(object):
             self.simulation.context.setPositions(init_coord)
     
     def move_COM_to_box_center(self):
-        '''
+        """
         Move center of mass (COM) to simulation box center. 
-        '''
+        """
         print('Move center of mass (COM) to box center')
         state = self.simulation.context.getState(getPositions=True, enforcePeriodicBox=self.use_pbc)
         positions = np.array(state.getPositions().value_in_unit(unit.nanometer))
@@ -272,7 +272,7 @@ class CGModel(object):
         self.simulation.context.setPositions(positions*unit.nanometer)
     
     def add_reporters(self, report_interval, output_dcd='output.dcd', report_dcd=True, report_state=True):
-        '''
+        """
         Add reporters for OpenMM simulation. 
         
         Parameters
@@ -289,7 +289,7 @@ class CGModel(object):
         report_state : bool
             Whether to output simulation state. 
         
-        '''
+        """
         if report_dcd:
             dcd_reporter = app.DCDReporter(output_dcd, report_interval, enforcePeriodicBox=self.use_pbc)
             self.simulation.reporters.append(dcd_reporter)

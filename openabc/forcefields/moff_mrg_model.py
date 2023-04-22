@@ -18,19 +18,19 @@ _amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
 _nucleotides = ['DA', 'DC', 'DG', 'DT']
 
 class MOFFMRGModel(CGModel):
-    '''
+    """
     A class for MOFF+MRG model that represents a mixture of MOFF proteins and MRG DNA. 
-    '''
+    """
     def __init__(self):
-        '''
+        """
         Initialize. 
-        '''
+        """
         self.atoms = None
         self.bonded_attr_names = ['protein_bonds', 'protein_angles', 'protein_dihedrals', 'native_pairs', 'dna_bonds', 
                                   'dna_angles', 'dna_fan_bonds', 'exclusions']
 
     def add_protein_bonds(self, force_group=1):
-        '''
+        """
         Add protein bonds.
         
         Parameters
@@ -39,14 +39,14 @@ class MOFFMRGModel(CGModel):
         force_group : int
             Force group. 
         
-        '''
+        """
         if hasattr(self, 'protein_bonds'):
             print('Add protein bonds.')
             force = functional_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
 
     def add_protein_angles(self, force_group=2):
-        '''
+        """
         Add protein angles.
         
         Parameters
@@ -54,14 +54,14 @@ class MOFFMRGModel(CGModel):
         force_group : int
             Force group. 
         
-        '''
+        """
         if hasattr(self, 'protein_angles'):
             print('Add protein angles.')
             force = functional_terms.harmonic_angle_term(self.protein_angles, self.use_pbc, force_group)
             self.system.addForce(force)
     
     def add_protein_dihedrals(self, k_dihedral_1=3.0, k_dihedral_3=1.5, force_group=3):
-        '''
+        """
         Add protein dihedrals. 
         
         Parameters
@@ -69,14 +69,14 @@ class MOFFMRGModel(CGModel):
         force_group : int
             Force group. 
         
-        '''
+        """
         if hasattr(self, 'protein_dihedrals'):
             print('Add protein dihedrals.')
             force = functional_terms.periodic_dihedral_term(self.protein_dihedrals, self.use_pbc, force_group)
             self.system.addForce(force)
     
     def add_native_pairs(self, force_group=4):
-        '''
+        """
         Add native pairs. 
         
         Parameters
@@ -84,14 +84,14 @@ class MOFFMRGModel(CGModel):
         force_group : int
             Force group.
         
-        '''
+        """
         if hasattr(self, 'native_pairs'):
             print('Add native pairs.')
             force = functional_terms.native_pair_12_10_term(self.native_pairs, self.use_pbc, force_group)
             self.system.addForce(force)
 
     def add_dna_bonds(self, force_group=5):
-        '''
+        """
         Add DNA bonds. 
         
         Parameters
@@ -99,14 +99,14 @@ class MOFFMRGModel(CGModel):
         force_group : int
             Force group. 
         
-        '''
+        """
         if hasattr(self, 'dna_bonds'):
             print('Add DNA bonds.')
             force = functional_terms.class2_bond_term(self.dna_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
     
     def add_dna_angles(self, force_group=6):
-        '''
+        """
         Add DNA angles. 
         
         Parameters
@@ -114,14 +114,14 @@ class MOFFMRGModel(CGModel):
         force_group : int
             Force group. 
         
-        '''
+        """
         if hasattr(self, 'dna_angles'):
             print('Add DNA angles.')
             force = functional_terms.class2_angle_term(self.dna_angles, self.use_pbc, force_group)
             self.system.addForce(force)
         
     def add_dna_fan_bonds(self, force_group=7):
-        '''
+        """
         Add DNA fan bonds. 
         
         Parameters
@@ -129,7 +129,7 @@ class MOFFMRGModel(CGModel):
         force_group : int
             Force group. 
         
-        '''
+        """
         if hasattr(self, 'dna_fan_bonds'):
             print('Add DNA fan bonds.')
             force = functional_terms.class2_bond_term(self.dna_fan_bonds, self.use_pbc, force_group)
@@ -138,7 +138,7 @@ class MOFFMRGModel(CGModel):
     def add_contacts(self, eta=0.7/unit.angstrom, r0=8*unit.angstrom, cutoff=2.0*unit.nanometer, 
                      alpha_protein_dna=1.6264e-3, alpha_dna_dna=1.678e-5, epsilon_protein_dna=0, epsilon_dna_dna=0, 
                      force_group=8):
-        '''
+        """
         Add nonbonded contacts for MOFF protein and MRG DNA. 
         
         For amino acids, the CA atom type indices are 0-19, and CG nucleotide atom type index is 20. 
@@ -171,7 +171,7 @@ class MOFFMRGModel(CGModel):
         force_group : int
             Force group.  
         
-        '''
+        """
         print('Add protein and DNA nonbonded contacts.')
         atom_types = []
         for i, row in self.atoms.iterrows():
@@ -203,7 +203,7 @@ class MOFFMRGModel(CGModel):
     def add_elec_switch(self, salt_conc=150.0*unit.millimolar, temperature=300.0*unit.kelvin, 
                         cutoff1=1.2*unit.nanometer, cutoff2=1.5*unit.nanometer, switch_coeff=[1, 0, 0, -10, 15, -6], 
                         add_native_pair_elec=True, force_group=9):
-        '''
+        """
         Add electrostatic interaction with switch function. 
         
         The switch function switches potential to zero within range cutoff1 < r <= cutoff2. 
@@ -231,7 +231,7 @@ class MOFFMRGModel(CGModel):
         force_group : int
             Force group. 
         
-        '''
+        """
         print('Add protein and DNA electrostatic interactions with distance-dependent dielectric and switch.')
         charges = self.atoms['charge'].tolist()
         force1 = functional_terms.ddd_dh_elec_switch_term(charges, self.exclusions, self.use_pbc, salt_conc, 
@@ -253,9 +253,9 @@ class MOFFMRGModel(CGModel):
             print('Do not add electrostatic interactions between native pair atoms.')
         
     def add_all_default_forces(self):
-        '''
+        """
         Add all the forces with default settings. 
-        '''
+        """
         print('Add all the forces with default settings.')
         self.add_protein_bonds()
         self.add_protein_angles()

@@ -9,15 +9,15 @@ import torch
 import math
 import time
 
-'''
+"""
 The code is adapted from Xinqiang Ding's script. 
-'''
+"""
 
 # set gas constant R
 GAS_CONSTANT_R = (1.0*unit.BOLTZMANN_CONSTANT_kB*unit.AVOGADRO_CONSTANT_NA).value_in_unit(unit.kilojoule_per_mole/unit.kelvin)
 
 class TemperatureReplicaExchange(object):
-    '''
+    """
     Temperature replica exchange class for performing temperature replica exchange (TRE) simulations. 
     
     Note only positions and scaled velocities are exchanged, while other internal states of the simulations are not exchanged. This means the class may not be properly applied to simulations involving other internal states. For example, Nose-Hoover integrator may not work properly as it includes internal chain states. 
@@ -34,10 +34,11 @@ class TemperatureReplicaExchange(object):
     
         export MASTER_ADDR=${master_addr}
     
-    '''
+    """
+    
     def __init__(self, backend, n_replicas, rank, positions, top, system, temperatures, integrator, 
                  platform_name='CUDA', properties={'Precision': 'mixed'}):
-        '''
+        """
         Initialize temperature replica exchange object. 
         
         Parameters
@@ -73,7 +74,7 @@ class TemperatureReplicaExchange(object):
         ----------
         https://pytorch.org/docs/stable/distributed.html
 
-        '''
+        """
         self.backend = backend
         self.n_replicas = n_replicas
         assert self.n_replicas == int(os.environ['WORLD_SIZE'])
@@ -95,7 +96,7 @@ class TemperatureReplicaExchange(object):
         self.simulation.context.setVelocitiesToTemperature(self.temperatures[self.rank])
     
     def add_reporters(self, report_interval, report_state=True, report_dcd=True, output_dcd=None, use_pbc=True):
-        '''
+        """
         Add reporters for OpenMM simulation.
         
         Parameters
@@ -116,7 +117,7 @@ class TemperatureReplicaExchange(object):
             Whether to use periodic boundary condition (PBC) to translate atoms so the center of each molecule lies in the same PBC box.
             If None, then determine according to if the simulation system uses PBC. 
         
-        '''
+        """
         if report_state:
             state_reporter = app.StateDataReporter(sys.stdout, report_interval, step=True, time=True, 
                                                    potentialEnergy=True, kineticEnergy=True, totalEnergy=True, 
@@ -129,7 +130,7 @@ class TemperatureReplicaExchange(object):
             self.simulation.reporters.append(dcd_reporter)
     
     def run_replica_exchange(self, n_steps, exchange_interval, verbose=True):
-        '''
+        """
         Perform replica exchange simulation. 
         
         Exchange atom positions and rescaled velocities. Other state variables are not exchanged. 
@@ -147,7 +148,7 @@ class TemperatureReplicaExchange(object):
         verbose : bool
             Whether to report exchange acceptance ratio and simulation speed. 
          
-        '''
+        """
         n_iterations = int(n_steps/exchange_interval)
         n_steps = n_iterations*exchange_interval # reset n_steps in case n_steps % exchange_interval != 0
         n_exchange_attempts = 0

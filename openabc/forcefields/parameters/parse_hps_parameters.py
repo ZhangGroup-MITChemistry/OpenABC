@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 
-'''
+"""
 Use this script to produce the .csv files for HPS model nonbonded interaction parameters. 
 There are two sets of hydrophobicity scales (KR scale and Urry scale). 
-'''
+"""
 
 _amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
                 'GLN', 'GLU', 'GLY', 'HIS', 'ILE',

@@ -3,11 +3,11 @@ import pandas as pd
 import sys
 import os
 
-'''
+"""
 Use this script to produce the .csv files for MOFF nonbonded interaction parameters. 
 The nonbonded interaction form is: abs(epsilon)*(sigma^12)/(r^12)-0.5*epsilon*(1+tanh(eta*(r0-r))).
 Set alpha=abs(epsilon)*(sigma^12).
-'''
+"""
 df_contact_parameters = pd.DataFrame(columns=['atom_type1', 'atom_type2', 'alpha', 'epsilon', 'sigma'])
 
 with open('template_MOFF.top', 'r') as input_reader:

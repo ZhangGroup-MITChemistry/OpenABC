@@ -17,21 +17,21 @@ __location__ = os.path.dirname(os.path.abspath(__file__))
 
 __author__ = 'Cong Wang'
 
-'''
+"""
 This python script calls REMO (https://zhanggroup.org/REMO/) to reconstruct atomic configurations for protein condensates.
-'''
+"""
 
 
 default_REMO_path = __location__ + '/REMO'
 
 def args_parse():
-    '''
+    """
     The function uses argparse module to create and manage the command-line interface.
 
     Returns
     -------
     parser.parse_args(): the parsed command-line arguments object.
-    '''
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input_file', type=str, help='A string that represents the path to the input protein PDB file')
     parser.add_argument('-N', '--number_of_chains', nargs='+', type=int, help='A list of integers, where each element represents the number of chains for a particular protein type')
@@ -41,7 +41,7 @@ def args_parse():
 
 
 def split_protein(input_pdbfile, num_chains, num_residues, output_path):
-    '''
+    """
     Split a PDB file containing multiple chains into individual files, each containing one chain.
     
     Parameters
@@ -59,7 +59,7 @@ def split_protein(input_pdbfile, num_chains, num_residues, output_path):
     output_path : str
         The folder where user wants to save output pdb files.  
            
-    '''
+    """
     pdb = parse_pdb(input_pdbfile)
     assert len(num_chains) == len(num_residues)
     protein_types = len(num_chains)
@@ -76,7 +76,7 @@ def split_protein(input_pdbfile, num_chains, num_residues, output_path):
 
 
 def single_chain_CA2AA(input_pdbfile, output_pdbfile, REMO_path=default_REMO_path, debug=False):
-    '''
+    """
     Reconstruct all-atom representation for a single-chain protein from its alpha carbons using REMO.
     
     Parameters
@@ -97,7 +97,7 @@ def single_chain_CA2AA(input_pdbfile, output_pdbfile, REMO_path=default_REMO_pat
     ----------
     Yunqi Li and Yang Zhang. REMO: A new protocol to refine full atomic protein models from C-alpha traces by optimizing hydrogen-bonding networks. Proteins, 2009, 76: 665-676.
     https://zhanggroup.org/REMO/.
-    '''
+    """
     REMO_path = os.path.expanduser(REMO_path)
     if not os.path.exists(f'{REMO_path}/REMO.pl'):
         raise FileNotFoundError(f'REMO.pl not found in {REMO_path}')
@@ -115,7 +115,7 @@ def single_chain_CA2AA(input_pdbfile, output_pdbfile, REMO_path=default_REMO_pat
 
 
 def align_protein(input_pdbfile, reference_pdbfile, output_pdbfile, reference_atoms='CA'):
-    '''
+    """
     Align a protein with the reference protein accoding to positions of alpha carbons.
     
     Parameters
@@ -137,7 +137,7 @@ def align_protein(input_pdbfile, reference_pdbfile, output_pdbfile, reference_at
     ----------
     Yunqi Li and Yang Zhang. REMO: A new protocol to refine full atomic protein models from C-alpha traces by optimizing hydrogen-bonding networks. Proteins, 2009, 76: 665-676.
     https://zhanggroup.org/REMO/.
-    '''
+    """
     input_pdb = mdtraj.load(input_pdbfile)
     ref_pdb = mdtraj.load(reference_pdbfile)
     input_pdb_CA_index = input_pdb.top.select(f'name=={reference_atoms}')
@@ -156,7 +156,7 @@ def align_protein(input_pdbfile, reference_pdbfile, output_pdbfile, reference_at
 
 
 def combine_proteins(pdbfile_lis, output_pdbflie):
-    '''
+    """
     Merge multiple pdb files into a single pdb file.
     
     Parameters
@@ -167,8 +167,7 @@ def combine_proteins(pdbfile_lis, output_pdbflie):
     output_pdbfile : str
         Merged pdb file.
         
-    '''
-
+    """
     pdb_list = [mdtraj.load(i) for i in pdbfile_lis]
     pdb_combined = pdb_list[0]
     for i in range(len(pdb_list) - 1):
@@ -178,7 +177,7 @@ def combine_proteins(pdbfile_lis, output_pdbflie):
 
 
 def multiple_chains_CA2AA(input_pdbfile, num_chains, num_residues, REMO_path=default_REMO_path, debug=False):
-    '''
+    """
     Reconstruct all-atom representation of a multiple-chain protein from its alpha carbons. If the name of input file is 'XXX.pdb', then output will be saved as 'XXX_AA.pdb' in the folder where 'XXX.pdb' is located.
     
     Parameters
@@ -203,7 +202,7 @@ def multiple_chains_CA2AA(input_pdbfile, num_chains, num_residues, REMO_path=def
     ----------
     Yunqi Li and Yang Zhang. REMO: A new protocol to refine full atomic protein models from C-alpha traces by optimizing hydrogen-bonding networks. Proteins, 2009, 76: 665-676.
     https://zhanggroup.org/REMO/.
-    '''
+    """
     assert len(num_chains) == len(num_residues)
     pdb_name = input_pdbfile.split('/')[-1].split('.')[0]
     split_protein(input_pdbfile, num_chains, num_residues, output_path=f'{pdb_name}/ca_splitted')

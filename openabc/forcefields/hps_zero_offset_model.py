@@ -19,10 +19,10 @@ _amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
 _kcal_to_kj = 4.184
 
 class HPSZeroOffsetModel(HPSModel):
-    '''
+    """
     An HPS model with zero offset for nonbonded interactions. 
     This model is only used for comparisons, as HOOMD-Blue HPS model does not shift nonbonded potential to zero at cutoff. 
-    '''
+    """
     def add_contacts(self, hydropathy_scale='Urry', epsilon=0.2*_kcal_to_kj, mu=1, delta=0.08, force_group=2):
         print('Add nonbonded contacts.')
         resname_list = self.atoms['resname'].tolist()

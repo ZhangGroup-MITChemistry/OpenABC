@@ -25,11 +25,11 @@ _hps_amino_acid_charge_dict = dict(ALA=0.0, ARG=1.0, ASN=0.0, ASP=-1.0, CYS=0.0,
 _kcal_to_kj = 4.184
 
 class HPSParser(object):
-    '''
+    """
     HPS protein parser.
-    '''
+    """
     def __init__(self, ca_pdb, default_parse=True):
-        '''
+        """
         Initialize a protein with HPS model.
         
         Parameters
@@ -40,7 +40,7 @@ class HPSParser(object):
         default_parse : bool
             Whether to parse with default settings. 
         
-        '''
+        """
         self.pdb = ca_pdb
         self.atoms = helper_functions.parse_pdb(ca_pdb)
         # check if all the atoms are protein CA atoms
@@ -51,7 +51,7 @@ class HPSParser(object):
     
     @classmethod
     def from_atomistic_pdb(cls, atomistic_pdb, ca_pdb, write_TER=False, default_parse=True):
-        '''
+        """
         Initialize an HPS model protein from atomistic pdb. 
         
         Parameters
@@ -68,13 +68,13 @@ class HPSParser(object):
         default_parse : bool
             Whether to parse with default settings. 
         
-        '''
+        """
         helper_functions.atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
         return cls(ca_pdb, default_parse)
     
     def parse_mol(self, exclude12=True, mass_dict=_hps_amino_acid_mass_dict, 
                      charge_dict=_hps_amino_acid_charge_dict):
-        '''
+        """
         Parse molecule. 
         
         Parameters
@@ -88,7 +88,7 @@ class HPSParser(object):
         charge_dict : dict
             Charge dictionary. 
         
-        '''
+        """
         bonds = []
         n_atoms = len(self.atoms.index)
         for atom1 in range(n_atoms):

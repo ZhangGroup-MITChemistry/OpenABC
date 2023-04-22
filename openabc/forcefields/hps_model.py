@@ -19,20 +19,20 @@ _amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
 _kcal_to_kj = 4.184
 
 class HPSModel(CGModel):
-    '''
+    """
     A class for HPS model that represents a mixture of HPS model proteins. 
     
     This class inherits CGModel class. 
-    '''
+    """
     def __init__(self):
-        '''
+        """
         Initialize. 
-        '''
+        """
         self.atoms = None
         self.bonded_attr_names = ['protein_bonds', 'exclusions']
         
     def add_protein_bonds(self, force_group=1):
-        '''
+        """
         Add protein bonds. 
         
         Parameters
@@ -40,13 +40,13 @@ class HPSModel(CGModel):
         force_group : int
             Force group. 
         
-        '''
+        """
         print('Add protein bonds.')
         force = bond_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
         self.system.addForce(force)
     
     def add_contacts(self, hydropathy_scale='Urry', epsilon=0.2*_kcal_to_kj, mu=1, delta=0.08, force_group=2):
-        '''
+        """
         Add nonbonded contacts. 
         
         The raw hydropathy scale is scaled and shifted by: mu*lambda - delta
@@ -68,7 +68,7 @@ class HPSModel(CGModel):
         force_group : int
             Force group. 
             
-        '''
+        """
         print('Add nonbonded contacts.')
         resname_list = self.atoms['resname'].tolist()
         atom_types = [_amino_acids.index(x) for x in resname_list]
@@ -95,7 +95,7 @@ class HPSModel(CGModel):
         self.system.addForce(force)
     
     def add_dh_elec(self, ldby=1*unit.nanometer, dielectric_water=80.0, cutoff=3.5*unit.nanometer, force_group=3):
-        '''
+        """
         Add Debye-Huckel electrostatic interactions. 
         
         Parameters
@@ -112,7 +112,7 @@ class HPSModel(CGModel):
         force_group : int
             Force group. 
         
-        '''
+        """
         print('Add Debye-Huckel electrostatic interactions.')
         print(f'Set Debye length as {ldby.value_in_unit(unit.nanometer)} nm.')
         print(f'Set water dielectric as {dielectric_water}.')
@@ -122,9 +122,9 @@ class HPSModel(CGModel):
         self.system.addForce(force)
 
     def add_all_default_forces(self):
-        '''
+        """
         Add all the forces with default settings. 
-        '''
+        """
         print('Add all the forces with default settings.')
         self.add_protein_bonds(force_group=1)
         self.add_contacts(force_group=2)

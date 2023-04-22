@@ -27,8 +27,11 @@ def moff_mrg_contact_term(atom_types, df_exclusions, use_pbc, alpha_map, epsilon
     r0_value = r0.value_in_unit(unit.nanometer)
     cutoff_value = cutoff.value_in_unit(unit.nanometer)
     contacts = mm.CustomNonbondedForce(f'''energy;
-               energy=(alpha_con/(r^12)-0.5*epsilon_con*(1+tanh({eta_value}*({r0_value}-r)))-offset)*step({cutoff_value}-r);
-               offset=alpha_con/({cutoff_value}^12)-0.5*epsilon_con*(1+tanh({eta_value}*({r0_value}-{cutoff_value})));
+               energy=(energy1+energy2-offset1-offset2)*step({cutoff_value}-r);
+               energy1=alpha_con/(r^12);
+               energy2=-0.5*epsilon_con*(1+tanh({eta_value}*({r0_value}-r)));
+               offset1=alpha_con/({cutoff_value}^12);
+               offset2=-0.5*epsilon_con*(1+tanh({eta_value}*({r0_value}-{cutoff_value})));
                alpha_con=alpha_con_map(atom_type1, atom_type2);
                epsilon_con=epsilon_con_map(atom_type1, atom_type2);
                ''')

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manual &mdash; OpenABC 1.0.2 documentation</title>
+  <title>Manual &mdash; OpenABC 1.0.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -32,7 +32,7 @@
             OpenABC
           </a>
               <div class="version">
-                1.0.2
+                1.0.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -1302,8 +1302,10 @@ Note in GROMACS, atom indices start from 1, while in OpenMM, atom indices start 
 <span id="opeanbc-utils-insert"></span><h2>opeanbc.utils.insert<a class="headerlink" href="#module-openabc.utils.insert" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="openabc.utils.insert.insert_molecules">
-<span class="sig-name descname"><span class="pre">insert_molecules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_pdb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'system.pdb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_mol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_pdb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n_attempts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[100,</span> <span class="pre">100,</span> <span class="pre">100]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.insert.insert_molecules" title="Permalink to this definition"></a></dt>
-<dd><p>Insert multiple copies of given molecule into an existing pdb or a new empty box. Note all the length parameter units are nm, though coordinates in pdb are in unit angstroms. Currently this function only supports using orthogonal box.</p>
+<span class="sig-name descname"><span class="pre">insert_molecules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_pdb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n_attempts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[100,</span> <span class="pre">100,</span> <span class="pre">100]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FastNS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset_serial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.insert.insert_molecules" title="Permalink to this definition"></a></dt>
+<dd><p>Insert multiple copies of given molecule into an existing pdb or a new empty box. 
+Note all the length parameter units are nm, though coordinates in pdb are in unit angstroms. 
+Currently this function only supports using orthogonal box.</p>
 <section id="id64">
 <h3>Parameters<a class="headerlink" href="#id64" title="Permalink to this heading"></a></h3>
 <dl class="simple">
@@ -1313,15 +1315,19 @@ Note in GROMACS, atom indices start from 1, while in OpenMM, atom indices start 
 </dd>
 <dt>n_mol<span class="classifier">int</span></dt><dd><p>Number of copies of the new molecule to be inserted.</p>
 </dd>
-<dt>radius<span class="classifier">float or int</span></dt><dd><p>Radius for each atom in unit nm. Insertion ensures the distance between any two atoms are larger than 2*radius.</p>
+<dt>radius<span class="classifier">float or int</span></dt><dd><p>Radius for each atom in unit nm. Insertion ensures the distance between any two atoms are larger than 2*radius under periodic boundary condition.</p>
 </dd>
 <dt>existing_pdb<span class="classifier">None or str</span></dt><dd><p>Path of an existing pdb file. If None, the molecules will be inserted into a new empty box, otherwise, inserted into a copy of existing_pdb.</p>
 </dd>
 <dt>max_n_attempts<span class="classifier">int</span></dt><dd><p>Maximal number of attempts to insert. Ensure this value no smaller than n_mol.</p>
 </dd>
-<dt>reset_box<span class="classifier">bool</span></dt><dd><p>Whether to reset the box lengths.</p>
+<dt>box<span class="classifier">list or numpy array, shape = (3,)</span></dt><dd><p>New box size in unit nm.</p>
 </dd>
-<dt>box<span class="classifier">list or numpy array, shape = (3,)</span></dt><dd><p>New box size in unit nm. This is effective if reset_box is True.</p>
+<dt>method<span class="classifier">str</span></dt><dd><p>Which method to use for detecting if the inserted molecule has contact with existing atoms. 
+This parameter can be ‘FastNS’ or ‘distance_array’. 
+FastNS should be faster than distance_array, especially for large systems.</p>
+</dd>
+<dt>reset_serial<span class="classifier">bool</span></dt><dd><p>Whether to reset serial to 0, 1, …, N - 1.</p>
 </dd>
 </dl>
 </section>

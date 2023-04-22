@@ -6,7 +6,6 @@ import simtk.unit as unit
 import sys
 import os
 
-
 def periodic_dihedral_term(df_dihedrals, use_pbc, force_group=3):
     dihedrals = mm.PeriodicTorsionForce()
     for i, row in df_dihedrals.iterrows():

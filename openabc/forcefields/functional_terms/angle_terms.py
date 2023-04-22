@@ -6,7 +6,6 @@ import simtk.unit as unit
 import sys
 import os
 
-
 def harmonic_angle_term(df_angles, use_pbc, force_group=2):
     angles = mm.HarmonicAngleForce()
     for i, row in df_angles.iterrows():

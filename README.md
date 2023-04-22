@@ -74,19 +74,36 @@ condensate.add_all_default_forces()
 
 Please read the tutorials for more instructions. 
 
+
 ## Tip
 
-When using `openabc.utils.insert.insert_molecules`, users may see such warnings: `UserWarning: Found no information for attr: 'formalcharges' Using default value of '0'` and `warnings.warn("Found no information for attr: '{}'"`. Such warning can be ignored as atom charge is not required when we insert molecules. To suppress such warning, users can add such lines at the beginning of the script:
+For version 1.0.2: When using `openabc.utils.insert.insert_molecules`, users may see such warnings: `UserWarning: Found no information for attr: 'formalcharges' Using default value of '0'` and `warnings.warn("Found no information for attr: '{}'"`. Such warning can be ignored as atom charge is not required when we insert molecules. To suppress such warning, users can add such lines at the beginning of the script:
 
 ```
 import warnings
 warnings.filterwarnings('ignore')
 ```
 
+Starting from version 1.0.3, we use other ways to write pdb file for `openabc.utils.insert.insert_molecules`, and such warning will not appear. 
+
 
 ## Extension
 
 If the user intends to add new force fields, then the user has to write new parsers, new models, and expressions of new forces. Take HPS model as an example, the main components are `openabc/forcefields/parsers/hps_parser.py` and `openabc/forcefields/hps_model.py`. `openabc/forcefields/parsers/hps_parser.py` includes a parser that can parse each individual protein and get all the bonded interactions. `openabc/forcefields/hps_model.py` includes a container-like class that can hold multiple protein parser objects and add forces. Definitions of different potentials are saved in `openabc/forcefields/functional_terms/*_terms.py`. 
+
+
+## Important notes and updates
+
+Some important notes and updates are listed: 
+
+### Version 1.0.2
+
+The first version available with pip install. 
+
+### Version 1.0.3 
+
+Update `openabc.utils.insert.insert_molecules`, MDAnalysis warnings will not appear. Both "FastNS" and "distance_array" methods are supported. 
+
 
 ## Citations
 
