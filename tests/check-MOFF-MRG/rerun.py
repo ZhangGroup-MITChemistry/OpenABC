@@ -14,11 +14,11 @@ from openabc.forcefields.parsers import MOFFParser, MRGdsDNAParser
 from openabc.utils.shadow_map import load_ca_pairs_from_gmx_top
 from openabc.utils.helper_functions import write_pdb
 
-'''
+"""
 Compare energy with GROMACS output. 
 Note the native pairs in GROMACS topology file are produced by SMOG, which may be slightly different from the native pairs found by our shadow map algorithm code. 
 To keep consistency, we directly load native pairs from GROMACS topology file. 
-'''
+"""
 
 hp1alpha_dimer_parser = MOFFParser.from_atomistic_pdb('hp1a.pdb', 'hp1alpha_dimer_CA.pdb')
 hp1alpha_dimer_parser.native_pairs = load_ca_pairs_from_gmx_top('hp1a.itp', 'hp1alpha_dimer_CA.pdb') # update native pairs

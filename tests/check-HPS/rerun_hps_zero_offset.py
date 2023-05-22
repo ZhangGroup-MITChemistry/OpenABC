@@ -13,11 +13,11 @@ sys.path.append(f'{__location__}/../..')
 from openabc.forcefields.hps_zero_offset_model import HPSZeroOffsetModel
 from openabc.forcefields.parsers import HPSParser
 
-'''
+"""
 Compare energies of configurations computed with our code and HOOMD-Blue. 
 Run tests with DDX4.
 Add both Urry scale and KR scale nonbonded force so we can compute them in one rerun. 
-'''
+"""
 
 ca_pdb = 'init_DDX4_CA.pdb'
 protein_parser = HPSParser(ca_pdb)
