@@ -20,7 +20,9 @@ Instructions for class methods and functions are also included as comments in th
 
 ## Environment
 
-We recommend using openmm 7.5.1 for using OpenABC, as OpenABC is built based on openmm 7.5.1. 
+For versions >= 1.0.4, openmm versions < 7.6 and >= 7.6 are all supported.
+
+For versions < 1.0.4, we recommend using openmm 7.5.1 for using OpenABC, as OpenABC is built based on openmm 7.5.1. 
 
 Install openmm 7.5.1 with the following command: 
 
@@ -103,6 +105,10 @@ The first version available with pip install.
 ### Version 1.0.3 
 
 Update `openabc.utils.insert.insert_molecules`, MDAnalysis warnings will not appear. Both "FastNS" and "distance_array" methods are supported. 
+
+### Version 1.0.4
+
+OpenMM of version < 7.6 and >= 7.6 are both supported. Mpipi force field is included. 
 
 
 ## Citations

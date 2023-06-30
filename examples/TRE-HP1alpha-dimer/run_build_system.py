@@ -1,8 +1,11 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm.app as app
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm.app as app
+    import simtk.unit as unit
 import sys
 import os
 
@@ -10,9 +13,9 @@ sys.path.append('../..')
 from openabc.forcefields import MOFFMRGModel
 from openabc.forcefields.parsers import MOFFParser
 
-'''
+"""
 Build HP1alpha dimer system for further simulations. 
-'''
+"""
 
 # parse HP1alpha dimer
 hp1alpha_dimer_parser = MOFFParser.from_atomistic_pdb('hp1a.pdb', 'hp1alpha_dimer_CA.pdb')
