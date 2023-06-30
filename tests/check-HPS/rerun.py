@@ -1,10 +1,14 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm as mm
+    import openmm.app as app
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+    import simtk.unit as unit
 import mdtraj
-import MDAnalysis
 import sys
 import os
 
@@ -44,7 +48,13 @@ for i in range(n_frames):
         energy = state.getPotentialEnergy().value_in_unit(unit.kilojoule_per_mole)
         row.append(energy)
     df_openmm_energy.loc[len(df_openmm_energy.index)] = row
-df_openmm_energy.round(2).to_csv('DDX4_openmm_energy_zero_offset.csv', index=False)
+df_openmm_energy.round(2).to_csv('DDX4_openmm_energy.csv', index=False)
 
+# compare
+df_hoomd_energy = pd.read_csv('data/DDX4/DDX4_hoomd_energy.csv')
+for i in ['bond', 'contact (Urry)', 'contact (KR)', 'elec']:
+    diff = np.absolute(df_openmm_energy[i].to_numpy() - df_hoomd_energy[i].to_numpy())
+    assert np.amax(diff) <= 0.01
+    
 
 

@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 
-'''
+"""
 Convert the energies in GROMACS log file to csv file. 
-'''
+"""
 
 with open('rerun.log', 'r') as f:
     rerun_log_lines = f.readlines()

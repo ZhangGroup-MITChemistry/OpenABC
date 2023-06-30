@@ -1,8 +1,13 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm as mm
+    import openmm.app as app
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+    import simtk.unit as unit
 import mdtraj
 import sys
 import os
@@ -12,7 +17,6 @@ sys.path.append(f'{__location__}/../..')
 from openabc.forcefields import MOFFMRGModel
 from openabc.forcefields.parsers import MOFFParser, MRGdsDNAParser
 from openabc.utils.shadow_map import load_ca_pairs_from_gmx_top
-from openabc.utils.helper_functions import write_pdb
 
 """
 Compare energy with GROMACS output. 
@@ -71,9 +75,19 @@ for i in range(n_frames):
     openmm_energies.append(row)
 
 openmm_energies = np.array(openmm_energies)
-columns = ['protein bond', 'protein angle', 'protein dihedral', 'native pair', 'dna bond', 'dna angle', 'dna fan bond', 'contact', 'elec switch', 'sum']
+columns = ['protein bond', 'protein angle', 'protein dihedral', 'native pair', 'dna bond', 'dna angle', 
+           'dna fan bond', 'contact', 'elec switch', 'sum']
 df_openmm_energies = pd.DataFrame(openmm_energies, columns=columns).round(6)
 df_openmm_energies.round(2).to_csv('openmm_energies.csv', index=False)
 
-
+# compare
+df_gmx_energies = pd.read_csv('gmx-data/gmx_energies.csv')
+df_openmm_energies['dna bond and fan bond'] = df_openmm_energies['dna bond'] + df_openmm_energies['dna fan bond']
+for i in ['protein bond', 'protein angle', 'protein dihedral', 'native pair', 'dna bond and fan bond', 'dna angle', 
+          'contact', 'elec switch']:
+    diff = np.absolute(df_openmm_energies[i].to_numpy() - df_gmx_energies[i].to_numpy())
+    if i == 'elec switch':
+        assert np.amax(diff) <= 0.2
+    else:
+        assert np.amax(diff) <= 0.01
 

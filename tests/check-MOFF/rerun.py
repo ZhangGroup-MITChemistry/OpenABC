@@ -1,8 +1,13 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm as mm
+    import openmm.app as app
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+    import simtk.unit as unit
 import mdtraj
 import sys
 import os
@@ -36,7 +41,7 @@ hp1alpha_dimer.add_protein_dihedrals(force_group=3)
 hp1alpha_dimer.add_native_pairs(force_group=4)
 hp1alpha_dimer.add_contacts(force_group=5)
 hp1alpha_dimer.add_elec_switch(salt_conc, temperature, force_group=6)
-hp1alpha_dimer.save_system('system.xml')
+#hp1alpha_dimer.save_system('system.xml')
 collision = 1/unit.picosecond
 timestep = 10*unit.femtosecond
 integrator = mm.NoseHooverIntegrator(temperature, collision, timestep)
@@ -66,16 +71,10 @@ df_openmm_energies.round(2).to_csv('openmm_energies.csv', index=False)
 
 # compare with GROMACS output energies
 df_gmx_energies = pd.read_csv('gmx-data/gmx_energies.csv')
-n_snapshots = len(df_openmm_energies.index)
-assert n_snapshots == len(df_gmx_energies)
-for i in range(n_snapshots):
-    row1 = df_openmm_energies.loc[i]
-    row2 = df_gmx_energies.loc[i]
-    for j in columns:
-        if (j not in ['elec switch', 'sum']) and (abs(row1[j] - row2[j]) > 0.01):
-            print(f'Warning: snapshot {i} energy {j} do not match!')
-        elif (j in ['elec switch', 'sum']) and (abs(row1[j] - row2[j]) > 0.02):
-            # we assign a slightly larger tolerance for electrostatic interaction and overall energy
-            print(f'Warning: snapshot {i} energy {j} do not match!')
+assert len(df_openmm_energies.index) == len(df_gmx_energies.index)
+
+for i in ['bond', 'angle', 'dihedral', 'native pair', 'contact', 'elec switch']:
+    diff = np.absolute(df_openmm_energies[i].to_numpy() - df_gmx_energies[i].to_numpy())
+    assert np.amax(diff) <= 0.02
 
 
