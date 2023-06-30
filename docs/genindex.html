@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; OpenABC 1.0.3 documentation</title>
+  <title>Index &mdash; OpenABC 1.0.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             OpenABC
           </a>
               <div class="version">
-                1.0.3
+                1.0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -103,9 +103,15 @@
       <ul>
         <li><a href="manual.html#openabc.forcefields.moff_mrg_model.MOFFMRGModel.add_contacts">(MOFFMRGModel method)</a>
 </li>
+        <li><a href="manual.html#openabc.forcefields.mpipi_model.MpipiModel.add_contacts">(MpipiModel method)</a>
+</li>
       </ul></li>
       <li><a href="manual.html#openabc.forcefields.hps_model.HPSModel.add_dh_elec">add_dh_elec() (HPSModel method)</a>
+
+      <ul>
+        <li><a href="manual.html#openabc.forcefields.mpipi_model.MpipiModel.add_dh_elec">(MpipiModel method)</a>
 </li>
+      </ul></li>
       <li><a href="manual.html#openabc.forcefields.moff_mrg_model.MOFFMRGModel.add_dna_angles">add_dna_angles() (MOFFMRGModel method)</a>
 </li>
       <li><a href="manual.html#openabc.forcefields.moff_mrg_model.MOFFMRGModel.add_dna_bonds">add_dna_bonds() (MOFFMRGModel method)</a>
@@ -127,6 +133,8 @@
       <ul>
         <li><a href="manual.html#openabc.forcefields.moff_mrg_model.MOFFMRGModel.add_protein_bonds">(MOFFMRGModel method)</a>
 </li>
+        <li><a href="manual.html#openabc.forcefields.mpipi_model.MpipiModel.add_protein_bonds">(MpipiModel method)</a>
+</li>
       </ul></li>
       <li><a href="manual.html#openabc.forcefields.moff_mrg_model.MOFFMRGModel.add_protein_dihedrals">add_protein_dihedrals() (MOFFMRGModel method)</a>
 </li>
@@ -136,6 +144,8 @@
         <li><a href="manual.html#openabc.utils.replica_exchange.TemperatureReplicaExchange.add_reporters">(TemperatureReplicaExchange method)</a>
 </li>
       </ul></li>
+      <li><a href="manual.html#openabc.forcefields.mpipi_model.MpipiModel.add_rna_bonds">add_rna_bonds() (MpipiModel method)</a>
+</li>
       <li><a href="manual.html#openabc.utils.CA2AA.align_protein">align_protein() (in module openabc.utils.CA2AA)</a>
 </li>
       <li><a href="manual.html#openabc.forcefields.cg_model.CGModel.append_mol">append_mol() (CGModel method)</a>
@@ -155,6 +165,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#openabc.utils.helper_functions.build_straight_CA_chain">build_straight_CA_chain() (in module openabc.utils.helper_functions)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#openabc.utils.helper_functions.build_straight_chain">build_straight_chain() (in module openabc.utils.helper_functions)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -182,16 +196,20 @@
 </li>
       <li><a href="manual.html#openabc.utils.shadow_map.find_res_pairs_from_atomistic_pdb">find_res_pairs_from_atomistic_pdb() (in module openabc.utils.shadow_map)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#openabc.forcefields.parsers.hps_parser.HPSParser.from_atomistic_pdb">from_atomistic_pdb() (HPSParser class method)</a>
 
       <ul>
         <li><a href="manual.html#openabc.forcefields.parsers.moff_parser.MOFFParser.from_atomistic_pdb">(MOFFParser class method)</a>
 </li>
+        <li><a href="manual.html#openabc.forcefields.parsers.mpipi_parsers.MpipiProteinParser.from_atomistic_pdb">(MpipiProteinParser class method)</a>
+</li>
         <li><a href="manual.html#openabc.forcefields.parsers.mrg_parser.MRGdsDNAParser.from_atomistic_pdb">(MRGdsDNAParser class method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="manual.html#openabc.forcefields.parsers.mpipi_parsers.MpipiRNAParser.from_sequence">from_sequence() (MpipiRNAParser class method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -254,9 +272,13 @@
 </li>
         <li><a href="manual.html#module-openabc.forcefields.moff_mrg_model">openabc.forcefields.moff_mrg_model</a>
 </li>
+        <li><a href="manual.html#module-openabc.forcefields.mpipi_model">openabc.forcefields.mpipi_model</a>
+</li>
         <li><a href="manual.html#module-openabc.forcefields.parsers.hps_parser">openabc.forcefields.parsers.hps_parser</a>
 </li>
         <li><a href="manual.html#module-openabc.forcefields.parsers.moff_parser">openabc.forcefields.parsers.moff_parser</a>
+</li>
+        <li><a href="manual.html#module-openabc.forcefields.parsers.mpipi_parsers">openabc.forcefields.parsers.mpipi_parsers</a>
 </li>
         <li><a href="manual.html#module-openabc.forcefields.parsers.mrg_parser">openabc.forcefields.parsers.mrg_parser</a>
 </li>
@@ -270,6 +292,8 @@
 </li>
         <li><a href="manual.html#module-openabc.utils.shadow_map">openabc.utils.shadow_map</a>
 </li>
+        <li><a href="manual.html#module-openabc.utils.stride">openabc.utils.stride</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -280,6 +304,12 @@
       <li><a href="manual.html#openabc.utils.helper_functions.move_atoms_to_closest_pbc_image">move_atoms_to_closest_pbc_image() (in module openabc.utils.helper_functions)</a>
 </li>
       <li><a href="manual.html#openabc.forcefields.cg_model.CGModel.move_COM_to_box_center">move_COM_to_box_center() (CGModel method)</a>
+</li>
+      <li><a href="manual.html#openabc.forcefields.mpipi_model.MpipiModel">MpipiModel (class in openabc.forcefields.mpipi_model)</a>
+</li>
+      <li><a href="manual.html#openabc.forcefields.parsers.mpipi_parsers.MpipiProteinParser">MpipiProteinParser (class in openabc.forcefields.parsers.mpipi_parsers)</a>
+</li>
+      <li><a href="manual.html#openabc.forcefields.parsers.mpipi_parsers.MpipiRNAParser">MpipiRNAParser (class in openabc.forcefields.parsers.mpipi_parsers)</a>
 </li>
       <li><a href="manual.html#openabc.forcefields.parsers.mrg_parser.MRGdsDNAParser">MRGdsDNAParser (class in openabc.forcefields.parsers.mrg_parser)</a>
 </li>
@@ -313,6 +343,13 @@
 </li>
       </ul></li>
       <li>
+    openabc.forcefields.mpipi_model
+
+      <ul>
+        <li><a href="manual.html#module-openabc.forcefields.mpipi_model">module</a>
+</li>
+      </ul></li>
+      <li>
     openabc.forcefields.parsers.hps_parser
 
       <ul>
@@ -327,14 +364,21 @@
 </li>
       </ul></li>
       <li>
+    openabc.forcefields.parsers.mpipi_parsers
+
+      <ul>
+        <li><a href="manual.html#module-openabc.forcefields.parsers.mpipi_parsers">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
     openabc.forcefields.parsers.mrg_parser
 
       <ul>
         <li><a href="manual.html#module-openabc.forcefields.parsers.mrg_parser">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     openabc.utils.CA2AA
 
@@ -370,6 +414,13 @@
         <li><a href="manual.html#module-openabc.utils.shadow_map">module</a>
 </li>
       </ul></li>
+      <li>
+    openabc.utils.stride
+
+      <ul>
+        <li><a href="manual.html#module-openabc.utils.stride">module</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -387,12 +438,18 @@
       <ul>
         <li><a href="manual.html#openabc.forcefields.parsers.moff_parser.MOFFParser.parse_mol">(MOFFParser method)</a>
 </li>
+        <li><a href="manual.html#openabc.forcefields.parsers.mpipi_parsers.MpipiProteinParser.parse_mol">(MpipiProteinParser method)</a>
+</li>
+        <li><a href="manual.html#openabc.forcefields.parsers.mpipi_parsers.MpipiRNAParser.parse_mol">(MpipiRNAParser method)</a>
+</li>
         <li><a href="manual.html#openabc.forcefields.parsers.mrg_parser.MRGdsDNAParser.parse_mol">(MRGdsDNAParser method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual.html#openabc.utils.helper_functions.parse_pdb">parse_pdb() (in module openabc.utils.helper_functions)</a>
+</li>
+      <li><a href="manual.html#openabc.utils.stride.parse_stride">parse_stride() (in module openabc.utils.stride)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -412,9 +469,11 @@
 </li>
       <li><a href="manual.html#openabc.forcefields.cg_model.CGModel.save_system">save_system() (CGModel method)</a>
 </li>
+      <li><a href="manual.html#openabc.forcefields.cg_model.CGModel.set_rigid_bodies">set_rigid_bodies() (CGModel method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="manual.html#openabc.forcefields.cg_model.CGModel.set_rigid_bodies">set_rigid_bodies() (CGModel method)</a>
+      <li><a href="manual.html#openabc.forcefields.cg_model.CGModel.set_simulation">set_simulation() (CGModel method)</a>
 </li>
       <li><a href="manual.html#openabc.utils.CA2AA.single_chain_CA2AA">single_chain_CA2AA() (in module openabc.utils.CA2AA)</a>
 </li>
