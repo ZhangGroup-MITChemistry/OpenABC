@@ -1,28 +1,20 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
 from openabc.utils import helper_functions
+from openabc.lib.protein_lib import _amino_acids
+from openabc.lib.unit_conversion import _kcal_to_kj
 import sys
 import os
 
-_amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
-                'GLN', 'GLU', 'GLY', 'HIS', 'ILE',
-                'LEU', 'LYS', 'MET', 'PHE', 'PRO',
-                'SER', 'THR', 'TRP', 'TYR', 'VAL']
-
 _hps_amino_acid_mass_dict = dict(ALA=71.08, ARG=156.20, ASN=114.10, ASP=115.10, CYS=103.10, 
-                                GLN=128.10, GLU=129.10, GLY=57.05, HIS=137.10, ILE=113.20, 
-                                LEU=113.20, LYS=128.20, MET=131.20, PHE=147.20, PRO=97.12, 
-                                SER=87.08, THR=101.10, TRP=186.20, TYR=163.20, VAL=99.07)
+                                 GLN=128.10, GLU=129.10, GLY=57.05, HIS=137.10, ILE=113.20, 
+                                 LEU=113.20, LYS=128.20, MET=131.20, PHE=147.20, PRO=97.12, 
+                                 SER=87.08, THR=101.10, TRP=186.20, TYR=163.20, VAL=99.07)
 
 _hps_amino_acid_charge_dict = dict(ALA=0.0, ARG=1.0, ASN=0.0, ASP=-1.0, CYS=0.0, 
-                                  GLN=0.0, GLU=-1.0, GLY=0.0, HIS=0.5, ILE=0.0,
-                                  LEU=0.0, LYS=1.0, MET=0.0, PHE=0.0, PRO=0.0,
-                                  SER=0.0, THR=0.0, TRP=0.0, TYR=0.0, VAL=0.0)
-
-_kcal_to_kj = 4.184
+                                   GLN=0.0, GLU=-1.0, GLY=0.0, HIS=0.5, ILE=0.0,
+                                   LEU=0.0, LYS=1.0, MET=0.0, PHE=0.0, PRO=0.0,
+                                   SER=0.0, THR=0.0, TRP=0.0, TYR=0.0, VAL=0.0)
 
 class HPSParser(object):
     """
@@ -66,14 +58,20 @@ class HPSParser(object):
             Whether to write TER between two chains. 
         
         default_parse : bool
-            Whether to parse with default settings. 
+            Whether to parse with default settings.
+        
+        Returns
+        ------- 
+        result : class instance
+            A class instance. 
         
         """
         helper_functions.atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
-        return cls(ca_pdb, default_parse)
+        result = cls(ca_pdb, default_parse)
+        return result
     
     def parse_mol(self, exclude12=True, mass_dict=_hps_amino_acid_mass_dict, 
-                     charge_dict=_hps_amino_acid_charge_dict):
+                  charge_dict=_hps_amino_acid_charge_dict):
         """
         Parse molecule. 
         

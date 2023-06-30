@@ -1,12 +1,33 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm as mm
+except ImportError:
+    import simtk.openmm as mm
 import sys
 import os
 
 def harmonic_angle_term(df_angles, use_pbc, force_group=2):
+    """
+    Harmonic angle term.
+    
+    Parameters
+    ----------
+    df_angles : pd.DataFrame
+        Information for all the angles. 
+    
+    use_pbc : bool
+        Whether to use PBC. 
+    
+    force_group : int
+        Force group.
+    
+    Returns
+    -------
+    angles : Force
+        OpenMM force object. 
+    
+    """
     angles = mm.HarmonicAngleForce()
     for i, row in df_angles.iterrows():
         a1 = int(row['a1'])
@@ -21,6 +42,26 @@ def harmonic_angle_term(df_angles, use_pbc, force_group=2):
 
 
 def class2_angle_term(df_angles, use_pbc, force_group=2):
+    """
+    Class 2 angle term.
+    
+    Parameters
+    ----------
+    df_angles : pd.DataFrame
+        Information for all the angles. 
+    
+    use_pbc : bool
+        Whether to use PBC. 
+    
+    force_group : int
+        Force group.
+    
+    Returns
+    -------
+    angles : Force
+        OpenMM force object. 
+    
+    """
     angles = mm.CustomAngleForce('k_angle_2*(theta-theta0)^2+k_angle_3*(theta-theta0)^3+k_angle_4*(theta-theta0)^4')
     angles.addPerAngleParameter('theta0')
     angles.addPerAngleParameter('k_angle_2')

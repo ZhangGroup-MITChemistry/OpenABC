@@ -1,16 +1,10 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
 from openabc.utils import helper_functions
+from openabc.lib.dna_lib import _dna_nucleotides
+from openabc.lib.unit_conversion import _kcal_to_kj, _deg_to_rad
 import sys
 import os
-
-_nucleotides = ['DA', 'DC', 'DG', 'DT']
-
-_kcal_to_kj = 4.184
-_deg_to_rad = np.pi/180
 
 _k_mrg_dna_bonds = _kcal_to_kj*np.array([262.5, -226, 149])
 _r0_mrg_dna_bonds = 0.496
@@ -52,7 +46,7 @@ class MRGdsDNAParser(object):
         self.atoms = helper_functions.parse_pdb(self.pdb)
         # check if all the atoms are CG nucleotide atoms
         atom_names = self.atoms['name']
-        assert (self.atoms['resname'].isin(_nucleotides).all() and atom_names.eq('NU').all())
+        assert (self.atoms['resname'].isin(_dna_nucleotides).all() and atom_names.eq('DN').all())
         # check if there are only 2 chains
         unique_chainID = list(set(self.atoms['chainID'].tolist()))
         assert len(unique_chainID) == 2
@@ -87,9 +81,15 @@ class MRGdsDNAParser(object):
         default_parse : bool
             Whether to parse with default settings. 
         
+        Returns
+        ------- 
+        result : class instance
+            A class instance. 
+        
         """
         helper_functions.atomistic_pdb_to_nucleotide_pdb(atomistic_pdb, cg_pdb, write_TER)
-        return cls(cg_pdb, default_parse)
+        result = cls(cg_pdb, default_parse)
+        return result
     
     def parse_exclusions(self, exclude12=True, exclude13=True):
         """

@@ -1,11 +1,20 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm as mm
+    import openmm.app as app
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+    import simtk.unit as unit
+from openabc.lib.physical_constants import GAS_CONST
 import sys
 import os
-import torch
+try:
+    import torch
+except ImportError:
+    print('torch is not supported.')
 import math
 import time
 
@@ -14,7 +23,7 @@ The code is adapted from Xinqiang Ding's script.
 """
 
 # set gas constant R
-GAS_CONSTANT_R = (1.0*unit.BOLTZMANN_CONSTANT_kB*unit.AVOGADRO_CONSTANT_NA).value_in_unit(unit.kilojoule_per_mole/unit.kelvin)
+GAS_CONST_value = GAS_CONST.value_in_unit(unit.kilojoule_per_mole/unit.kelvin)
 
 class TemperatureReplicaExchange(object):
     """
@@ -172,7 +181,7 @@ class TemperatureReplicaExchange(object):
                 for j in range(self.n_replicas - 1):
                     n_exchange_attempts += 1
                     delta_potential_energy = gathered_potential_energy[j] - gathered_potential_energy[j + 1]
-                    delta_beta = (1/self.temperatures[j] - 1/self.temperatures[j + 1])/GAS_CONSTANT_R
+                    delta_beta = (1/self.temperatures[j] - 1/self.temperatures[j + 1])/GAS_CONST_value
                     if np.random.uniform(0, 1) < math.exp(delta_beta*delta_potential_energy):
                         n_accepted_exchange_attempts += 1
                         gathered_positions[j], gathered_positions[j + 1] = gathered_positions[j + 1], gathered_positions[j]

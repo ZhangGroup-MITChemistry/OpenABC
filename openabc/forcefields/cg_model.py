@@ -1,9 +1,17 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
-from openmmplumed import PlumedForce
+try:
+    import openmm as mm
+    import openmm.app as app
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+    import simtk.unit as unit
+try:
+    from openmmplumed import PlumedForce
+except ImportError:
+    print('openmmplumed is not installed. PlumedForce is not supported.')
 from openabc.forcefields.rigid import createRigidBodies
 import openabc.utils.helper_functions as helper_functions
 import sys
@@ -185,8 +193,12 @@ class CGModel(object):
         
         """
         with open(plumed_script_path, 'r') as input_reader:
-            force = PlumedForce(input_reader.read())
-        self.system.addForce(force)
+            plumed_script = input_reader.read()
+        try:
+            force = PlumedForce(plumed_script)
+            self.system.addForce(force)
+        except NameError:
+            print('PlumedForce is not loaded.')
     
     def save_system(self, system_xml='system.xml'):
         """
@@ -218,7 +230,6 @@ class CGModel(object):
             output_writer.write(mm.XmlSerializer.serialize(state))
     
     def set_simulation(self, integrator, platform_name='CPU', properties={'Precision': 'mixed'}, init_coord=None):
-        platform = mm.Platform.getPlatformByName(platform_name)
         """
         Set OpenMM simulation.
         
@@ -237,6 +248,7 @@ class CGModel(object):
             Initial coordinate. 
         
         """
+        platform = mm.Platform.getPlatformByName(platform_name)
         print(f'Use platform: {platform_name}')
         if platform_name in ['CUDA', 'OpenCL']:
             if 'Precision' not in properties:

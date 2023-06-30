@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm as mm
+except ImportError:
+    import simtk.openmm as mm
 import sys
 import os
 

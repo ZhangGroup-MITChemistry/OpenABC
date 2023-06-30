@@ -31,8 +31,12 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 __author__ = "Peter Eastman"
 __version__ = "1.0"
 
-import simtk.openmm as mm
-import simtk.unit as unit
+try:
+    import openmm as mm
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.unit as unit
 import numpy as np
 import numpy.linalg as lin
 from itertools import combinations

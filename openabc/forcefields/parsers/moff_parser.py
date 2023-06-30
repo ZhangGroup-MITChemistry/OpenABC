@@ -1,18 +1,11 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
 import mdtraj
 from openabc.utils import helper_functions
 from openabc.utils.shadow_map import find_ca_pairs_from_atomistic_pdb
+from openabc.lib.protein_lib import _amino_acids
 import sys
 import os
-
-_amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
-                'GLN', 'GLU', 'GLY', 'HIS', 'ILE',
-                'LEU', 'LYS', 'MET', 'PHE', 'PRO',
-                'SER', 'THR', 'TRP', 'TYR', 'VAL']
 
 _moff_amino_acid_mass_dict = dict(ALA=71.08, ARG=156.20, ASN=114.10, ASP=115.10, CYS=103.10, 
                                   GLN=128.10, GLU=129.10, GLY=57.05, HIS=137.10, ILE=113.20, 
@@ -37,10 +30,10 @@ class MOFFParser(object):
         Parameters
         ----------
         atomistic_pdb : str
-            Path for the atomistic pdb file. 
+            Atomistic pdb file path. 
         
         ca_pdb : str
-            path for the CA pdb file. 
+            CA pdb file path. 
         
         default_parse : bool
             Whether to parse with default settings. 
@@ -58,15 +51,15 @@ class MOFFParser(object):
     @classmethod
     def from_atomistic_pdb(cls, atomistic_pdb, ca_pdb, write_TER=False, default_parse=True):
         """
-        Initialize an HPS model protein from atomistic pdb. 
+        Initialize a MOFF model protein from atomistic pdb. 
         
         Parameters
         ----------
         atomistic_pdb : str
-            Path for the atomistic pdb file. 
+            Atomistic pdb file path. 
         
         ca_pdb : str
-            path for the CA pdb file. 
+            CA pdb file path. 
             
         write_TER : bool
             Whether to write TER between two chains. 
@@ -74,9 +67,15 @@ class MOFFParser(object):
         default_parse : bool
             Whether to parse with default settings. 
         
+        Returns
+        ------- 
+        result : class instance
+            A class instance. 
+        
         """
         helper_functions.atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
-        return cls(atomistic_pdb, ca_pdb, default_parse)
+        result = cls(atomistic_pdb, ca_pdb, default_parse)
+        return result
     
     def parse_exclusions(self, exclude12=True, exclude13=True, exclude14=True, exclude_native_pairs=True):
         """
@@ -115,7 +114,7 @@ class MOFFParser(object):
         
     def parse_mol(self, get_native_pairs=True, frame=0, radius=0.1, bonded_radius=0.05, cutoff=0.6, box=None, 
                   use_pbc=False, exclude12=True, exclude13=True, exclude14=True, exclude_native_pairs=True, 
-                  mass_dict=_moff_amino_acid_mass_dict, charge_dict=_moff_amino_acid_charge_dict):
+                  mass_dict=_moff_amino_acid_mass_dict, charge_dict=_moff_amino_acid_charge_dict, ss=None, ordered_ss_names=['H', 'E']):
         """
         Parse molecule.
         
@@ -138,9 +137,9 @@ class MOFFParser(object):
         
         box : None or np.ndarray
         Specify box shape. 
-        Note `use_pbc` = False is only compatible with orthogonal box. 
-        If `use_pbc` = False, then set `box` as None. 
-        If `use_pbc` = True, then `box` = np.array([lx, ly, lz, alpha1, alpha2, alpha3]). 
+        Note setting `use_pbc` as False is only compatible with orthogonal box. 
+        If `use_pbc` is False, then set `box` as None. 
+        If `use_pbc` is True, then `box` = np.array([lx, ly, lz, alpha1, alpha2, alpha3]). 
         
         use_pbc : bool
             Whether to use periodic boundary condition (PBC) for searching native pairs. 
@@ -162,6 +161,15 @@ class MOFFParser(object):
         
         charge_dict : dict
             Charge dictionary. 
+        
+        ss : None or sequence-like
+            Secondary structure type of each residue. 
+            If None, no secondary structure information is provided and all the native pairs are kept.
+            If not None, then only native pairs within continuous ordered 
+        
+        ordered_ss_names : sequence-like
+            The names of ordered secondary structures. 
+            The default value is ['H', 'E'], where 'H' represents alpha-helix, and 'E' represents beta strand. 
         
         """
         # set bonds, angles, and dihedrals
@@ -204,7 +212,22 @@ class MOFFParser(object):
             print('Get native pairs with shadow algorithm.')
             self.native_pairs = find_ca_pairs_from_atomistic_pdb(self.atomistic_pdb, frame, radius, bonded_radius, 
                                                                  cutoff, box, use_pbc)
-            self.native_pairs.loc[:, 'epsilon'] = 3.0
+            self.native_pairs.loc[:, 'epsilon'] = 3.0  
+            if ss is not None:
+                assert n_atoms == len(ss) # the length of ss should be equal to the number of CA atoms
+                print('Secondary structure information is provided.')
+                print('Only native pairs within the continuous ordered secondary structure domains are kept.')
+                old_native_pairs = self.native_pairs
+                new_native_pairs = pd.DataFrame(columns=self.native_pairs.columns)
+                for i, row in old_native_pairs.iterrows():
+                    a1 = int(row['a1'])
+                    a2 = int(row['a2'])
+                    if a1 > a2:
+                        a1, a2 = a2, a1
+                    if ss[a1] in ordered_ss_names:
+                        if all([x == ss[a1] for x in ss[a1:a2 + 1]]):
+                            new_native_pairs.loc[len(new_native_pairs.index)] = row
+                self.native_pairs = new_native_pairs
         # set exclusions
         self.parse_exclusions(exclude12, exclude13, exclude14, exclude_native_pairs) 
         # set mass and charge

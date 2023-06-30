@@ -1,32 +1,28 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm.unit as unit
+except ImportError:
+    import simtk.unit as unit
 from openabc.forcefields.cg_model import CGModel
-from openabc.forcefields.functional_terms import bond_terms
-from openabc.forcefields.functional_terms import nonbonded_terms
+from openabc.forcefields import functional_terms
+from openabc.lib.protein_lib import _amino_acids
+from openabc.lib.unit_conversion import _kcal_to_kj
 import sys
 import os
 
 __location__ = os.path.dirname(os.path.abspath(__file__))
 
-_amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
-                'GLN', 'GLU', 'GLY', 'HIS', 'ILE',
-                'LEU', 'LYS', 'MET', 'PHE', 'PRO',
-                'SER', 'THR', 'TRP', 'TYR', 'VAL']
-
-_kcal_to_kj = 4.184
-
 class HPSModel(CGModel):
     """
-    A class for HPS model that represents a mixture of HPS model proteins. 
+    The class for HPS model that represents a mixture of HPS model proteins. 
     
     This class inherits CGModel class. 
     """
     def __init__(self):
         """
         Initialize. 
+        
         """
         self.atoms = None
         self.bonded_attr_names = ['protein_bonds', 'exclusions']
@@ -42,7 +38,7 @@ class HPSModel(CGModel):
         
         """
         print('Add protein bonds.')
-        force = bond_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
+        force = functional_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
         self.system.addForce(force)
     
     def add_contacts(self, hydropathy_scale='Urry', epsilon=0.2*_kcal_to_kj, mu=1, delta=0.08, force_group=2):
@@ -90,8 +86,8 @@ class HPSModel(CGModel):
             lambda_ah_map[atom_type2, atom_type1] = row['lambda']
         print(f'Scale factor mu = {mu} and shift delta = {delta}.')
         lambda_ah_map = mu*lambda_ah_map - delta
-        force = nonbonded_terms.hps_ah_term(atom_types, self.exclusions, self.use_pbc, epsilon, sigma_ah_map, 
-                                            lambda_ah_map, force_group)
+        force = functional_terms.ashbaugh_hatch_term(atom_types, self.exclusions, self.use_pbc, epsilon, 
+                                                    sigma_ah_map, lambda_ah_map, force_group)
         self.system.addForce(force)
     
     def add_dh_elec(self, ldby=1*unit.nanometer, dielectric_water=80.0, cutoff=3.5*unit.nanometer, force_group=3):
@@ -117,8 +113,8 @@ class HPSModel(CGModel):
         print(f'Set Debye length as {ldby.value_in_unit(unit.nanometer)} nm.')
         print(f'Set water dielectric as {dielectric_water}.')
         charges = self.atoms['charge'].tolist()
-        force = nonbonded_terms.dh_elec_term(charges, self.exclusions, self.use_pbc, ldby, dielectric_water, cutoff, 
-                                             force_group)
+        force = functional_terms.dh_elec_term(charges, self.exclusions, self.use_pbc, ldby, dielectric_water, 
+                                              cutoff, force_group)
         self.system.addForce(force)
 
     def add_all_default_forces(self):

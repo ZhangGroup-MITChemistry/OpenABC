@@ -3,6 +3,9 @@ import pandas as pd
 import mdtraj
 import sys
 import os
+from openabc.lib.protein_lib import _amino_acids, _amino_acid_1_letter_to_3_letters_dict
+from openabc.lib.dna_lib import _dna_nucleotides
+from openabc.lib.rna_lib import _rna_nucleotides
 
 """
 Some code is adapted from Open3SPN2. 
@@ -11,18 +14,7 @@ Open3SPN2 and OpenAWSEM paper:
 Lu, Wei, et al. "OpenAWSEM with Open3SPN2: A fast, flexible, and accessible framework for large-scale coarse-grained biomolecular simulations." PLoS computational biology 17.2 (2021): e1008308.
 """
 
-_amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
-                'GLN', 'GLU', 'GLY', 'HIS', 'ILE',
-                'LEU', 'LYS', 'MET', 'PHE', 'PRO',
-                'SER', 'THR', 'TRP', 'TYR', 'VAL']
-
-_nucleotides = ['DA', 'DC', 'DG', 'DT']
-
-_amino_acid_1_letter_to_3_letters_dict = dict(A='ALA', R='ARG', N='ASN', D='ASP', C='CYS', 
-                                              Q='GLN', E='GLU', G='GLY', H='HIS', I='ILE', 
-                                              L='LEU', K='LYS', M='MET', F='PHE', P='PRO', 
-                                              S='SER', T='THR', W='TRP', Y='TYR', V='VAL')
-
+_nucleotides = _dna_nucleotides + _rna_nucleotides
 
 def parse_pdb(pdb_file):
     """
@@ -129,7 +121,7 @@ def atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER=False):
 
 def atomistic_pdb_to_nucleotide_pdb(atomistic_pdb, cg_nucleotide_pdb, write_TER=False):
     """
-    Convert atomistic pdb to DNA nucleotide pdb (i.e. one CG bead per nucleotide). 
+    Convert DNA or RNA atomistic pdb to nucleotide pdb (i.e. one CG bead per nucleotide). 
     The position of each CG nucleotide bead is the geometric center of all the nucleotide atoms in the pdb.
     
     Parameters
@@ -156,7 +148,15 @@ def atomistic_pdb_to_nucleotide_pdb(atomistic_pdb, cg_nucleotide_pdb, write_TER=
         coord = np.mean(residue_atoms[['x', 'y', 'z']].to_numpy(), axis=0)
         row = residue_atoms.iloc[0].copy()
         row[['x', 'y', 'z']] = coord
-        row[['name', 'occupancy', 'tempFactor', 'element', 'charge']] = ['NU', 1.0, 1.0, '', '']
+        resname = row['resname']
+        # set atom name to distinguish DNA and RNA nucleotides
+        if resname in _dna_nucleotides:
+            name = 'DN'
+        elif resname in _rna_nucleotides:
+            name = 'RN'
+        else:
+            name = ''
+        row[['name', 'occupancy', 'tempFactor', 'element', 'charge']] = [name, 1.0, 1.0, '', '']
         cg_nucleotide_pdb_atoms.loc[len(cg_nucleotide_pdb_atoms.index)] = row
     cg_nucleotide_pdb_atoms['serial'] = list(range(1, len(cg_nucleotide_pdb_atoms.index) + 1))
     write_pdb(cg_nucleotide_pdb_atoms, cg_nucleotide_pdb, write_TER)
@@ -184,8 +184,47 @@ def build_straight_CA_chain(sequence, r0=0.38):
     data = []
     for i in range(n_atoms):
         resname = _amino_acid_1_letter_to_3_letters_dict[sequence[i]]
-        atom_i_dict = {'recname': 'ATOM', 'name': 'CA', 'altLoc': '', 'resname': resname, 'chainID': 'A', 'iCode': '', 
-                       'occupancy': 1.0, 'tempFactor': 1.0, 'element': 'C', 'charge': ''}
+        atom_i_dict = {'recname': 'ATOM', 'name': 'CA', 'altLoc': '', 'resname': resname, 'chainID': 'A', 
+                       'iCode': '', 'occupancy': 1.0, 'tempFactor': 1.0, 'element': 'C', 'charge': ''}
+        data.append(atom_i_dict)
+    df_atoms = pd.DataFrame(data)
+    df_atoms['serial'] = list(range(1, n_atoms + 1))
+    df_atoms['resSeq'] = list(range(1, n_atoms + 1))
+    df_atoms.loc[:, 'x'] = 0
+    df_atoms.loc[:, 'y'] = 0
+    z = r0*np.arange(n_atoms)
+    z -= np.mean(z)
+    df_atoms['z'] = z*10 # convert nm to angstroms
+    df_atoms['z'] = df_atoms['z'].round(3)
+    return df_atoms
+
+
+def build_straight_chain(n_atoms, chainID, r0):
+    """
+    Build a straight chain. 
+    Each atom is viewed as one residue. 
+    
+    Parameters
+    ----------
+    n_atoms : int
+        The number of atoms along the chain. 
+    
+    chainID : floar or int or str
+        Chain ID. 
+    
+    r0 : float or int
+        Distance in unit nm between neighboring atoms along the chain. 
+    
+    Returns
+    -------
+    df_atoms : pd.DataFrame
+        A pandas dataframe includes atom information. 
+        
+    """
+    data = []
+    for i in range(n_atoms):
+        atom_i_dict = {'recname': 'ATOM', 'name': '', 'altLoc': '', 'resname': '', 'chainID': chainID, 
+                       'iCode': '', 'occupancy': 1.0, 'tempFactor': 1.0, 'element': '', 'charge': ''}
         data.append(atom_i_dict)
     df_atoms = pd.DataFrame(data)
     df_atoms['serial'] = list(range(1, n_atoms + 1))

@@ -1,21 +1,17 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm.unit as unit
+except ImportError:
+    import simtk.unit as unit
 from openabc.forcefields.cg_model import CGModel
 from openabc.forcefields import functional_terms
+from openabc.lib.protein_lib import _amino_acids
+from openabc.lib.dna_lib import _dna_nucleotides
 import sys
 import os
 
 __location__ = os.path.dirname(os.path.abspath(__file__))
-
-_amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
-                'GLN', 'GLU', 'GLY', 'HIS', 'ILE',
-                'LEU', 'LYS', 'MET', 'PHE', 'PRO',
-                'SER', 'THR', 'TRP', 'TYR', 'VAL']
-
-_nucleotides = ['DA', 'DC', 'DG', 'DT']
 
 class MOFFMRGModel(CGModel):
     """
@@ -45,22 +41,45 @@ class MOFFMRGModel(CGModel):
             force = functional_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
 
-    def add_protein_angles(self, force_group=2):
+    def add_protein_angles(self, threshold=130*np.pi/180, clip=False, force_group=2):
         """
         Add protein angles.
         
+        Note that the angle potential is a harmonic angle potential, which may lead to unstable simulation if harmonic potential center is too large.
+        
+        Based on some tests, theta0 <= 130 degrees (130*np.pi/180 radians) can facilitate 10 fs timestep. 
+        
         Parameters
         ----------
+        threshold : float or int
+            The suggested upper limit value of theta0.
+        
+        clip : bool
+            Whether to change theta0 values larger than threshold to threshold.
+            If True, all the theta0 values larger than threshold will be changed to threshold. 
+            If False, do not change theta0 values.
+        
         force_group : int
             Force group. 
         
         """
         if hasattr(self, 'protein_angles'):
-            print('Add protein angles.')
+            any_theta0_beyond_threshold = False
+            for i, row in self.protein_angles.iterrows():
+                a1 = int(row['a1'])
+                a2 = int(row['a2'])
+                a3 = int(row['a3'])
+                theta0 = float(row['theta0'])
+                if theta0 > threshold:
+                    print(f'Warning: angle composed of atom ({a1}, {a2}, {a3}) has theta0 equal to {theta0}, which is larger than the threshold value equal to {threshold}!')
+                    any_theta0_beyond_threshold = True
+            if clip and any_theta0_beyond_threshold:
+                print(f'Decrease all the theta0 values larger than {threshold} to {threshold}.')
+                self.protein_angles.loc[self.protein_angles['theta0'] > threshold, 'theta0'] = threshold
             force = functional_terms.harmonic_angle_term(self.protein_angles, self.use_pbc, force_group)
             self.system.addForce(force)
     
-    def add_protein_dihedrals(self, k_dihedral_1=3.0, k_dihedral_3=1.5, force_group=3):
+    def add_protein_dihedrals(self, force_group=3):
         """
         Add protein dihedrals. 
         
@@ -177,19 +196,19 @@ class MOFFMRGModel(CGModel):
         for i, row in self.atoms.iterrows():
             if (row['resname'] in _amino_acids) and (row['name'] == 'CA'):
                 atom_types.append(_amino_acids.index(row['resname']))
-            elif (row['resname'] in _nucleotides) and (row['name'] == 'NU'):
+            elif (row['resname'] in _dna_nucleotides) and (row['name'] == 'DN'):
                 atom_types.append(20)
             else:
                 sys.exit('Error: atom type cannot recognize.')
         df_MOFF_contact_parameters = pd.read_csv(f'{__location__}/parameters/MOFF_contact_parameters.csv')
         alpha_map, epsilon_map = np.zeros((21, 21)), np.zeros((21, 21))
         for i, row in df_MOFF_contact_parameters.iterrows():
-            atom_type1 = _amino_acids.index(row['atom_type1'])
-            atom_type2 = _amino_acids.index(row['atom_type2'])
-            alpha_map[atom_type1, atom_type2] = row['alpha']
-            alpha_map[atom_type2, atom_type1] = row['alpha']
-            epsilon_map[atom_type1, atom_type2] = row['epsilon']
-            epsilon_map[atom_type2, atom_type1] = row['epsilon']
+            a1 = _amino_acids.index(row['atom_type1'])
+            a2 = _amino_acids.index(row['atom_type2'])
+            alpha_map[a1, a2] = row['alpha']
+            alpha_map[a2, a1] = row['alpha']
+            epsilon_map[a1, a2] = row['epsilon']
+            epsilon_map[a2, a1] = row['epsilon']
         alpha_map[:20, 20] = alpha_protein_dna
         alpha_map[20, :20] = alpha_protein_dna
         alpha_map[20, 20] = alpha_dna_dna
@@ -222,7 +241,7 @@ class MOFFMRGModel(CGModel):
         cutoff2 : Quantity
             Cutoff distance 2. 
         
-        switch_coeff : list
+        switch_coeff : sequence-like
             Switch function coefficients. 
         
         add_native_pair_elec : bool

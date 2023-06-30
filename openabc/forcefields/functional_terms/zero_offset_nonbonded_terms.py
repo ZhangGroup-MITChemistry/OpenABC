@@ -1,28 +1,27 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm as mm
+    import openmm.unit as unit
+except:
+    import simtk.openmm as mm
+    import simtk.unit as unit
+from openabc.lib.physical_constants import NA, kB, EC, VEP
 import math
 import sys
 import os
 
-'''
+"""
 Define some nonbonded interactions with zero offset.
 These forces are used for comparing with outputs from other softwares. 
-'''
+"""
 
-# define some constants based on CODATA
-NA = unit.AVOGADRO_CONSTANT_NA # Avogadro constant
-kB = unit.BOLTZMANN_CONSTANT_kB  # Boltzmann constant
-EC = 1.602176634e-19*unit.coulomb # elementary charge
-VEP = 8.8541878128e-12*unit.farad/unit.meter # vacuum electric permittivity
-
-def hps_ah_zero_offset_term(atom_types, df_exclusions, use_pbc, epsilon, sigma_ah_map, lambda_ah_map, force_group=2):
-    '''
+def ashbaugh_hatch_zero_offset_term(atom_types, df_exclusions, use_pbc, epsilon, sigma_ah_map, lambda_ah_map, 
+                                    force_group=2):
+    """
     HPS model nonbonded contact term (form proposed by Ashbaugh and Hatch). 
     The cutoff is 4*sigma_ah. 
-    '''
+    """
     contacts = mm.CustomNonbondedForce(f'''energy;
                energy=(f1+f2-offset)*step(4*sigma_ah-r);
                offset=0;
@@ -53,9 +52,9 @@ def hps_ah_zero_offset_term(atom_types, df_exclusions, use_pbc, epsilon, sigma_a
 
 def dh_elec_zero_offset_term(charges, df_exclusions, use_pbc, ldby=1*unit.nanometer, dielectric_water=80.0, 
                              cutoff=3.5*unit.nanometer, force_group=3):
-    '''
+    """
     Debye-Huckel potential with a constant dielectric.
-    '''
+    """
     alpha = NA*EC**2/(4*np.pi*VEP)
     ldby_value = ldby.value_in_unit(unit.nanometer)
     alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole*unit.nanometer)

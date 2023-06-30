@@ -1,22 +1,18 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm.unit as unit
+except ImportError:
+    import simtk.unit as unit
 from openabc.forcefields.hps_model import HPSModel
-from openabc.forcefields.functional_terms.zero_offset_nonbonded_terms import hps_ah_zero_offset_term
+from openabc.forcefields.functional_terms.zero_offset_nonbonded_terms import ashbaugh_hatch_zero_offset_term
 from openabc.forcefields.functional_terms.zero_offset_nonbonded_terms import dh_elec_zero_offset_term
+from openabc.lib.protein_lib import _amino_acids
+from openabc.lib.unit_conversion import _kcal_to_kj
 import sys
 import os
 
 __location__ = os.path.dirname(os.path.abspath(__file__))
-
-_amino_acids = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS',
-                'GLN', 'GLU', 'GLY', 'HIS', 'ILE',
-                'LEU', 'LYS', 'MET', 'PHE', 'PRO',
-                'SER', 'THR', 'TRP', 'TYR', 'VAL']
-
-_kcal_to_kj = 4.184
 
 class HPSZeroOffsetModel(HPSModel):
     """
@@ -45,8 +41,8 @@ class HPSZeroOffsetModel(HPSModel):
             lambda_ah_map[atom_type2, atom_type1] = row['lambda']
         print(f'Scale factor mu = {mu} and shift delta = {delta}.')
         lambda_ah_map = mu*lambda_ah_map - delta
-        force = hps_ah_zero_offset_term(atom_types, self.exclusions, self.use_pbc, epsilon, sigma_ah_map, 
-                                        lambda_ah_map, force_group)
+        force = ashbaugh_hatch_zero_offset_term(atom_types, self.exclusions, self.use_pbc, epsilon, sigma_ah_map, 
+                                                lambda_ah_map, force_group)
         self.system.addForce(force)
     
     def add_dh_elec(self, ldby=1*unit.nanometer, dielectric_water=80.0, cutoff=3.5*unit.nanometer, force_group=3):

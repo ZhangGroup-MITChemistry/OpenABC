@@ -1,18 +1,36 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm as mm
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.unit as unit
+from openabc.lib.physical_constants import NA, kB, EC, VEP
 import sys
 import os
 
-# define some constants based on CODATA
-NA = unit.AVOGADRO_CONSTANT_NA # Avogadro constant
-kB = unit.BOLTZMANN_CONSTANT_kB  # Boltzmann constant
-EC = 1.602176634e-19*unit.coulomb # elementary charge
-VEP = 8.8541878128e-12*unit.farad/unit.meter # vacuum electric permittivity
-
 def harmonic_bond_term(df_bonds, use_pbc, force_group=1):
+    """
+    Harmonic bond term. 
+    
+    Parameters
+    ----------
+    df_bonds : pd.DataFrame
+        Information for all the bonds. 
+    
+    use_pbc : bool
+        Whether to use PBC. 
+    
+    force_group : int
+        Force group.
+    
+    Returns
+    -------
+    bonds : Force
+        OpenMM force object. 
+    
+    """
     bonds = mm.HarmonicBondForce()
     for i, row in df_bonds.iterrows():
         a1 = int(row['a1'])
@@ -26,9 +44,27 @@ def harmonic_bond_term(df_bonds, use_pbc, force_group=1):
 
 
 def native_pair_12_10_term(df_native_pairs, use_pbc, force_group=4):
-    '''
+    """
+    A 12-10 potential for native pairs. 
     mu is the lowest energy distance for the 12-10 potential.
-    '''
+    
+    Parameters
+    ----------
+    df_native_pairs : pd.DataFrame
+        Information for all the native pairs. 
+    
+    use_pbc : bool
+        Whether to use PBC. 
+    
+    force_group : int
+        Force group.
+    
+    Returns
+    -------
+    bonds : Force
+        OpenMM force object. 
+    
+    """
     bonds = mm.CustomBondForce('epsilon*(5*(mu/r)^12-6*(mu/r)^10)')
     bonds.addPerBondParameter('epsilon')
     bonds.addPerBondParameter('mu')
@@ -44,6 +80,26 @@ def native_pair_12_10_term(df_native_pairs, use_pbc, force_group=4):
 
 
 def class2_bond_term(df_bonds, use_pbc, force_group=1):
+    """
+    Class2 bond term. 
+    
+    Parameters
+    ----------
+    df_bonds : pd.DataFrame
+        Information for all the bonds. 
+    
+    use_pbc : bool
+        Whether to use PBC. 
+    
+    force_group : int
+        Force group.
+    
+    Returns
+    -------
+    bonds : Force
+        OpenMM force object. 
+    
+    """
     bonds = mm.CustomBondForce('k_bond_2*(r-r0)^2+k_bond_3*(r-r0)^3+k_bond_4*(r-r0)^4')
     bonds.addPerBondParameter('r0')
     bonds.addPerBondParameter('k_bond_2')
@@ -59,12 +115,39 @@ def class2_bond_term(df_bonds, use_pbc, force_group=1):
     return bonds
 
 
-def ddd_dh_elec_switch_bond_term(df_bonds, use_pbc, salt_conc=150.0*unit.millimolar, 
-                                 temperature=300.0*unit.kelvin, cutoff1=1.2*unit.nanometer, cutoff2=1.5*unit.nanometer, 
+def ddd_dh_elec_switch_bond_term(df_bonds, use_pbc, salt_conc=150.0*unit.millimolar, temperature=300.0*unit.kelvin, 
+                                 cutoff1=1.2*unit.nanometer, cutoff2=1.5*unit.nanometer, 
                                  switch_coeff=[1, 0, 0, -10, 15, -6], force_group=6):
-    '''
-    A bonded potential with distance-dependent dielectric and a switch function. 
-    '''
+    """
+    A bonded form of Debye-Huckel potential with distance-dependent dielectric and a switch function. 
+    
+    Parameters
+    ----------
+    df_bonds : pd.DataFrame
+        Information for all the bonds. 
+    
+    use_pbc : bool
+        Whether to use PBC. 
+    
+    salt_conc : Quantity
+        Monovalent salt concentration.
+    
+    temperature : Quantity
+        Temperature.
+    
+    cutoff1 : Quantity
+        Cutoff distance 1.
+    
+    cutoff2 : Quantity
+        Cutoff distance 2. 
+    
+    switch_coeff : list
+        Switch function coefficients. 
+    
+    force_group : int
+        Force group. 
+    
+    """
     alpha = NA*EC**2/(4*np.pi*VEP)
     gamma = VEP*kB*temperature/(2.0*NA*salt_conc*EC**2)
     # use a distance-dependent relative permittivity (dielectric)
