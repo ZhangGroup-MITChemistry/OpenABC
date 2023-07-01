@@ -12,5 +12,6 @@ backup/
 
 examples/minimal-example/
 
-
+dist/
+openabc.egg-info/
 

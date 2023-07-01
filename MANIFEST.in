@@ -1,0 +1,13 @@
+graft openabc
+
+prune */__pycache__
+prune backup
+prune docs
+prune examples
+prune image
+prune sphinx-files
+prune tests
+prune tutorials
+
+include LICENSE
+
