@@ -37,7 +37,8 @@ for i, row in old_native_pairs.iterrows():
     flag3 = ((a1 in csd1) and (a2 in csd2))
     if flag1 or flag2 or flag3:
         new_native_pairs.loc[len(new_native_pairs.index)] = row
-hp1alpha_dimer_parser.native_pairs = new_native_pairs
+hp1alpha_dimer_parser.native_pairs = new_native_pairs.copy()
+hp1alpha_dimer_parser.native_pairs.loc[:, 'epsilon'] = 6.0
 hp1alpha_dimer_parser.parse_exclusions() # update exclusions based on the new native pairs
 
 # prepare system
@@ -49,7 +50,7 @@ salt_concentration = 82*unit.millimolar
 protein.add_protein_bonds(force_group=1)
 protein.add_protein_angles(force_group=2)
 protein.add_protein_dihedrals(force_group=3)
-protein.add_native_pairs(epsilon=6.0, force_group=4)
+protein.add_native_pairs(force_group=4)
 protein.add_contacts(force_group=5)
 protein.add_elec_switch(salt_concentration, 300*unit.kelvin, force_group=6)
 protein.atoms.to_csv('hp1alpha_dimer_CA.csv', index=False)
