@@ -16,3 +16,6 @@ This folder provides tutorials for setting up and performing simulations with MO
 
 - MRG-dsDNA provides an example for runing simulations of a dsDNA with MRG. 
 
+- build-new-forcefield provides the tutorial for building a new force field. 
+
+
