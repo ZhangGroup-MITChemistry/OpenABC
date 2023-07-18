@@ -2,7 +2,7 @@
 
 OpenABC stands for **Open**MM GPU-**A**ccelerated simulations of **B**iomolecular **C**ondensates. It is flexible and implements multiple popular coarse-grained force fields for simulations, including the hydropathy scale (HPS) model, MOFF C<sub>$\alpha$</sub> model, and the molecular renormalization group (MRG)-CG DNA model. The package dramatically simplifies the simulation setup: users only need a few lines of python code to carry out condensate simulations starting from initial configurations of a single protein or DNA. The package is integrated with OpenMM, a GPU-accelerated MD simulation engine, enabling efficient simulations with advanced sampling techniques. We include tools for converting coarse-grained configurations to atomistic structures for further simulations with all-atom force fields. We provide tutorials in Jupyter notebooks to demonstrate the various capabilities. We anticipate OpenABC to significantly facilitate the application of existing computer models for simulating biomolecular condensates and the continued development of new force fields.
 
-<img src="./image/flowchart.png" width="500px"><img>
+![flowchart](https://github.com/ZhangGroup-MITChemistry/OpenABC/blob/main/image/flowchart.png)
 
 ## Tutorials
 
@@ -20,7 +20,11 @@ Instructions for class methods and functions are also included as comments in th
 
 ## Environment
 
-For versions >= 1.0.4, openmm versions < 7.6 and >= 7.6 are all supported.
+For versions >= 1.0.4, openmm versions < 7.6 and >= 7.6 are all supported. Install openmm with the following command: 
+
+```
+conda install -c conda-forge openmm
+```
 
 For versions < 1.0.4, we recommend using openmm 7.5.1 for using OpenABC, as OpenABC is built based on openmm 7.5.1. 
 
@@ -30,7 +34,9 @@ Install openmm 7.5.1 with the following command:
 conda install -c conda-forge openmm=7.5.1
 ```
 
-Other required packages: numpy, pandas, mdanalysis, mdtraj, openmmplumed. 
+Other required packages: numpy, pandas, mdanalysis, mdtraj. 
+
+Users can also install openmm-plumed to run openmm simulations with plumed. 
 
 If running replica exchange with `openabc.utils.replica_exchange`, then torch is also required. 
 

@@ -2,6 +2,7 @@
 **/*.dcd
 **/*.pdf
 **/*.tar.gz
+**/*.npy
 
 __pycache__/
 my-tests/
