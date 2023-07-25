@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manual &mdash; OpenABC 1.0.4 documentation</title>
+  <title>Manual &mdash; OpenABC 1.0.5 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -32,7 +32,7 @@
             OpenABC
           </a>
               <div class="version">
-                1.0.4
+                1.0.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -116,6 +116,23 @@
 <li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.mpipi_parsers.MpipiRNAParser.parse_mol"><code class="docutils literal notranslate"><span class="pre">MpipiRNAParser.parse_mol()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#openabc.forcefields.parsers.smog_parser.SMOGParser"><code class="docutils literal notranslate"><span class="pre">SMOGParser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.smog_parser.SMOGParser.from_atomistic_pdb"><code class="docutils literal notranslate"><span class="pre">SMOGParser.from_atomistic_pdb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.smog_parser.SMOGParser.parse_exclusions"><code class="docutils literal notranslate"><span class="pre">SMOGParser.parse_exclusions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.smog_parser.SMOGParser.parse_mol"><code class="docutils literal notranslate"><span class="pre">SMOGParser.parse_mol()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser"><code class="docutils literal notranslate"><span class="pre">DNA3SPN2Parser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.aa_to_cg"><code class="docutils literal notranslate"><span class="pre">DNA3SPN2Parser.aa_to_cg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.build_x3dna_template"><code class="docutils literal notranslate"><span class="pre">DNA3SPN2Parser.build_x3dna_template()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.change_sequence"><code class="docutils literal notranslate"><span class="pre">DNA3SPN2Parser.change_sequence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.from_atomistic_pdb"><code class="docutils literal notranslate"><span class="pre">DNA3SPN2Parser.from_atomistic_pdb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.get_sequence"><code class="docutils literal notranslate"><span class="pre">DNA3SPN2Parser.get_sequence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.get_sequence_list"><code class="docutils literal notranslate"><span class="pre">DNA3SPN2Parser.get_sequence_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.get_sequence_list_from_cg_atoms"><code class="docutils literal notranslate"><span class="pre">DNA3SPN2Parser.get_sequence_list_from_cg_atoms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.parse_mol"><code class="docutils literal notranslate"><span class="pre">DNA3SPN2Parser.parse_mol()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-openabc.utils.CA2AA">openabc.utils.CA2AA</a><ul>
@@ -133,6 +150,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.build_straight_CA_chain"><code class="docutils literal notranslate"><span class="pre">build_straight_CA_chain()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.build_straight_chain"><code class="docutils literal notranslate"><span class="pre">build_straight_chain()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.compute_rg"><code class="docutils literal notranslate"><span class="pre">compute_rg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.fix_pdb"><code class="docutils literal notranslate"><span class="pre">fix_pdb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.get_WC_paired_seq"><code class="docutils literal notranslate"><span class="pre">get_WC_paired_seq()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.make_mol_whole"><code class="docutils literal notranslate"><span class="pre">make_mol_whole()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.move_atoms_to_closest_pbc_image"><code class="docutils literal notranslate"><span class="pre">move_atoms_to_closest_pbc_image()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.parse_pdb"><code class="docutils literal notranslate"><span class="pre">parse_pdb()</span></code></a></li>
@@ -162,6 +181,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-openabc.utils.stride">openabc.utils.stride</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.stride.parse_stride"><code class="docutils literal notranslate"><span class="pre">parse_stride()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-openabc.utils.chromatin_helper_functions">openabc.utils.chromatin_helper_functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#openabc.utils.chromatin_helper_functions.get_chromatin_rigid_bodies"><code class="docutils literal notranslate"><span class="pre">get_chromatin_rigid_bodies()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openabc.utils.chromatin_helper_functions.remove_histone_tail_dihedrals"><code class="docutils literal notranslate"><span class="pre">remove_histone_tail_dihedrals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openabc.utils.chromatin_helper_functions.remove_histone_tail_native_pairs_and_exclusions"><code class="docutils literal notranslate"><span class="pre">remove_histone_tail_native_pairs_and_exclusions()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -485,9 +510,9 @@ Need to further add forces to this OpenMM system.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openabc.forcefields.moff_mrg_model.MOFFMRGModel.add_protein_angles">
-<span class="sig-name descname"><span class="pre">add_protein_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.2689280275926285</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.moff_mrg_model.MOFFMRGModel.add_protein_angles" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_protein_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.2689280275926285</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.moff_mrg_model.MOFFMRGModel.add_protein_angles" title="Permalink to this definition"></a></dt>
 <dd><p>Add protein angles.</p>
-<p>Note that the angle potential is a harmonic angle potential, which may lead to unstable simulation if harmonic potential center is too large.</p>
+<p>Note that the angle potential is a harmonic angle potential, which may lead to unstable simulation if harmonic potential center theta0 is too large.</p>
 <p>Based on some tests, theta0 &lt;= 130 degrees (130*np.pi/180 radians) can facilitate 10 fs timestep.</p>
 <section id="id15">
 <h3>Parameters<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
@@ -499,6 +524,8 @@ If True, all the theta0 values larger than threshold will be changed to threshol
 If False, do not change theta0 values.</p>
 </dd>
 <dt>force_group<span class="classifier">int</span></dt><dd><p>Force group.</p>
+</dd>
+<dt>verbose: bool</dt><dd><p>Whether to show warnings if theta0 is larger than the threshold.</p>
 </dd>
 </dl>
 </section>
@@ -663,7 +690,7 @@ We follow the parameters provided in the Mpipi LAMMPS input file.</p>
 
 </dd></dl>
 
-</section>
+<span class="target" id="module-openabc.forcefields.smog_3spn2_model"></span></section>
 <section id="module-openabc.forcefields.parsers.moff_parser">
 <span id="openabc-forcefields-parsers"></span><h2>openabc.forcefields.parsers<a class="headerlink" href="#module-openabc.forcefields.parsers.moff_parser" title="Permalink to this heading"></a></h2>
 <dl class="py class">
@@ -977,6 +1004,272 @@ The initial structure is a straight chain.</p>
 
 </dd></dl>
 
+<span class="target" id="module-openabc.forcefields.parsers.smog_parser"></span><dl class="py class">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.smog_parser.SMOGParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SMOGParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atomistic_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ca_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_parse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.smog_parser.SMOGParser" title="Permalink to this definition"></a></dt>
+<dd><p>SMOG protein parser.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.smog_parser.SMOGParser.from_atomistic_pdb">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_atomistic_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atomistic_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ca_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_TER</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_parse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.smog_parser.SMOGParser.from_atomistic_pdb" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize an HPS model protein from atomistic pdb.</p>
+<section id="id40">
+<h3>Parameters<a class="headerlink" href="#id40" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>atomistic_pdb<span class="classifier">str</span></dt><dd><p>Path for the input atomistic pdb file.</p>
+</dd>
+<dt>ca_pdb<span class="classifier">str</span></dt><dd><p>Path for the output CA pdb file.</p>
+</dd>
+<dt>write_TER<span class="classifier">bool</span></dt><dd><p>Whether to write TER between two chains.</p>
+</dd>
+<dt>default_parse<span class="classifier">bool</span></dt><dd><p>Whether to parse with default settings.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.smog_parser.SMOGParser.parse_exclusions">
+<span class="sig-name descname"><span class="pre">parse_exclusions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude12</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude13</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude14</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_native_pairs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.smog_parser.SMOGParser.parse_exclusions" title="Permalink to this definition"></a></dt>
+<dd><p>Parse nonbonded exclusions based on bonds, angles, dihedrals, and native pairs.</p>
+<section id="id41">
+<h3>Parameters<a class="headerlink" href="#id41" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>exclude12<span class="classifier">bool</span></dt><dd><p>Whether to exclude nonbonded interactions between 1-2 atom pairs.</p>
+</dd>
+<dt>exclude13<span class="classifier">bool</span></dt><dd><p>Whether to exclude nonbonded interactions between 1-3 atom pairs.</p>
+</dd>
+<dt>exclude14<span class="classifier">bool</span></dt><dd><p>Whether to exclude nonbonded interactions between 1-4 atom pairs.</p>
+</dd>
+<dt>exclude_native_pairs<span class="classifier">bool</span></dt><dd><p>Whether to exclude nonbonded interactions between native pairs.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.smog_parser.SMOGParser.parse_mol">
+<span class="sig-name descname"><span class="pre">parse_mol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">get_native_pairs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bonded_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_pbc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude12</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude13</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude14</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_native_pairs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'ALA':</span> <span class="pre">71.0788,</span> <span class="pre">'ARG':</span> <span class="pre">156.1875,</span> <span class="pre">'ASN':</span> <span class="pre">114.1038,</span> <span class="pre">'ASP':</span> <span class="pre">115.0886,</span> <span class="pre">'CYS':</span> <span class="pre">103.1388,</span> <span class="pre">'GLN':</span> <span class="pre">128.1307,</span> <span class="pre">'GLU':</span> <span class="pre">129.1155,</span> <span class="pre">'GLY':</span> <span class="pre">57.0519,</span> <span class="pre">'HIS':</span> <span class="pre">137.1411,</span> <span class="pre">'ILE':</span> <span class="pre">113.1594,</span> <span class="pre">'LEU':</span> <span class="pre">113.1594,</span> <span class="pre">'LYS':</span> <span class="pre">128.1741,</span> <span class="pre">'MET':</span> <span class="pre">131.1926,</span> <span class="pre">'PHE':</span> <span class="pre">147.1766,</span> <span class="pre">'PRO':</span> <span class="pre">97.1167,</span> <span class="pre">'SER':</span> <span class="pre">87.0782,</span> <span class="pre">'THR':</span> <span class="pre">101.1051,</span> <span class="pre">'TRP':</span> <span class="pre">186.2132,</span> <span class="pre">'TYR':</span> <span class="pre">163.176,</span> <span class="pre">'VAL':</span> <span class="pre">99.1326}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'ALA':</span> <span class="pre">0.0,</span> <span class="pre">'ARG':</span> <span class="pre">1.0,</span> <span class="pre">'ASN':</span> <span class="pre">0.0,</span> <span class="pre">'ASP':</span> <span class="pre">-1.0,</span> <span class="pre">'CYS':</span> <span class="pre">0.0,</span> <span class="pre">'GLN':</span> <span class="pre">0.0,</span> <span class="pre">'GLU':</span> <span class="pre">-1.0,</span> <span class="pre">'GLY':</span> <span class="pre">0.0,</span> <span class="pre">'HIS':</span> <span class="pre">0.0,</span> <span class="pre">'ILE':</span> <span class="pre">0.0,</span> <span class="pre">'LEU':</span> <span class="pre">0.0,</span> <span class="pre">'LYS':</span> <span class="pre">1.0,</span> <span class="pre">'MET':</span> <span class="pre">0.0,</span> <span class="pre">'PHE':</span> <span class="pre">0.0,</span> <span class="pre">'PRO':</span> <span class="pre">0.0,</span> <span class="pre">'SER':</span> <span class="pre">0.0,</span> <span class="pre">'THR':</span> <span class="pre">0.0,</span> <span class="pre">'TRP':</span> <span class="pre">0.0,</span> <span class="pre">'TYR':</span> <span class="pre">0.0,</span> <span class="pre">'VAL':</span> <span class="pre">0.0}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bonded_energy_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.smog_parser.SMOGParser.parse_mol" title="Permalink to this definition"></a></dt>
+<dd><p>Parse molecule.</p>
+<section id="id42">
+<h3>Parameters<a class="headerlink" href="#id42" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>get_native_pairs<span class="classifier">bool</span></dt><dd><p>Whether to get native pairs from atomistic pdb with shadow algorithm.</p>
+</dd>
+<dt>frame<span class="classifier">int</span></dt><dd><p>Frame index to compute native configuration parameters for both CG and atomistic models.</p>
+</dd>
+<dt>radius<span class="classifier">float or int</span></dt><dd><p>Shadow algorithm radius.</p>
+</dd>
+<dt>bonded_radius<span class="classifier">float or int</span></dt><dd><p>Shadow algorithm bonded radius.</p>
+</dd>
+<dt>cutoff<span class="classifier">float or int</span></dt><dd><p>Shadow algorithm cutoff.</p>
+</dd>
+</dl>
+<p>box : None or np.ndarray
+Specify box shape. 
+Note <cite>use_pbc</cite> = False is only compatible with orthogonal box. 
+If <cite>use_pbc</cite> = False, then set <cite>box</cite> as None. 
+If <cite>use_pbc</cite> = True, then <cite>box</cite> = np.array([lx, ly, lz, alpha1, alpha2, alpha3]).</p>
+<dl class="simple">
+<dt>use_pbc<span class="classifier">bool</span></dt><dd><p>Whether to use periodic boundary condition (PBC) for searching native pairs.</p>
+</dd>
+<dt>exclude12<span class="classifier">bool</span></dt><dd><p>Whether to exclude nonbonded interactions between 1-2 atom pairs.</p>
+</dd>
+<dt>exclude13<span class="classifier">bool</span></dt><dd><p>Whether to exclude nonbonded interactions between 1-3 atom pairs.</p>
+</dd>
+<dt>exclude14<span class="classifier">bool</span></dt><dd><p>Whether to exclude nonbonded interactions between 1-4 atom pairs.</p>
+</dd>
+<dt>exclude_native_pairs<span class="classifier">bool</span></dt><dd><p>Whether to exclude nonbonded interactions between native pairs.</p>
+</dd>
+<dt>mass_dict<span class="classifier">dict</span></dt><dd><p>Mass dictionary.</p>
+</dd>
+<dt>charge_dict<span class="classifier">dict</span></dt><dd><p>Charge dictionary.</p>
+</dd>
+<dt>bonded_energy_scale<span class="classifier">float or int</span></dt><dd><p>Bonded energy additional scale factor.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-openabc.forcefields.parsers.dna_3spn2_parser"></span><dl class="py class">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DNA3SPN2Parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dna_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'B_curved'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser" title="Permalink to this definition"></a></dt>
+<dd><p>DNA 3SPN2 parser. 
+For B-curved DNA, the parser works best for a single strand ssDNA or WC-paired dsDNA. 
+Please ensure the parsed DNA has unique chainID for each chain.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.aa_to_cg">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">aa_to_cg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aa_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PSB_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.aa_to_cg" title="Permalink to this definition"></a></dt>
+<dd><p>Convert DNA all-atom structure to CG structure. 
+Both input and output structures are saved as pandas dataframe. 
+Notably, this function gives each residue in the output CG model a unique resSeq (index starts from 0). 
+Using unique resSeq can be helpful when comparing with x3dna built template as chainID may be different. 
+This code is long and specific to 3SPN2 model, so we put it here instead of in helper_functions.py.</p>
+<section id="id43">
+<h3>Parameters<a class="headerlink" href="#id43" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>aa_atoms<span class="classifier">pd.DataFrame</span></dt><dd><p>Input all-atom structure.</p>
+</dd>
+<dt>PSB_order<span class="classifier">bool</span></dt><dd><p>Whether to ensure CG atom order in each nucleotide is P-S-B.</p>
+</dd>
+</dl>
+</section>
+<section id="id44">
+<h3>Returns<a class="headerlink" href="#id44" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>cg_atoms<span class="classifier">pd.DataFrame</span></dt><dd><p>Output CG structure.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.build_x3dna_template">
+<span class="sig-name descname"><span class="pre">build_x3dna_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dna'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.build_x3dna_template" title="Permalink to this definition"></a></dt>
+<dd><p>Build template DNA structure with x3dna. 
+We do not need to specify whether to use PSB order, since template atom order is aligned with self.atoms.
+If self.atoms is one dsDNA molecule and the target sequence is W-C paired, x3dna input sequence is the sequence of the first ssDNA. Else, use the full sequence of the DNA as x3dna input sequence.</p>
+<section id="id45">
+<h3>Parameters<a class="headerlink" href="#id45" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>temp_name<span class="classifier">str</span></dt><dd><p>Name for built template files.</p>
+</dd>
+</dl>
+</section>
+<section id="id46">
+<h3>Returns<a class="headerlink" href="#id46" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>temp_atoms<span class="classifier">pd.DataFrame</span></dt><dd><p>X3DNA built CG DNA template structure.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.change_sequence">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">change_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cg_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.change_sequence" title="Permalink to this definition"></a></dt>
+<dd><p>Change DNA sequence. 
+Note sequence includes the sequence of all the ssDNA chains.</p>
+<section id="id47">
+<h3>Parameters<a class="headerlink" href="#id47" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>cg_atoms<span class="classifier">pd.DataFrame</span></dt><dd><p>DNA CG structure.</p>
+</dd>
+<dt>sequence<span class="classifier">str</span></dt><dd><p>New DNA sequence.</p>
+</dd>
+</dl>
+</section>
+<section id="id48">
+<h3>Returns<a class="headerlink" href="#id48" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>new_cg_atoms<span class="classifier">pd.DataFrame</span></dt><dd><p>DNA CG structure with the new sequence.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.from_atomistic_pdb">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_atomistic_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atomistic_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cg_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PSB_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_sequence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dna_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'B_curved'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_parse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_from_x3dna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dna'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.from_atomistic_pdb" title="Permalink to this definition"></a></dt>
+<dd><p>Create object from atomistic pdb file. 
+Ensure each chain in input pdb_file has unique chainID. 
+If a new sequence is provided, then the CG DNA topology is from input pdb file, but using the new sequence.</p>
+<section id="id49">
+<h3>Parameters<a class="headerlink" href="#id49" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>atomistic_pdb<span class="classifier">str</span></dt><dd><p>Path for the input atomistic pdb file.</p>
+</dd>
+<dt>cg_pdb<span class="classifier">str</span></dt><dd><p>Path for the output CG pdb file.</p>
+</dd>
+<dt>PSB_order<span class="classifier">bool</span></dt><dd><p>Whether to ensure CG atom order in each nucleotide is P-S-B.</p>
+</dd>
+<dt>new_sequence<span class="classifier">None or str</span></dt><dd><p>The new full DNA sequence. 
+If None, keep the original sequence.</p>
+</dd>
+<dt>dna_type<span class="classifier">str</span></dt><dd><p>DNA type.</p>
+</dd>
+<dt>default_parse<span class="classifier">bool</span></dt><dd><p>Whether to parse molecule with default settings.</p>
+</dd>
+<dt>temp_from_x3dna<span class="classifier">bool</span></dt><dd><p>Whether to use template built by x3dna. 
+If False, use the input pdb file as the template.</p>
+</dd>
+<dt>temp_name<span class="classifier">str</span></dt><dd><p>Template file names.</p>
+</dd>
+<dt>input_temp<span class="classifier">None or pd.DataFrame</span></dt><dd><p>Additional input template.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.get_sequence">
+<span class="sig-name descname"><span class="pre">get_sequence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.get_sequence" title="Permalink to this definition"></a></dt>
+<dd><p>Get all ssDNA sequence from CG atoms as a string. 
+Note each chain has to possess a unique chainID.</p>
+<section id="id50">
+<h3>Returns<a class="headerlink" href="#id50" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>sequence<span class="classifier">str</span></dt><dd><p>DNA sequence.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.get_sequence_list">
+<span class="sig-name descname"><span class="pre">get_sequence_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.get_sequence_list" title="Permalink to this definition"></a></dt>
+<dd><p>Get all ssDNA sequence from self.atoms as a list. 
+Note each chain has to possess a unique chainID.</p>
+<section id="id51">
+<h3>Returns<a class="headerlink" href="#id51" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>sequence_list<span class="classifier">list</span></dt><dd><p>A list including multiple strings. Each string is the sequence of one chain.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.get_sequence_list_from_cg_atoms">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_sequence_list_from_cg_atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cg_atoms</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.get_sequence_list_from_cg_atoms" title="Permalink to this definition"></a></dt>
+<dd><p>Get all ssDNA sequence from CG atoms as a list. 
+Since we use <cite>groupby</cite> to group by chainID, each chain has to possess a unique chainID.</p>
+<section id="id52">
+<h3>Parameters<a class="headerlink" href="#id52" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>cg_atoms<span class="classifier">pd.DataFrame</span></dt><dd><p>CG DNA atoms.</p>
+</dd>
+</dl>
+</section>
+<section id="id53">
+<h3>Returns<a class="headerlink" href="#id53" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>sequence_list<span class="classifier">list</span></dt><dd><p>A list including multiple strings. Each string is the sequence of one chain.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.parse_mol">
+<span class="sig-name descname"><span class="pre">parse_mol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_from_x3dna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dna'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.parsers.dna_3spn2_parser.DNA3SPN2Parser.parse_mol" title="Permalink to this definition"></a></dt>
+<dd><p>Parse molecule with given template.</p>
+<section id="id54">
+<h3>Parameters<a class="headerlink" href="#id54" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>temp_from_x3dna<span class="classifier">bool</span></dt><dd><p>Whether to use x3dna template.</p>
+</dd>
+<dt>temp_name<span class="classifier">str</span></dt><dd><p>Name for x3dna built template files.</p>
+</dd>
+<dt>input_temp<span class="classifier">None or pd.DataFrame</span></dt><dd><p>Additional input template. Use input_temp only <cite>if (not ((self.dna_type == ‘B_curved’) and temp_from_x3dna)) and (input_temp is not None)</cite>.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-openabc.utils.CA2AA">
 <span id="openabc-utils-ca2aa"></span><h2>openabc.utils.CA2AA<a class="headerlink" href="#module-openabc.utils.CA2AA" title="Permalink to this heading"></a></h2>
@@ -984,8 +1277,8 @@ The initial structure is a straight chain.</p>
 <dt class="sig sig-object py" id="openabc.utils.CA2AA.align_protein">
 <span class="sig-name descname"><span class="pre">align_protein</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_pdbfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_pdbfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_pdbfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CA'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.CA2AA.align_protein" title="Permalink to this definition"></a></dt>
 <dd><p>Align a protein with the reference protein accoding to positions of alpha carbons.</p>
-<section id="id40">
-<h3>Parameters<a class="headerlink" href="#id40" title="Permalink to this heading"></a></h3>
+<section id="id55">
+<h3>Parameters<a class="headerlink" href="#id55" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>input_pdbfile<span class="classifier">str</span></dt><dd><p>Input pdb file to be aligned.</p>
 </dd>
@@ -1009,8 +1302,8 @@ Note ‘input_pdbfile’ and ‘reference_pdbfile’ must represent the same sys
 <dt class="sig sig-object py" id="openabc.utils.CA2AA.args_parse">
 <span class="sig-name descname"><span class="pre">args_parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.CA2AA.args_parse" title="Permalink to this definition"></a></dt>
 <dd><p>The function uses argparse module to create and manage the command-line interface.</p>
-<section id="id41">
-<h3>Returns<a class="headerlink" href="#id41" title="Permalink to this heading"></a></h3>
+<section id="id56">
+<h3>Returns<a class="headerlink" href="#id56" title="Permalink to this heading"></a></h3>
 <p>parser.parse_args(): the parsed command-line arguments object.</p>
 </section>
 </dd></dl>
@@ -1019,8 +1312,8 @@ Note ‘input_pdbfile’ and ‘reference_pdbfile’ must represent the same sys
 <dt class="sig sig-object py" id="openabc.utils.CA2AA.combine_proteins">
 <span class="sig-name descname"><span class="pre">combine_proteins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbfile_lis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_pdbflie</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.CA2AA.combine_proteins" title="Permalink to this definition"></a></dt>
 <dd><p>Merge multiple pdb files into a single pdb file.</p>
-<section id="id42">
-<h3>Parameters<a class="headerlink" href="#id42" title="Permalink to this heading"></a></h3>
+<section id="id57">
+<h3>Parameters<a class="headerlink" href="#id57" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>pdbfile_lis<span class="classifier">str</span></dt><dd><p>List that contains name of pdb files to be merged.</p>
 </dd>
@@ -1034,8 +1327,8 @@ Note ‘input_pdbfile’ and ‘reference_pdbfile’ must represent the same sys
 <dt class="sig sig-object py" id="openabc.utils.CA2AA.multiple_chains_CA2AA">
 <span class="sig-name descname"><span class="pre">multiple_chains_CA2AA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_pdbfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_chains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_residues</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">REMO_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/home/gridsan/sliu/Projects/OpenABC/openabc/utils/REMO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.CA2AA.multiple_chains_CA2AA" title="Permalink to this definition"></a></dt>
 <dd><p>Reconstruct all-atom representation of a multiple-chain protein from its alpha carbons. If the name of input file is ‘XXX.pdb’, then output will be saved as ‘XXX_AA.pdb’ in the folder where ‘XXX.pdb’ is located.</p>
-<section id="id43">
-<h3>Parameters<a class="headerlink" href="#id43" title="Permalink to this heading"></a></h3>
+<section id="id58">
+<h3>Parameters<a class="headerlink" href="#id58" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>input_pdbfile<span class="classifier">str</span></dt><dd><p>Input pdb file.</p>
 </dd>
@@ -1050,8 +1343,8 @@ Note <cite>num_chains</cite> and <cite>num_residues</cite> share the same length
 </dd>
 </dl>
 </section>
-<section id="id44">
-<h3>References<a class="headerlink" href="#id44" title="Permalink to this heading"></a></h3>
+<section id="id59">
+<h3>References<a class="headerlink" href="#id59" title="Permalink to this heading"></a></h3>
 <p>Yunqi Li and Yang Zhang. REMO: A new protocol to refine full atomic protein models from C-alpha traces by optimizing hydrogen-bonding networks. Proteins, 2009, 76: 665-676.
 <a class="reference external" href="https://zhanggroup.org/REMO/">https://zhanggroup.org/REMO/</a>.</p>
 </section>
@@ -1061,8 +1354,8 @@ Note <cite>num_chains</cite> and <cite>num_residues</cite> share the same length
 <dt class="sig sig-object py" id="openabc.utils.CA2AA.single_chain_CA2AA">
 <span class="sig-name descname"><span class="pre">single_chain_CA2AA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_pdbfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_pdbfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">REMO_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/home/gridsan/sliu/Projects/OpenABC/openabc/utils/REMO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.CA2AA.single_chain_CA2AA" title="Permalink to this definition"></a></dt>
 <dd><p>Reconstruct all-atom representation for a single-chain protein from its alpha carbons using REMO.</p>
-<section id="id45">
-<h3>Parameters<a class="headerlink" href="#id45" title="Permalink to this heading"></a></h3>
+<section id="id60">
+<h3>Parameters<a class="headerlink" href="#id60" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>input_pdbfile<span class="classifier">str</span></dt><dd><p>Input pdb file that contains one protein chain.</p>
 </dd>
@@ -1074,8 +1367,8 @@ Note <cite>num_chains</cite> and <cite>num_residues</cite> share the same length
 </dd>
 </dl>
 </section>
-<section id="id46">
-<h3>References<a class="headerlink" href="#id46" title="Permalink to this heading"></a></h3>
+<section id="id61">
+<h3>References<a class="headerlink" href="#id61" title="Permalink to this heading"></a></h3>
 <p>Yunqi Li and Yang Zhang. REMO: A new protocol to refine full atomic protein models from C-alpha traces by optimizing hydrogen-bonding networks. Proteins, 2009, 76: 665-676.
 <a class="reference external" href="https://zhanggroup.org/REMO/">https://zhanggroup.org/REMO/</a>.</p>
 </section>
@@ -1085,8 +1378,8 @@ Note <cite>num_chains</cite> and <cite>num_residues</cite> share the same length
 <dt class="sig sig-object py" id="openabc.utils.CA2AA.split_protein">
 <span class="sig-name descname"><span class="pre">split_protein</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_pdbfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_chains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_residues</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.CA2AA.split_protein" title="Permalink to this definition"></a></dt>
 <dd><p>Split a PDB file containing multiple chains into individual files, each containing one chain.</p>
-<section id="id47">
-<h3>Parameters<a class="headerlink" href="#id47" title="Permalink to this heading"></a></h3>
+<section id="id62">
+<h3>Parameters<a class="headerlink" href="#id62" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>input_pdbfile<span class="classifier">str</span></dt><dd><p>Input pdb file.</p>
 </dd>
@@ -1108,8 +1401,8 @@ Note <cite>num_chains</cite> and <cite>num_residues</cite> share the same length
 <dt class="sig sig-object py" id="openabc.utils.helper_functions.atomistic_pdb_to_ca_pdb">
 <span class="sig-name descname"><span class="pre">atomistic_pdb_to_ca_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atomistic_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ca_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_TER</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.atomistic_pdb_to_ca_pdb" title="Permalink to this definition"></a></dt>
 <dd><p>Convert atomistic pdb to protein CA pdb.</p>
-<section id="id48">
-<h3>Parameters<a class="headerlink" href="#id48" title="Permalink to this heading"></a></h3>
+<section id="id63">
+<h3>Parameters<a class="headerlink" href="#id63" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>atomistic_pdb<span class="classifier">str</span></dt><dd><p>Path for the atomistic pdb file.</p>
 </dd>
@@ -1126,8 +1419,8 @@ Note <cite>num_chains</cite> and <cite>num_residues</cite> share the same length
 <span class="sig-name descname"><span class="pre">atomistic_pdb_to_nucleotide_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atomistic_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cg_nucleotide_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_TER</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.atomistic_pdb_to_nucleotide_pdb" title="Permalink to this definition"></a></dt>
 <dd><p>Convert DNA or RNA atomistic pdb to nucleotide pdb (i.e. one CG bead per nucleotide). 
 The position of each CG nucleotide bead is the geometric center of all the nucleotide atoms in the pdb.</p>
-<section id="id49">
-<h3>Parameters<a class="headerlink" href="#id49" title="Permalink to this heading"></a></h3>
+<section id="id64">
+<h3>Parameters<a class="headerlink" href="#id64" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>atomistic_pdb<span class="classifier">str</span></dt><dd><p>Path for the atomistic pdb file.</p>
 </dd>
@@ -1143,8 +1436,8 @@ The position of each CG nucleotide bead is the geometric center of all the nucle
 <dt class="sig sig-object py" id="openabc.utils.helper_functions.build_straight_CA_chain">
 <span class="sig-name descname"><span class="pre">build_straight_CA_chain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.38</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.build_straight_CA_chain" title="Permalink to this definition"></a></dt>
 <dd><p>Build a straight portein CA atom chain with given sequence.</p>
-<section id="id50">
-<h3>Parameters<a class="headerlink" href="#id50" title="Permalink to this heading"></a></h3>
+<section id="id65">
+<h3>Parameters<a class="headerlink" href="#id65" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>sequence<span class="classifier">str</span></dt><dd><p>Protein chain sequence (1 letter for each amino acid).</p>
 </dd>
@@ -1152,8 +1445,8 @@ The position of each CG nucleotide bead is the geometric center of all the nucle
 </dd>
 </dl>
 </section>
-<section id="id51">
-<h3>Returns<a class="headerlink" href="#id51" title="Permalink to this heading"></a></h3>
+<section id="id66">
+<h3>Returns<a class="headerlink" href="#id66" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>df_atoms<span class="classifier">pd.DataFrame</span></dt><dd><p>A pandas dataframe includes atom information.</p>
 </dd>
@@ -1166,8 +1459,8 @@ The position of each CG nucleotide bead is the geometric center of all the nucle
 <span class="sig-name descname"><span class="pre">build_straight_chain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chainID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.build_straight_chain" title="Permalink to this definition"></a></dt>
 <dd><p>Build a straight chain. 
 Each atom is viewed as one residue.</p>
-<section id="id52">
-<h3>Parameters<a class="headerlink" href="#id52" title="Permalink to this heading"></a></h3>
+<section id="id67">
+<h3>Parameters<a class="headerlink" href="#id67" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>n_atoms<span class="classifier">int</span></dt><dd><p>The number of atoms along the chain.</p>
 </dd>
@@ -1177,8 +1470,8 @@ Each atom is viewed as one residue.</p>
 </dd>
 </dl>
 </section>
-<section id="id53">
-<h3>Returns<a class="headerlink" href="#id53" title="Permalink to this heading"></a></h3>
+<section id="id68">
+<h3>Returns<a class="headerlink" href="#id68" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>df_atoms<span class="classifier">pd.DataFrame</span></dt><dd><p>A pandas dataframe includes atom information.</p>
 </dd>
@@ -1190,8 +1483,8 @@ Each atom is viewed as one residue.</p>
 <dt class="sig sig-object py" id="openabc.utils.helper_functions.compute_rg">
 <span class="sig-name descname"><span class="pre">compute_rg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coord</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.compute_rg" title="Permalink to this definition"></a></dt>
 <dd><p>Compute radius of gyration.</p>
-<section id="id54">
-<h3>Parameters<a class="headerlink" href="#id54" title="Permalink to this heading"></a></h3>
+<section id="id69">
+<h3>Parameters<a class="headerlink" href="#id69" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>coord<span class="classifier">np.ndarray, shape = (n_atoms, 3)</span></dt><dd><p>Input atom coordinates.</p>
 </dd>
@@ -1199,10 +1492,51 @@ Each atom is viewed as one residue.</p>
 </dd>
 </dl>
 </section>
-<section id="id55">
-<h3>Returns<a class="headerlink" href="#id55" title="Permalink to this heading"></a></h3>
+<section id="id70">
+<h3>Returns<a class="headerlink" href="#id70" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>rg<span class="classifier">float</span></dt><dd><p>Radius of gyration.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openabc.utils.helper_functions.fix_pdb">
+<span class="sig-name descname"><span class="pre">fix_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdb_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.fix_pdb" title="Permalink to this definition"></a></dt>
+<dd><p>Fix pdb file with pdbfixer. The fixed structure is output as pandas dataframe. 
+This function is adapted from open3SPN2.</p>
+<section id="id71">
+<h3>Parameters<a class="headerlink" href="#id71" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>pdb_file<span class="classifier">str</span></dt><dd><p>PDB file path.</p>
+</dd>
+</dl>
+</section>
+<section id="id72">
+<h3>Returns<a class="headerlink" href="#id72" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>atoms<span class="classifier">pd.DataFrame</span></dt><dd><p>Output fixed structure.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openabc.utils.helper_functions.get_WC_paired_seq">
+<span class="sig-name descname"><span class="pre">get_WC_paired_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.get_WC_paired_seq" title="Permalink to this definition"></a></dt>
+<dd><p>Get WC-paired sequence.</p>
+<section id="id73">
+<h3>Parameters<a class="headerlink" href="#id73" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>sequence<span class="classifier">str</span></dt><dd><p>Input sequence.</p>
+</dd>
+</dl>
+</section>
+<section id="id74">
+<h3>Returns<a class="headerlink" href="#id74" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>paired_sequence<span class="classifier">str</span></dt><dd><p>W-C paired sequence.</p>
 </dd>
 </dl>
 </section>
@@ -1215,8 +1549,8 @@ Each atom is viewed as one residue.</p>
 This is useful to recover the whole molecule if it is split by box boundary. 
 The position of the first atom is kept. 
 The other atoms are moved so that each one is in the closest periodic image relative to the previous one.</p>
-<section id="id56">
-<h3>Parameters<a class="headerlink" href="#id56" title="Permalink to this heading"></a></h3>
+<section id="id75">
+<h3>Parameters<a class="headerlink" href="#id75" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>coord<span class="classifier">np.ndarray, shape = (n_atoms, 3)</span></dt><dd><p>Input atom coordinates.</p>
 </dd>
@@ -1228,8 +1562,8 @@ The other atoms are moved so that each one is in the closest periodic image rela
 </dd>
 </dl>
 </section>
-<section id="id57">
-<h3>Returns<a class="headerlink" href="#id57" title="Permalink to this heading"></a></h3>
+<section id="id76">
+<h3>Returns<a class="headerlink" href="#id76" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>new_coord<span class="classifier">np.ndarray, shape = (n_atoms, 3)</span></dt><dd><p>Output atom coordinates.</p>
 </dd>
@@ -1241,8 +1575,8 @@ The other atoms are moved so that each one is in the closest periodic image rela
 <dt class="sig sig-object py" id="openabc.utils.helper_functions.move_atoms_to_closest_pbc_image">
 <span class="sig-name descname"><span class="pre">move_atoms_to_closest_pbc_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coord</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.move_atoms_to_closest_pbc_image" title="Permalink to this definition"></a></dt>
 <dd><p>Move the atom coordinates to the periodic image closest to ref_point.</p>
-<section id="id58">
-<h3>Parameters<a class="headerlink" href="#id58" title="Permalink to this heading"></a></h3>
+<section id="id77">
+<h3>Parameters<a class="headerlink" href="#id77" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>coord<span class="classifier">np.ndarray, shape = (n_atoms, 3)</span></dt><dd><p>Input atom coordinates.</p>
 </dd>
@@ -1256,8 +1590,8 @@ The other atoms are moved so that each one is in the closest periodic image rela
 </dd>
 </dl>
 </section>
-<section id="id59">
-<h3>Returns<a class="headerlink" href="#id59" title="Permalink to this heading"></a></h3>
+<section id="id78">
+<h3>Returns<a class="headerlink" href="#id78" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>new_coord<span class="classifier">np.ndarray, shape = (n_atoms, 3)</span></dt><dd><p>Output atom coordinates.</p>
 </dd>
@@ -1269,15 +1603,15 @@ The other atoms are moved so that each one is in the closest periodic image rela
 <dt class="sig sig-object py" id="openabc.utils.helper_functions.parse_pdb">
 <span class="sig-name descname"><span class="pre">parse_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdb_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.parse_pdb" title="Permalink to this definition"></a></dt>
 <dd><p>Load pdb file as pandas dataframe.</p>
-<section id="id60">
-<h3>Parameters<a class="headerlink" href="#id60" title="Permalink to this heading"></a></h3>
+<section id="id79">
+<h3>Parameters<a class="headerlink" href="#id79" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>pdb_file<span class="classifier">str</span></dt><dd><p>Path for the pdb file.</p>
 </dd>
 </dl>
 </section>
-<section id="id61">
-<h3>Returns<a class="headerlink" href="#id61" title="Permalink to this heading"></a></h3>
+<section id="id80">
+<h3>Returns<a class="headerlink" href="#id80" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>pdb_atoms<span class="classifier">pd.DataFrame</span></dt><dd><p>A pandas dataframe includes atom information.</p>
 </dd>
@@ -1289,8 +1623,8 @@ The other atoms are moved so that each one is in the closest periodic image rela
 <dt class="sig sig-object py" id="openabc.utils.helper_functions.write_pdb">
 <span class="sig-name descname"><span class="pre">write_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdb_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdb_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_TER</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.write_pdb" title="Permalink to this definition"></a></dt>
 <dd><p>Write pandas dataframe to pdb file.</p>
-<section id="id62">
-<h3>Parameters<a class="headerlink" href="#id62" title="Permalink to this heading"></a></h3>
+<section id="id81">
+<h3>Parameters<a class="headerlink" href="#id81" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>pdb_atoms<span class="classifier">pd.DataFrame</span></dt><dd><p>A pandas dataframe includes atom information.</p>
 </dd>
@@ -1320,10 +1654,11 @@ The other atoms are moved so that each one is in the closest periodic image rela
 </div></blockquote>
 <dl class="py method">
 <dt class="sig sig-object py" id="openabc.utils.replica_exchange.TemperatureReplicaExchange.add_reporters">
-<span class="sig-name descname"><span class="pre">add_reporters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report_interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_dcd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dcd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_pbc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.replica_exchange.TemperatureReplicaExchange.add_reporters" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_reporters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report_interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_dcd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dcd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.replica_exchange.TemperatureReplicaExchange.add_reporters" title="Permalink to this definition"></a></dt>
 <dd><p>Add reporters for OpenMM simulation.</p>
-<section id="id63">
-<h3>Parameters<a class="headerlink" href="#id63" title="Permalink to this heading"></a></h3>
+<p>Whether to use PBC is read from self.system information.</p>
+<section id="id82">
+<h3>Parameters<a class="headerlink" href="#id82" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>report_interval<span class="classifier">int</span></dt><dd><p>Report interval.</p>
 </dd>
@@ -1332,9 +1667,6 @@ The other atoms are moved so that each one is in the closest periodic image rela
 <dt>report_dcd<span class="classifier">bool</span></dt><dd><p>Whether to report trajectory as dcd file.</p>
 </dd>
 <dt>output_dcd<span class="classifier">str or None</span></dt><dd><p>The output dcd file path. If None, then the output dcd file path is set as output.{self.rank}.dcd.</p>
-</dd>
-<dt>use_pbc<span class="classifier">bool or None</span></dt><dd><p>Whether to use periodic boundary condition (PBC) to translate atoms so the center of each molecule lies in the same PBC box.
-If None, then determine according to if the simulation system uses PBC.</p>
 </dd>
 </dl>
 </section>
@@ -1346,8 +1678,8 @@ If None, then determine according to if the simulation system uses PBC.</p>
 <dd><p>Perform replica exchange simulation.</p>
 <p>Exchange atom positions and rescaled velocities. Other state variables are not exchanged.</p>
 <p>The temperature of each replica remains unchanged.</p>
-<section id="id64">
-<h3>Parameters<a class="headerlink" href="#id64" title="Permalink to this heading"></a></h3>
+<section id="id83">
+<h3>Parameters<a class="headerlink" href="#id83" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>n_steps<span class="classifier">int</span></dt><dd><p>Total number of simulation steps for each replica.</p>
 </dd>
@@ -1368,8 +1700,8 @@ If None, then determine according to if the simulation system uses PBC.</p>
 <dt class="sig sig-object py" id="openabc.utils.shadow_map.find_ca_pairs_from_atomistic_pdb">
 <span class="sig-name descname"><span class="pre">find_ca_pairs_from_atomistic_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atomistic_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bonded_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_pbc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.shadow_map.find_ca_pairs_from_atomistic_pdb" title="Permalink to this definition"></a></dt>
 <dd><p>Find protein CA atom pairs whose residues are in contact.</p>
-<section id="id65">
-<h3>Parameters<a class="headerlink" href="#id65" title="Permalink to this heading"></a></h3>
+<section id="id84">
+<h3>Parameters<a class="headerlink" href="#id84" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>atomistic_pdb<span class="classifier">str</span></dt><dd><p>Path for the atomistic pdb file.</p>
 </dd>
@@ -1390,8 +1722,8 @@ If <cite>use_pbc</cite> = True, then <cite>box</cite> = np.array([lx, ly, lz, al
 </dd>
 </dl>
 </section>
-<section id="id66">
-<h3>Returns<a class="headerlink" href="#id66" title="Permalink to this heading"></a></h3>
+<section id="id85">
+<h3>Returns<a class="headerlink" href="#id85" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>df_ca_pairs<span class="classifier">pd.DataFrame</span></dt><dd><p>Pandas DataFrame including CA atom pair indices and distances.</p>
 </dd>
@@ -1405,8 +1737,8 @@ If <cite>use_pbc</cite> = True, then <cite>box</cite> = np.array([lx, ly, lz, al
 <dd><p>Find native pairs between residues following the shadow algorithm.
 They algorithm only searches native pairs between residues that do not have 1-2, 1-3, or 1-4 interactions. 
 If two heavy atoms from different residues are in contact, then the two residues are in contact.</p>
-<section id="id67">
-<h3>Parameters<a class="headerlink" href="#id67" title="Permalink to this heading"></a></h3>
+<section id="id86">
+<h3>Parameters<a class="headerlink" href="#id86" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>atomistic_pdb<span class="classifier">str</span></dt><dd><p>Path for the atomistic pdb file.</p>
 </dd>
@@ -1427,8 +1759,8 @@ If <cite>use_pbc</cite> = True, then <cite>box</cite> = np.array([lx, ly, lz, al
 </dd>
 </dl>
 </section>
-<section id="id68">
-<h3>Returns<a class="headerlink" href="#id68" title="Permalink to this heading"></a></h3>
+<section id="id87">
+<h3>Returns<a class="headerlink" href="#id87" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>res_pairs<span class="classifier">np.ndarray, shape = (n_pairs, 2)</span></dt><dd><p>Residue pairs found by the shadow algorithm.</p>
 </dd>
@@ -1442,22 +1774,22 @@ If <cite>use_pbc</cite> = True, then <cite>box</cite> = np.array([lx, ly, lz, al
 <dt class="sig sig-object py" id="openabc.utils.shadow_map.get_bonded_neighbor_dict">
 <span class="sig-name descname"><span class="pre">get_bonded_neighbor_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atomistic_pdb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.shadow_map.get_bonded_neighbor_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Find atoms that are directly connected by bonds based on MDTraj.</p>
-<section id="id69">
-<h3>Parameters<a class="headerlink" href="#id69" title="Permalink to this heading"></a></h3>
+<section id="id88">
+<h3>Parameters<a class="headerlink" href="#id88" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>atomistic_pdb<span class="classifier">str</span></dt><dd><p>Path for the atomistic pdb file.</p>
 </dd>
 </dl>
 </section>
-<section id="id70">
-<h3>Returns<a class="headerlink" href="#id70" title="Permalink to this heading"></a></h3>
+<section id="id89">
+<h3>Returns<a class="headerlink" href="#id89" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>bonded_neighbor_dict<span class="classifier">dict</span></dt><dd><p>A dictionary that the value is a list including all the atoms bonded to the atom of index key.</p>
 </dd>
 </dl>
 </section>
-<section id="id71">
-<h3>References<a class="headerlink" href="#id71" title="Permalink to this heading"></a></h3>
+<section id="id90">
+<h3>References<a class="headerlink" href="#id90" title="Permalink to this heading"></a></h3>
 <p><a class="reference external" href="https://mdtraj.org/1.9.4/api/generated/mdtraj.Topology.html">https://mdtraj.org/1.9.4/api/generated/mdtraj.Topology.html</a></p>
 </section>
 </dd></dl>
@@ -1466,8 +1798,8 @@ If <cite>use_pbc</cite> = True, then <cite>box</cite> = np.array([lx, ly, lz, al
 <dt class="sig sig-object py" id="openabc.utils.shadow_map.get_neighbor_pairs_and_distances">
 <span class="sig-name descname"><span class="pre">get_neighbor_pairs_and_distances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coord</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_pbc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.shadow_map.get_neighbor_pairs_and_distances" title="Permalink to this definition"></a></dt>
 <dd><p>Find spatially neighboring atom pairs within cutoff range based on MDAnalysis.</p>
-<section id="id72">
-<h3>Parameters<a class="headerlink" href="#id72" title="Permalink to this heading"></a></h3>
+<section id="id91">
+<h3>Parameters<a class="headerlink" href="#id91" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>coord<span class="classifier">np.ndarray, shape = (n_atoms, 3)</span></dt><dd><p>Input atom coordinates.</p>
 </dd>
@@ -1483,8 +1815,8 @@ If <cite>use_pbc</cite> = True, then <cite>box</cite> = np.array([lx, ly, lz, al
 </dd>
 </dl>
 </section>
-<section id="id73">
-<h3>Returns<a class="headerlink" href="#id73" title="Permalink to this heading"></a></h3>
+<section id="id92">
+<h3>Returns<a class="headerlink" href="#id92" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>neighbor_pairs<span class="classifier">np.ndarray, shape = (n_pairs, 2)</span></dt><dd><p>Neighboring atom pairs.</p>
 </dd>
@@ -1492,8 +1824,8 @@ If <cite>use_pbc</cite> = True, then <cite>box</cite> = np.array([lx, ly, lz, al
 </dd>
 </dl>
 </section>
-<section id="id74">
-<h3>References<a class="headerlink" href="#id74" title="Permalink to this heading"></a></h3>
+<section id="id93">
+<h3>References<a class="headerlink" href="#id93" title="Permalink to this heading"></a></h3>
 <p><a class="reference external" href="https://docs.mdanalysis.org/1.1.1/documentation_pages/lib/nsgrid.html">https://docs.mdanalysis.org/1.1.1/documentation_pages/lib/nsgrid.html</a></p>
 </section>
 </dd></dl>
@@ -1502,8 +1834,8 @@ If <cite>use_pbc</cite> = True, then <cite>box</cite> = np.array([lx, ly, lz, al
 <dt class="sig sig-object py" id="openabc.utils.shadow_map.light_is_blocked">
 <span class="sig-name descname"><span class="pre">light_is_blocked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d13</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d23</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.shadow_map.light_is_blocked" title="Permalink to this definition"></a></dt>
 <dd><p>Check if the light from atom1 to atom2 is blocked by atom3.</p>
-<section id="id75">
-<h3>Parameters<a class="headerlink" href="#id75" title="Permalink to this heading"></a></h3>
+<section id="id94">
+<h3>Parameters<a class="headerlink" href="#id94" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>d12: float or int, positive</dt><dd><p>The distance between atom1 and atom2.</p>
 </dd>
@@ -1519,8 +1851,8 @@ Require r3 &lt;= d13.</p>
 </dd>
 </dl>
 </section>
-<section id="id76">
-<h3>Returns<a class="headerlink" href="#id76" title="Permalink to this heading"></a></h3>
+<section id="id95">
+<h3>Returns<a class="headerlink" href="#id95" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>flag<span class="classifier">bool</span></dt><dd><p>Whether the light is blocked.</p>
 </dd>
@@ -1533,8 +1865,8 @@ Require r3 &lt;= d13.</p>
 <span class="sig-name descname"><span class="pre">load_ca_pairs_from_gmx_top</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ca_pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_pbc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.shadow_map.load_ca_pairs_from_gmx_top" title="Permalink to this definition"></a></dt>
 <dd><p>Load native pairs from GROMACS topology file. 
 Note in GROMACS, atom indices start from 1, while in OpenMM, atom indices start from 0.</p>
-<section id="id77">
-<h3>Parameters<a class="headerlink" href="#id77" title="Permalink to this heading"></a></h3>
+<section id="id96">
+<h3>Parameters<a class="headerlink" href="#id96" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>top_file<span class="classifier">str</span></dt><dd><p>Path for the GROMACS topology file.</p>
 </dd>
@@ -1546,8 +1878,8 @@ Note in GROMACS, atom indices start from 1, while in OpenMM, atom indices start 
 </dd>
 </dl>
 </section>
-<section id="id78">
-<h3>Returns<a class="headerlink" href="#id78" title="Permalink to this heading"></a></h3>
+<section id="id97">
+<h3>Returns<a class="headerlink" href="#id97" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>df_ca_pairs<span class="classifier">pd.DataFrame</span></dt><dd><p>Pandas DataFrame including CA atom pair indices and distances.</p>
 </dd>
@@ -1564,8 +1896,8 @@ Note in GROMACS, atom indices start from 1, while in OpenMM, atom indices start 
 <dd><p>Insert multiple copies of given molecule into an existing pdb or a new empty box. 
 Note all the length parameter units are nm, though coordinates in pdb are in unit angstroms. 
 Currently this function only supports using orthogonal box.</p>
-<section id="id79">
-<h3>Parameters<a class="headerlink" href="#id79" title="Permalink to this heading"></a></h3>
+<section id="id98">
+<h3>Parameters<a class="headerlink" href="#id98" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>new_pdb<span class="classifier">str</span></dt><dd><p>Path of the new pdb file to be inserted.</p>
 </dd>
@@ -1598,17 +1930,95 @@ FastNS should be faster than distance_array, especially for large systems.</p>
 <dt class="sig sig-object py" id="openabc.utils.stride.parse_stride">
 <span class="sig-name descname"><span class="pre">parse_stride</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stride_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.stride.parse_stride" title="Permalink to this definition"></a></dt>
 <dd><p>Parse stride output file.</p>
-<section id="id80">
-<h3>Parameters<a class="headerlink" href="#id80" title="Permalink to this heading"></a></h3>
+<section id="id99">
+<h3>Parameters<a class="headerlink" href="#id99" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>stride_file<span class="classifier">str</span></dt><dd><p>The stride output file.</p>
 </dd>
 </dl>
 </section>
-<section id="id81">
-<h3>Returns<a class="headerlink" href="#id81" title="Permalink to this heading"></a></h3>
+<section id="id100">
+<h3>Returns<a class="headerlink" href="#id100" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>df_data<span class="classifier">pd.DataFrame</span></dt><dd><p>A dataframe with the secondary structure information.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+<section id="module-openabc.utils.chromatin_helper_functions">
+<span id="openabc-utils-chromatin-helper-functions"></span><h2>openabc.utils.chromatin_helper_functions<a class="headerlink" href="#module-openabc.utils.chromatin_helper_functions" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="openabc.utils.chromatin_helper_functions.get_chromatin_rigid_bodies">
+<span class="sig-name descname"><span class="pre">get_chromatin_rigid_bodies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_nucl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_rigid_bp_per_nucl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">73</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.chromatin_helper_functions.get_chromatin_rigid_bodies" title="Permalink to this definition"></a></dt>
+<dd><p>Get chromatin rigid bodies. 
+The chromatin should possess uniform linker length without additional linkers on both ends.</p>
+<section id="id101">
+<h3>Parameters<a class="headerlink" href="#id101" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>n_nucl<span class="classifier">int</span></dt><dd><p>Nucleosome number.</p>
+</dd>
+<dt>nrl<span class="classifier">int</span></dt><dd><p>Nucleosome repeat length.</p>
+</dd>
+<dt>n_flexible_bp_per_nucl<span class="classifier">int</span></dt><dd><p>The number of flexible nucleosomal base pairs for each nucleosome.</p>
+</dd>
+</dl>
+</section>
+<section id="id102">
+<h3>Returns<a class="headerlink" href="#id102" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>rigid_bodies<span class="classifier">list</span></dt><dd><p>List of rigid bodies.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openabc.utils.chromatin_helper_functions.remove_histone_tail_dihedrals">
+<span class="sig-name descname"><span class="pre">remove_histone_tail_dihedrals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_dihedrals</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.chromatin_helper_functions.remove_histone_tail_dihedrals" title="Permalink to this definition"></a></dt>
+<dd><p>Remove histone tail dihedral potentials from a single histone.</p>
+<p>A dihedral potential is removed if at least one atom involved is within histone tail.</p>
+<section id="id103">
+<h3>Parameters<a class="headerlink" href="#id103" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>df_dihedrals<span class="classifier">pd.DataFrame</span></dt><dd><p>Dihedral potential. This should only include histones. 
+Each histone includes 974 CA atoms, and there should be 974*n CG atoms in all (n is the number of histones).</p>
+</dd>
+</dl>
+</section>
+<section id="id104">
+<h3>Returns<a class="headerlink" href="#id104" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>new_df_dihedrals<span class="classifier">pd.DataFrame</span></dt><dd><p>New dihedral potential.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openabc.utils.chromatin_helper_functions.remove_histone_tail_native_pairs_and_exclusions">
+<span class="sig-name descname"><span class="pre">remove_histone_tail_native_pairs_and_exclusions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_native_pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_exclusions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.chromatin_helper_functions.remove_histone_tail_native_pairs_and_exclusions" title="Permalink to this definition"></a></dt>
+<dd><p>Remove histone tail native pair potentials and corresponding exclusions from a single histone. 
+A native pair potential is removed if at least one atom involved is within histone tail. 
+The corresponding exclusions should also be removed if the native pair is removed.
+Also remove native pairs between atoms from different histones.</p>
+<section id="id105">
+<h3>Parameters<a class="headerlink" href="#id105" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>df_native_pairs<span class="classifier">pd.DataFrame</span></dt><dd><p>Native pair potential. This should only include histones. 
+Each histone includes 974 CA atoms, and there should be 974*n CG atoms in all (n is the number of histones).</p>
+</dd>
+<dt>df_exclusions<span class="classifier">pd.DataFrame</span></dt><dd><p>Nonbonded exclusions.</p>
+</dd>
+</dl>
+</section>
+<section id="id106">
+<h3>Returns<a class="headerlink" href="#id106" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>new_df_native_pairs<span class="classifier">pd.DataFrame</span></dt><dd><p>New native pair potential.</p>
+</dd>
+<dt>new_df_exclusions<span class="classifier">pd.DataFrame</span></dt><dd><p>New nonbonded exclusions.</p>
 </dd>
 </dl>
 </section>
