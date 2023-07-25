@@ -29,7 +29,7 @@ def harmonic_angle_term(df_angles, use_pbc, force_group=2):
     
     """
     angles = mm.HarmonicAngleForce()
-    for i, row in df_angles.iterrows():
+    for _, row in df_angles.iterrows():
         a1 = int(row['a1'])
         a2 = int(row['a2'])
         a3 = int(row['a3'])
@@ -67,7 +67,7 @@ def class2_angle_term(df_angles, use_pbc, force_group=2):
     angles.addPerAngleParameter('k_angle_2')
     angles.addPerAngleParameter('k_angle_3')
     angles.addPerAngleParameter('k_angle_4')
-    for i, row in df_angles.iterrows():
+    for _, row in df_angles.iterrows():
         a1 = int(row['a1'])
         a2 = int(row['a2'])
         a3 = int(row['a3'])

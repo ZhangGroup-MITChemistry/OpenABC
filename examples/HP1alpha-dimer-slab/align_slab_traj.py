@@ -1,7 +1,11 @@
 import numpy as np
 import pandas as pd
-import simtk.openmm as mm
-import simtk.unit as unit
+try:
+    import openmm as mm
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.unit as unit
 import mdtraj
 from mdtraj.formats import DCDTrajectoryFile
 from MDAnalysis.lib.nsgrid import FastNS

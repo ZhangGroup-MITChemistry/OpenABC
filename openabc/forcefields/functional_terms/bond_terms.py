@@ -32,7 +32,7 @@ def harmonic_bond_term(df_bonds, use_pbc, force_group=1):
     
     """
     bonds = mm.HarmonicBondForce()
-    for i, row in df_bonds.iterrows():
+    for _, row in df_bonds.iterrows():
         a1 = int(row['a1'])
         a2 = int(row['a2'])
         r0 = row['r0']
@@ -44,11 +44,11 @@ def harmonic_bond_term(df_bonds, use_pbc, force_group=1):
 
 
 def native_pair_gaussian_term(df_native_pairs, use_pbc, force_group=4):
-    '''
+    """
     Native pair term with Gaussian well. 
     
     Parameters epsilon_G, sigma_G, alpha_G all have _G to highlight these parameters are used in the native pair potential with Gaussian well. 
-    '''
+    """
     bonds = mm.CustomBondForce('''energy;
             energy=(-epsilon_G*G+alpha_G*(1-G)/r^12-offset)*step(cutoff-r);
             offset=-epsilon_G*exp(-18)+alpha_G*(1-exp(-18))/cutoff^12;
@@ -58,7 +58,7 @@ def native_pair_gaussian_term(df_native_pairs, use_pbc, force_group=4):
     bonds.addPerBondParameter('mu')
     bonds.addPerBondParameter('sigma_G')
     bonds.addPerBondParameter('alpha_G')
-    for i, row in df_native_pairs.iterrows():
+    for _, row in df_native_pairs.iterrows():
         a1 = int(row['a1'])
         a2 = int(row['a2'])
         epsilon_G = float(row['epsilon_G'])
@@ -96,7 +96,7 @@ def native_pair_12_10_term(df_native_pairs, use_pbc, force_group=4):
     bonds = mm.CustomBondForce('epsilon*(5*(mu/r)^12-6*(mu/r)^10)')
     bonds.addPerBondParameter('epsilon')
     bonds.addPerBondParameter('mu')
-    for i, row in df_native_pairs.iterrows():
+    for _, row in df_native_pairs.iterrows():
         a1 = int(row['a1'])
         a2 = int(row['a2'])
         epsilon = row['epsilon']
@@ -133,7 +133,7 @@ def class2_bond_term(df_bonds, use_pbc, force_group=1):
     bonds.addPerBondParameter('k_bond_2')
     bonds.addPerBondParameter('k_bond_3')
     bonds.addPerBondParameter('k_bond_4')
-    for i, row in df_bonds.iterrows():
+    for _, row in df_bonds.iterrows():
         a1 = int(row['a1'])
         a2 = int(row['a2'])
         parameters = row[['r0', 'k_bond_2', 'k_bond_3', 'k_bond_4']].tolist()
@@ -204,7 +204,7 @@ def ddd_dh_elec_switch_bond_term(df_bonds, use_pbc, salt_conc=150.0*unit.millimo
             dielectric={A}+{B}/(1+{kappa}*exp(-{zeta}*{B}*r));
             ''')
     bonds.addPerBondParameter('q1_times_q2')
-    for i, row in df_bonds.iterrows():
+    for _, row in df_bonds.iterrows():
         a1 = int(row['a1'])
         a2 = int(row['a2'])
         q1 = float(row['q1'])

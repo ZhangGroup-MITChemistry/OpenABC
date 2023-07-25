@@ -9,7 +9,7 @@ import os
 
 def periodic_dihedral_term(df_dihedrals, use_pbc, force_group=3):
     dihedrals = mm.PeriodicTorsionForce()
-    for i, row in df_dihedrals.iterrows():
+    for _, row in df_dihedrals.iterrows():
         a1 = int(row['a1'])
         a2 = int(row['a2'])
         a3 = int(row['a3'])
@@ -34,7 +34,7 @@ def dna_3spn2_dihedral_term(df_dihedrals, use_pbc, force_group=8):
     dihedrals.addPerTorsionParameter('sigma')
     dihedrals.addPerTorsionParameter('theta0')
     # add parameters
-    for i, row in df_dihedrals.iterrows():
+    for _, row in df_dihedrals.iterrows():
         parameters = [row['K_dihedral'], row['K_gaussian'], row['sigma'], row['theta0']]
         a1, a2, a3, a4 = int(row['a1']), int(row['a2']), int(row['a3']), int(row['a4'])
         particles = [a1, a2, a3, a4]

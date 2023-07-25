@@ -61,8 +61,10 @@ class TemperatureReplicaExchange(object):
         rank : int
             The index of the current replica. 
         
-        positions : np.ndarray, shape = (n_atoms, 3)
+        positions : np.ndarray, shape is (n_atoms, 3) or (n_replicas, n_atoms, 3)
             The initial coordinates. 
+            If shape is (n_atoms, 3), then each replica starts from the same initial coordinates. 
+            If shape is (n_replicas, n_atoms, 3), then the i-th replica starts from initial coordinate positions[i]. 
         
         top: OpenMM Topology
             The OpenMM topology. 
@@ -100,13 +102,19 @@ class TemperatureReplicaExchange(object):
             self.simulation = app.Simulation(self.top, self.system, self.integrator, platform, properties)
         else:
             self.simulation = app.Simulation(self.top, self.system, self.integrator, platform)
-        self.simulation.context.setPositions(positions)
+        assert positions.ndim in [2, 3]
+        if positions.ndim == 2:
+            self.simulation.context.setPositions(positions)
+        else:
+            self.simulation.context.setPositions(positions[self.rank])
         self.simulation.minimizeEnergy()
         self.simulation.context.setVelocitiesToTemperature(self.temperatures[self.rank])
     
-    def add_reporters(self, report_interval, report_state=True, report_dcd=True, output_dcd=None, use_pbc=True):
+    def add_reporters(self, report_interval, report_state=True, report_dcd=True, output_dcd=None):
         """
         Add reporters for OpenMM simulation.
+        
+        Whether to use PBC is read from self.system information. 
         
         Parameters
         ----------
@@ -122,11 +130,8 @@ class TemperatureReplicaExchange(object):
         output_dcd : str or None
             The output dcd file path. If None, then the output dcd file path is set as output.{self.rank}.dcd. 
         
-        use_pbc : bool or None
-            Whether to use periodic boundary condition (PBC) to translate atoms so the center of each molecule lies in the same PBC box.
-            If None, then determine according to if the simulation system uses PBC. 
-        
         """
+        use_pbc = self.system.usesPeriodicBoundaryConditions()
         if report_state:
             state_reporter = app.StateDataReporter(sys.stdout, report_interval, step=True, time=True, 
                                                    potentialEnergy=True, kineticEnergy=True, totalEnergy=True, 

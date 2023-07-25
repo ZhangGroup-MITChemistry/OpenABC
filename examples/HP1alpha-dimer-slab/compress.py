@@ -1,11 +1,15 @@
 import numpy as np
 import pandas as pd
+try:
+    import openmm as mm
+    import openmm.app as app
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+    import simtk.unit as unit
 import sys
 import os
-import argparse
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
 
 top = app.PDBFile('start.pdb').getTopology()
 init_coord = app.PDBFile('start.pdb').getPositions()

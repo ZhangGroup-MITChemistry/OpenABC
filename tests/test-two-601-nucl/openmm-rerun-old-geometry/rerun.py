@@ -2,18 +2,23 @@ import numpy as np
 import pandas as pd
 import sys
 import os
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm as mm
+    import openmm.app as app
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+    import simtk.unit as unit
 import mdtraj
 
 sys.path.append('../../..')
 
-from OpenSMOG3SPN2.forcefields.parsers import SMOGParser, DNA3SPN2Parser
-from OpenSMOG3SPN2.forcefields import SMOG3SPN2Model
-from OpenSMOG3SPN2.utils.helper_functions import get_WC_paired_seq
-from OpenSMOG3SPN2.utils.chromatin_helper_functions import remove_histone_tail_dihedrals, remove_histone_tail_native_pairs_and_exclusions
-from OpenSMOG3SPN2.utils.insert import insert_molecules
+from openabc.forcefields.parsers import SMOGParser, DNA3SPN2Parser
+from openabc.forcefields import SMOG3SPN2Model
+from openabc.utils.helper_functions import get_WC_paired_seq
+from openabc.utils.chromatin_helper_functions import remove_histone_tail_dihedrals, remove_histone_tail_native_pairs_and_exclusions
+from openabc.utils.insert import insert_molecules
 
 n_nucl = 2
 platform_name = sys.argv[1]

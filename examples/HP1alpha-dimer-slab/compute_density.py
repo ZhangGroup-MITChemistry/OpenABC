@@ -3,9 +3,12 @@ import mdtraj
 import sys
 import os
 import pandas as pd
-import simtk.unit as unit
-import simtk.openmm as mm
-import simtk.openmm.app as app
+try:
+    import openmm as mm
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.unit as unit
 
 COM_traj_npy = sys.argv[1]
 start_frame = int(sys.argv[2])

@@ -152,12 +152,12 @@ class CGModel(object):
             A list including attribute names that user intends to keep unchanged. 
         
         """
-        rigid_body_id_dict = {}
+        rigid_body_index_dict = {}
         for i in range(len(self.atoms.index)):
-            rigid_body_id_dict[i] = None
+            rigid_body_index_dict[i] = None
         for i in range(len(rigid_bodies)):
             for j in rigid_bodies[i]:
-                rigid_body_id_dict[j] = i
+                rigid_body_index_dict[j] = i
         for each_attr_name in self.bonded_attr_names:
             if hasattr(self, each_attr_name) and (each_attr_name not in keep_unchanged):
                 each_attr = getattr(self, each_attr_name)
@@ -168,10 +168,10 @@ class CGModel(object):
                         for each_col in ['a1', 'a2', 'a3', 'a4']:
                             if each_col in each_attr.columns:
                                 bonded_atoms.append(int(row[each_col]))
-                        bonded_atom_rigid_body_id = [rigid_body_id_dict[x] for x in bonded_atoms]
+                        bonded_atom_rigid_body_index = [rigid_body_index_dict[x] for x in bonded_atoms]
                         flag = True
-                        if bonded_atom_rigid_body_id[0] is not None:
-                            if all([x==bonded_atom_rigid_body_id[0] for x in bonded_atom_rigid_body_id]):
+                        if bonded_atom_rigid_body_index[0] is not None:
+                            if all([x==bonded_atom_rigid_body_index[0] for x in bonded_atom_rigid_body_index]):
                                 flag = False
                         if flag:
                             new_attr.loc[len(new_attr.index)] = row

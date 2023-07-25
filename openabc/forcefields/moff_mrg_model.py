@@ -41,7 +41,7 @@ class MOFFMRGModel(CGModel):
             force = functional_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
 
-    def add_protein_angles(self, threshold=130*np.pi/180, clip=False, force_group=2, verbose=False):
+    def add_protein_angles(self, threshold=130*np.pi/180, clip=False, force_group=2, verbose=True):
         """
         Add protein angles.
         
@@ -63,7 +63,7 @@ class MOFFMRGModel(CGModel):
             Force group. 
         
         verbose: bool
-            Whether to show warnings if theta0 is too large. 
+            Whether to show warnings if theta0 is larger than the threshold. 
         
         """
         if hasattr(self, 'protein_angles'):
@@ -73,7 +73,7 @@ class MOFFMRGModel(CGModel):
                 a2 = int(row['a2'])
                 a3 = int(row['a3'])
                 theta0 = float(row['theta0'])
-                if theta0 > threshold and verbose:
+                if (theta0 > threshold) and verbose:
                     warnings.warn(f'Warning: angle composed of atom ({a1}, {a2}, {a3}) has theta0 equal to {theta0}, which is larger than the threshold value equal to {threshold}!')
                     any_theta0_beyond_threshold = True
             if clip and any_theta0_beyond_threshold:

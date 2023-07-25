@@ -2,9 +2,14 @@ import numpy as np
 import pandas as pd
 import sys
 import os
-import simtk.openmm as mm
-import simtk.openmm.app as app
-import simtk.unit as unit
+try:
+    import openmm as mm
+    import openmm.app as app
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+    import simtk.unit as unit
 import mdtraj
 
 sys.path.append('../../..')

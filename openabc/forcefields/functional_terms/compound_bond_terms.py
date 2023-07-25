@@ -8,6 +8,9 @@ import sys
 import os
 
 def dna_3spn2_stacking_term(df_stackings, use_pbc, force_group=7):
+    """
+    DNA 3SPN2 stacking potential. 
+    """
     stackings = mm.CustomCompoundBondForce(3, f"""energy;
                 energy=rep+f2*attr;
                 rep=epsilon*(1-exp(-alpha*(dr)))^2*step(-dr);
@@ -24,7 +27,7 @@ def dna_3spn2_stacking_term(df_stackings, use_pbc, force_group=7):
     stackings.addPerBondParameter('alpha')
     stackings.addPerBondParameter('rng')
     # add parameters
-    for i, row in df_stackings.iterrows():
+    for _, row in df_stackings.iterrows():
         parameters = [row['epsilon'], row['sigma'], row['theta0'], row['alpha'], row['rng']]
         a1, a2, a3 = int(row['a1']), int(row['a2']), int(row['a3'])
         stackings.addBond([a1, a2, a3], parameters)

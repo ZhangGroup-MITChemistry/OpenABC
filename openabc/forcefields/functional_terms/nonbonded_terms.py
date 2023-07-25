@@ -43,7 +43,7 @@ def moff_mrg_contact_term(atom_types, df_exclusions, use_pbc, alpha_map, epsilon
     contacts.addPerParticleParameter('atom_type')
     for each in atom_types:
         contacts.addParticle([each])
-    for i, row in df_exclusions.iterrows():
+    for _, row in df_exclusions.iterrows():
         contacts.addExclusion(int(row['a1']), int(row['a2']))
     if use_pbc:
         contacts.setNonbondedMethod(contacts.CutoffPeriodic)
@@ -77,7 +77,7 @@ def ashbaugh_hatch_term(atom_types, df_exclusions, use_pbc, epsilon, sigma_ah_ma
     contacts.addPerParticleParameter('atom_type')
     for each in atom_types:
         contacts.addParticle([each])
-    for i, row in df_exclusions.iterrows():
+    for _, row in df_exclusions.iterrows():
         contacts.addExclusion(int(row['a1']), int(row['a2']))
     if use_pbc:
         contacts.setNonbondedMethod(contacts.CutoffPeriodic)
@@ -115,7 +115,7 @@ def ddd_dh_elec_term(charges, df_exclusions, use_pbc, salt_conc=150.0*unit.milli
     elec.addPerParticleParameter('q')
     for q in charges:
         elec.addParticle([q])
-    for i, row in df_exclusions.iterrows():
+    for _, row in df_exclusions.iterrows():
         elec.addExclusion(int(row['a1']), int(row['a2']))
     if use_pbc:
         elec.setNonbondedMethod(elec.CutoffPeriodic)
@@ -164,7 +164,7 @@ def ddd_dh_elec_switch_term(charges, df_exclusions, use_pbc, salt_conc=150.0*uni
     elec.addPerParticleParameter('q')
     for q in charges:
         elec.addParticle([q])
-    for i, row in df_exclusions.iterrows():
+    for _, row in df_exclusions.iterrows():
         elec.addExclusion(int(row['a1']), int(row['a2']))
     if use_pbc:
         elec.setNonbondedMethod(elec.CutoffPeriodic)
@@ -220,7 +220,7 @@ def dh_elec_term(charges, df_exclusions, use_pbc, ldby=1*unit.nanometer, dielect
     elec.addPerParticleParameter('q')
     for q in charges:
         elec.addParticle([q])
-    for i, row in df_exclusions.iterrows():
+    for _, row in df_exclusions.iterrows():
         elec.addExclusion(int(row['a1']), int(row['a2']))
     if use_pbc:
         elec.setNonbondedMethod(elec.CutoffPeriodic)
@@ -290,7 +290,7 @@ def wang_frenkel_term(atom_types, df_exclusions, use_pbc, epsilon_wf_map, sigma_
     contacts.addPerParticleParameter('atom_type')
     for each in atom_types:
         contacts.addParticle([each])
-    for i, row in df_exclusions.iterrows():
+    for _, row in df_exclusions.iterrows():
         contacts.addExclusion(int(row['a1']), int(row['a2']))
     if use_pbc:
         contacts.setNonbondedMethod(contacts.CutoffPeriodic)
@@ -302,13 +302,13 @@ def wang_frenkel_term(atom_types, df_exclusions, use_pbc, epsilon_wf_map, sigma_
     
 
 def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, force_group=11):
-    '''
+    """
     Combine all the SMOG (MJ potential for protein-protein nonbonded pairs) and 3SPN2 nonbonded interactions into one force.
     CG atom type 0-19 for amino acids.
     CG atom type 20-25 for DNA atoms. 
     Many parameters are saved as attributes of mol. 
         
-    '''
+    """
     vdwl = mm.CustomNonbondedForce('''energy;
            energy=4*epsilon*((sigma/r)^12-(sigma/r)^6-offset)*step(cutoff-r);
            offset=(sigma/cutoff)^12-(sigma/cutoff)^6;
@@ -381,17 +381,17 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
     vdwl.addTabulatedFunction('cutoff_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, cutoff_map))
     vdwl.addPerParticleParameter('atom_type')
     # add atom type
-    for i, row in mol.atoms.iterrows():
-        resname_i = row['resname']
-        name_i = row['name']
-        if (resname_i in _amino_acids) and (name_i == 'CA'):
-            vdwl.addParticle([_amino_acids.index(resname_i)])
-        elif (resname_i in _dna_nucleotides) and (name_i in _dna_3spn2_atom_names):
-            vdwl.addParticle([len(_amino_acids) + _dna_3spn2_atom_names.index(name_i)])
+    for _, row in mol.atoms.iterrows():
+        resname = row['resname']
+        name = row['name']
+        if (resname in _amino_acids) and (name == 'CA'):
+            vdwl.addParticle([_amino_acids.index(resname)])
+        elif (resname in _dna_nucleotides) and (name in _dna_3spn2_atom_names):
+            vdwl.addParticle([len(_amino_acids) + _dna_3spn2_atom_names.index(name)])
         else:
-            sys.exit(f'Cannot recognize atom with resname {resname_i} and name {name_i}.')
+            sys.exit(f'Cannot recognize atom with resname {resname} and name {name}.')
     # add exclusions
-    for i, row in mol.exclusions.iterrows():
+    for _, row in mol.exclusions.iterrows():
         vdwl.addExclusion(int(row['a1']), int(row['a2']))
     # set PBC, cutoff, and force group
     if mol.use_pbc:
@@ -406,7 +406,7 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
 def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300*unit.kelvin, 
                              elec_DD_charge_scale=0.6, cutoff_DD=5*unit.nanometer, 
                              cutoff_PP_PD=3.141504539*unit.nanometer, dielectric_PP_PD=78, force_group=12):
-    '''
+    """
     Combine all the SMOG and 3SPN2 electrostatic interactions into one force. 
     
     CG atom types: 
@@ -415,7 +415,7 @@ def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300
     Type 2 for ASP and GLU CA atoms. 
     Type 3 for phosphate CG atoms. 
 
-    '''
+    """
     C = salt_conc.value_in_unit(unit.molar)
     T = temperature.value_in_unit(unit.kelvin)
     print(f'For electrostatic interactions, set monovalent salt concentration as {1000*C} mM.')
@@ -469,19 +469,19 @@ def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300
     elec.addTabulatedFunction('cutoff_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, cutoff_map))
     elec.addPerParticleParameter('cg_atom_type')
     # add atom type
-    for i, row in mol.atoms.iterrows():
-        resname_i = row['resname']
-        name_i = row['name']
-        if (resname_i in ['ARG', 'LYS']) and (name_i == 'CA'):
+    for _, row in mol.atoms.iterrows():
+        resname = row['resname']
+        name = row['name']
+        if (resname in ['ARG', 'LYS']) and (name == 'CA'):
             elec.addParticle([1])
-        elif (resname_i in ['ASP', 'GLU']) and (name_i == 'CA'):
+        elif (resname in ['ASP', 'GLU']) and (name == 'CA'):
             elec.addParticle([2])
-        elif (resname_i in _dna_nucleotides) and (name_i == 'P'):
+        elif (resname in _dna_nucleotides) and (name == 'P'):
             elec.addParticle([3])
         else:
             elec.addParticle([0])
     # add exclusions
-    for i, row in mol.exclusions.iterrows():
+    for _, row in mol.exclusions.iterrows():
         elec.addExclusion(int(row['a1']), int(row['a2']))
     # set PBC, cutoff, and force group
     if mol.use_pbc:

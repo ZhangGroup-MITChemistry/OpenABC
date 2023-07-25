@@ -8,9 +8,9 @@ import sys
 import os
 
 def dna_3spn2_base_pair_term(use_pbc, cutoff=1.8, force_group=9):
-    '''
+    """
     Need to add donors, acceptors, and set exclusions after running this function. 
-    '''
+    """
     base_pairs = mm.CustomHbondForce(f'''energy;
                  energy=rep+1/2*(1+cos(dphi))*fdt1*fdt2*attr;
                  rep  = epsilon*(1-exp(-alpha*dr))^2*(1-step(dr));
@@ -40,14 +40,14 @@ def dna_3spn2_base_pair_term(use_pbc, cutoff=1.8, force_group=9):
 
 
 def dna_3spn2_cross_stacking_term(use_pbc, cutoff=1.8, force_group=10):
-    '''
+    """
     Need to add donors, acceptors, and set exclusions after running this function. 
     
     Some notes about the expression:
         t3 is the angle composed of vector d1-d2 and a1-a2. 
         In this version, each (atom1, atom2, atom3) group only act as either donor or acceptor. 
         
-    '''
+    """
     cross_stackings = mm.CustomHbondForce(f'''energy;
                                           energy=fdt3*(fdtCS1*attr1+fdtCS2*attr2)/2;
                                           attr1=epsilon1*(1-exp(-alpha1*dr1))^2*step(dr1)-epsilon1;
@@ -94,9 +94,9 @@ def dna_3spn2_cross_stacking_term(use_pbc, cutoff=1.8, force_group=10):
 
 
 def legacy_dna_3spn2_cross_stacking_term(use_pbc, cutoff=1.8, force_group=10):
-    '''
+    """
     Need to add donors, acceptors, and set exclusions after running this function.  
-    '''
+    """
     cross_stackings = mm.CustomHbondForce(f'''energy;
                       energy   = fdt3*fdtCS*attr/2;
                       attr     = epsilon*(1-exp(-alpha*dr))^2*step(dr)-epsilon;
