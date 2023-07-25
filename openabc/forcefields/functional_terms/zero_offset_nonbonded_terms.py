@@ -6,7 +6,7 @@ try:
 except:
     import simtk.openmm as mm
     import simtk.unit as unit
-from openabc.lib.physical_constants import NA, kB, EC, VEP
+from openabc.lib import NA, kB, EC, VEP
 import math
 import sys
 import os

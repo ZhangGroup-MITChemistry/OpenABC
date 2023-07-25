@@ -116,6 +116,10 @@ Update `openabc.utils.insert.insert_molecules`, MDAnalysis warnings will not app
 
 OpenMM of version < 7.6 and >= 7.6 are both supported. Mpipi force field is included. 
 
+### Version 1.0.5 
+
+SMOG+3SPN2 force fields are enabled. 
+
 
 ## Citations
 

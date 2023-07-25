@@ -1,0 +1,105 @@
+# For lammps simulation
+units               real
+atom_style          awsemmd
+boundary            p p p
+newton              on  #yes
+
+#   ---         Variables for debye huckel potential        ---     #
+#   parallel replica temperatures
+variable            T   equal   300     
+variable v1 equal random(1,1000,5753)
+variable            random      equal   round(v_v1)
+
+variable            salt        equal   150.0       # Salt concentration [mM]
+variable            ldby        equal   7.853761    # debye screen length, depend on both T and salt, determined from known formula given that dielec=78
+variable            ldbi        equal   1.0/v_ldby  # debye screen length
+variable            cut_coul    equal   v_ldby*4.0  # coulombic cutoff is four times the debye length. 
+                                                    # This is consistent with the DNA model
+variable            cut_lj      equal   15.0
+variable            cut_lj_pair equal   20.0
+variable            dielec      equal   78.0
+
+read_data           /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/data.prot_dna2 
+#read_dump           ../../DUMP_initial.dcd 0 x y z box no format molfile dcd /home/xclin/lib/vmd.old/plugins/LINUXAMD64/molfile
+
+variable            inputdir    string "/nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies"
+# Specify the different interaction styles
+bond_style          hybrid list ${inputdir}/dna_list_files_replica/in00_bond.list list/ca ${inputdir}/prot_list_files_replica/ca_bond_list.txt
+angle_style         hybrid stacking/3spn2   list    ${inputdir}/dna_list_files_replica/in00_angl.list list/ca ${inputdir}/prot_list_files_replica/ca_angle_list.txt
+dihedral_style      hybrid list ${inputdir}/dna_list_files_replica/in00_dihe.list list/ca ${inputdir}/prot_list_files_replica/ca_dihed_list.txt
+
+
+pair_style          hybrid/overlay 3spn2 bdna/curv ${T} ${salt} 18.0 50.0 list ${inputdir}/prot_list_files_replica/ca_pair_list.txt ${cut_lj_pair} nocheck lj/cut/coul/debye ${ldbi} 10.0 ${cut_coul}
+pair_coeff          * * list
+
+dielectric          ${dielec} 
+
+# read in pair interaction
+include           /nobackup1/binz/chromatin_fiber_CG/tetra/commons/post_processing/forcefield_pp_interaction/proteinDna_pairCoeff.in
+## shift the cutoff energy
+pair_modify         shift yes
+
+include           ${inputdir}/forcefield/bonded_ff.txt
+
+#   ---         group definitions       --- #
+#include             ${inputdir}/groupsDefinition/group_rigid_2nucl.txt
+#group nonRigidBody  subtract all nucl1 nucl2
+#group2ndx           groups.ndx  
+
+# ---     from AWSEM simulation   ---
+neighbor            5      bin 
+# exclude interactions
+#neigh_modify exclude group nucl1 nucl1 check no
+#neigh_modify exclude group nucl2 nucl2 check no
+neigh_modify        check  yes     one 5000    # this avoids the error "boost neigh_modify one"
+atom_modify         sort 0 0.0
+#special_bonds       fene
+special_bonds       lj 0.0 0.0 0.0
+#delete_bonds nucl1 multi remove
+#delete_bonds nucl2 multi remove
+
+# compute different components of DNA non-bonded energy
+# code from LAMMPS-3SPN2/GCGI/example/DNA_with_GCGI_ions.in
+compute edna all pair 3spn2
+variable ebp equal c_edna[1] # Base pairing energy
+variable ecstk equal c_edna[2] # Cross stacking energy
+variable eexcl equal c_edna[3] # Excluded volume energy
+variable dna_ecoul equal c_edna[4] # DNA coulombic energy
+variable nbp equal c_edna[5] # Number of base pairs
+
+compute e_bonds all bond
+compute e_angles all angle
+compute e_dihedrals all dihedral
+compute e_sbm_pair all pair list
+compute e_lj_debye all pair lj/cut/coul/debye
+compute e_lj_debye_vdwl all pair lj/cut/coul/debye evdwl
+compute e_lj_debye_coul all pair lj/cut/coul/debye ecoul
+
+variable e_all_coul equal "v_dna_ecoul+c_e_lj_debye_coul"
+variable e_all_vdwl equal "v_eexcl+c_e_lj_debye_vdwl"
+
+#####################################################
+#timestep            10.0
+thermo              1
+#thermo_style        multi
+thermo_style        custom step pe v_ebp v_ecstk v_eexcl v_dna_ecoul v_nbp c_e_bonds[*] c_e_angles[*] c_e_dihedrals[*] c_e_sbm_pair c_e_lj_debye c_e_lj_debye_vdwl c_e_lj_debye_coul v_e_all_vdwl v_e_all_coul
+
+#velocity            all create ${T} ${random} rot yes mom yes dist gaussian
+
+#minimize        1.0e-4 1.0e-6 100 1000
+reset_timestep 0
+
+#fix                 pl all plumed plumedfile plumed.txt outfile plumed.out
+
+#dump                1 all dcd 10000 DUMP_FILE.dcd
+#dump_modify         1 sort id
+
+#fix                 rigidBody core rigid/nvt group 2 nucl1 nucl2 temp ${T} ${T} 1000.0 
+#fix                 myfix nonRigidBody nvt temp ${T} ${T} 1000.0
+
+balance 1.1 shift xyz 10 1.0
+#run 100000
+
+rerun traj.dcd skip 1 dump x y z format molfile dcd /home/xclin/lib/vmd.old/plugins/LINUXAMD64/molfile
+
+

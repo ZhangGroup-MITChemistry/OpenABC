@@ -43,7 +43,7 @@ protein_dna.create_system(top, box_a=100, box_b=100, box_c=100)
 salt_conc = 82*unit.millimolar
 temperature = 300*unit.kelvin
 protein_dna.add_protein_bonds(force_group=1)
-protein_dna.add_protein_angles(force_group=2)
+protein_dna.add_protein_angles(force_group=2, verbose=False)
 protein_dna.add_protein_dihedrals(force_group=3)
 protein_dna.add_native_pairs(force_group=4)
 protein_dna.add_dna_bonds(force_group=5)

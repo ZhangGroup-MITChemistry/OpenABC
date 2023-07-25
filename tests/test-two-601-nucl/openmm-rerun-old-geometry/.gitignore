@@ -1,0 +1,12 @@
+Atomic*.pdb
+histone*CA.pdb
+cg_dna.pdb
+cg_chromatin.pdb
+*.csv
+*temp*
+ref_frames.dat
+system.xml
+run.slurm
+cg_nucl.pdb
+two_cg_nucl.pdb
+

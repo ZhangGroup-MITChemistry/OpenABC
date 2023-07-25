@@ -36,7 +36,7 @@ hp1alpha_dimer.create_system(top, box_a=200, box_b=200, box_c=200)
 salt_conc = 82*unit.millimolar
 temperature = 300*unit.kelvin
 hp1alpha_dimer.add_protein_bonds(force_group=1)
-hp1alpha_dimer.add_protein_angles(force_group=2)
+hp1alpha_dimer.add_protein_angles(force_group=2, verbose=False)
 hp1alpha_dimer.add_protein_dihedrals(force_group=3)
 hp1alpha_dimer.add_native_pairs(force_group=4)
 hp1alpha_dimer.add_contacts(force_group=5)

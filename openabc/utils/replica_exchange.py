@@ -8,7 +8,7 @@ except ImportError:
     import simtk.openmm as mm
     import simtk.openmm.app as app
     import simtk.unit as unit
-from openabc.lib.physical_constants import GAS_CONST
+from openabc.lib import GAS_CONST
 import sys
 import os
 try:

@@ -7,8 +7,7 @@ except ImportError:
 from openabc.forcefields.hps_model import HPSModel
 from openabc.forcefields.functional_terms.zero_offset_nonbonded_terms import ashbaugh_hatch_zero_offset_term
 from openabc.forcefields.functional_terms.zero_offset_nonbonded_terms import dh_elec_zero_offset_term
-from openabc.lib.protein_lib import _amino_acids
-from openabc.lib.unit_conversion import _kcal_to_kj
+from openabc.lib import _amino_acids, _kcal_to_kj
 import sys
 import os
 

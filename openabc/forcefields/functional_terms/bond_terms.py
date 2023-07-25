@@ -6,7 +6,7 @@ try:
 except ImportError:
     import simtk.openmm as mm
     import simtk.unit as unit
-from openabc.lib.physical_constants import NA, kB, EC, VEP
+from openabc.lib import NA, kB, EC, VEP
 import sys
 import os
 
@@ -38,6 +38,34 @@ def harmonic_bond_term(df_bonds, use_pbc, force_group=1):
         r0 = row['r0']
         k_bond = row['k_bond']
         bonds.addBond(a1, a2, r0, k_bond)
+    bonds.setUsesPeriodicBoundaryConditions(use_pbc)
+    bonds.setForceGroup(force_group)
+    return bonds
+
+
+def native_pair_gaussian_term(df_native_pairs, use_pbc, force_group=4):
+    '''
+    Native pair term with Gaussian well. 
+    
+    Parameters epsilon_G, sigma_G, alpha_G all have _G to highlight these parameters are used in the native pair potential with Gaussian well. 
+    '''
+    bonds = mm.CustomBondForce('''energy;
+            energy=(-epsilon_G*G+alpha_G*(1-G)/r^12-offset)*step(cutoff-r);
+            offset=-epsilon_G*exp(-18)+alpha_G*(1-exp(-18))/cutoff^12;
+            cutoff=mu+6*sigma_G;
+            G=exp(-(r-mu)^2/(2*sigma_G^2))''')
+    bonds.addPerBondParameter('epsilon_G')
+    bonds.addPerBondParameter('mu')
+    bonds.addPerBondParameter('sigma_G')
+    bonds.addPerBondParameter('alpha_G')
+    for i, row in df_native_pairs.iterrows():
+        a1 = int(row['a1'])
+        a2 = int(row['a2'])
+        epsilon_G = float(row['epsilon_G'])
+        mu = float(row['mu'])
+        sigma_G = float(row['sigma_G'])
+        alpha_G = float(row['alpha_G'])
+        bonds.addBond(a1, a2, [epsilon_G, mu, sigma_G, alpha_G])
     bonds.setUsesPeriodicBoundaryConditions(use_pbc)
     bonds.setForceGroup(force_group)
     return bonds

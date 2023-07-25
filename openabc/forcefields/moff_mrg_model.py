@@ -6,8 +6,8 @@ except ImportError:
     import simtk.unit as unit
 from openabc.forcefields.cg_model import CGModel
 from openabc.forcefields import functional_terms
-from openabc.lib.protein_lib import _amino_acids
-from openabc.lib.dna_lib import _dna_nucleotides
+from openabc.lib import _amino_acids, _dna_nucleotides
+import warnings
 import sys
 import os
 
@@ -41,11 +41,11 @@ class MOFFMRGModel(CGModel):
             force = functional_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
 
-    def add_protein_angles(self, threshold=130*np.pi/180, clip=False, force_group=2):
+    def add_protein_angles(self, threshold=130*np.pi/180, clip=False, force_group=2, verbose=False):
         """
         Add protein angles.
         
-        Note that the angle potential is a harmonic angle potential, which may lead to unstable simulation if harmonic potential center is too large.
+        Note that the angle potential is a harmonic angle potential, which may lead to unstable simulation if harmonic potential center theta0 is too large.
         
         Based on some tests, theta0 <= 130 degrees (130*np.pi/180 radians) can facilitate 10 fs timestep. 
         
@@ -62,6 +62,9 @@ class MOFFMRGModel(CGModel):
         force_group : int
             Force group. 
         
+        verbose: bool
+            Whether to show warnings if theta0 is too large. 
+        
         """
         if hasattr(self, 'protein_angles'):
             any_theta0_beyond_threshold = False
@@ -70,8 +73,8 @@ class MOFFMRGModel(CGModel):
                 a2 = int(row['a2'])
                 a3 = int(row['a3'])
                 theta0 = float(row['theta0'])
-                if theta0 > threshold:
-                    print(f'Warning: angle composed of atom ({a1}, {a2}, {a3}) has theta0 equal to {theta0}, which is larger than the threshold value equal to {threshold}!')
+                if theta0 > threshold and verbose:
+                    warnings.warn(f'Warning: angle composed of atom ({a1}, {a2}, {a3}) has theta0 equal to {theta0}, which is larger than the threshold value equal to {threshold}!')
                     any_theta0_beyond_threshold = True
             if clip and any_theta0_beyond_threshold:
                 print(f'Decrease all the theta0 values larger than {threshold} to {threshold}.')

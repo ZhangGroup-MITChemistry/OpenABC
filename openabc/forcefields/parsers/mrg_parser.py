@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 from openabc.utils import helper_functions
-from openabc.lib.dna_lib import _dna_nucleotides
-from openabc.lib.unit_conversion import _kcal_to_kj, _deg_to_rad
+from openabc.lib import _dna_nucleotides, _kcal_to_kj, _deg_to_rad
 import sys
 import os
 

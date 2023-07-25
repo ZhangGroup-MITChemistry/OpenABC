@@ -3,7 +3,7 @@ import pandas as pd
 import mdtraj
 from openabc.utils import helper_functions
 from openabc.utils.shadow_map import find_ca_pairs_from_atomistic_pdb
-from openabc.lib.protein_lib import _amino_acids
+from openabc.lib import _amino_acids
 import sys
 import os
 

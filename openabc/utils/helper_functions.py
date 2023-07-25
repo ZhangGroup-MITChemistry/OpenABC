@@ -1,11 +1,15 @@
 import numpy as np
 import pandas as pd
-import mdtraj
+import pdbfixer
+try:
+    import openmm.unit as unit
+except ImportError:
+    import simtk.unit as unit
 import sys
 import os
-from openabc.lib.protein_lib import _amino_acids, _amino_acid_1_letter_to_3_letters_dict
-from openabc.lib.dna_lib import _dna_nucleotides
-from openabc.lib.rna_lib import _rna_nucleotides
+from openabc.lib import (_amino_acids, _amino_acid_1_letter_to_3_letters_dict, 
+                         _dna_nucleotides, _dna_WC_pair_dict, 
+                         _rna_nucleotides)
 
 """
 Some code is adapted from Open3SPN2. 
@@ -363,4 +367,76 @@ def compute_rg(coord, mass):
     rg = rg_square**0.5
     return rg
 
+
+def fix_pdb(pdb_file):
+    """
+    Fix pdb file with pdbfixer. The fixed structure is output as pandas dataframe. 
+    This function is adapted from open3SPN2.
+    
+    Parameters
+    ----------
+    pdb_file : str
+        PDB file path. 
+    
+    Returns
+    -------
+    atoms : pd.DataFrame
+        Output fixed structure. 
+
+    """
+    fixer = pdbfixer.PDBFixer(filename=pdb_file)
+    fixer.findMissingResidues()
+    chains = list(fixer.topology.chains())
+    keys = fixer.missingResidues.keys()
+    for key in list(keys):
+        chain_tmp = chains[key[0]]
+        if key[1] in [0, len(list(chain_tmp.residues()))]:
+            del fixer.missingResidues[key]
+
+    fixer.findNonstandardResidues()
+    fixer.replaceNonstandardResidues()
+    fixer.removeHeterogens(keepWater=False)
+    fixer.findMissingAtoms()
+    fixer.addMissingAtoms()
+    fixer.addMissingHydrogens(7.0)
+    
+    columns = ['recname', 'serial', 'name', 'altLoc',
+               'resname', 'chainID', 'resSeq', 'iCode',
+               'x', 'y', 'z', 'occupancy', 'tempFactor',
+               'element', 'charge']
+    data = []
+    for atom, pos in zip(fixer.topology.atoms(), fixer.positions):
+        residue = atom.residue
+        chain = residue.chain
+        pos = pos.value_in_unit(unit.angstrom)
+        data += [dict(zip(columns, ['ATOM', int(atom.id), atom.name, '',
+                                    residue.name, chain.id, int(residue.id), '',
+                                    pos[0], pos[1], pos[2], 0, 0,
+                                    atom.element.symbol, '']))]
+    atoms = pd.DataFrame(data)
+    atoms = atoms[columns]
+    atoms.index = atoms['serial']
+    return atoms
+
+
+def get_WC_paired_seq(sequence):
+    """
+    Get WC-paired sequence. 
+    
+    Parameters
+    ----------
+    sequence : str
+        Input sequence. 
+        
+    Returns
+    -------
+    paired_sequence : str
+        W-C paired sequence. 
+    
+    """
+    paired_sequence = ''
+    for i in range(len(sequence)):
+        paired_sequence += _dna_WC_pair_dict[sequence[i]]
+    paired_sequence = paired_sequence[::-1]
+    return paired_sequence
     

@@ -5,10 +5,7 @@ try:
 except ImportError:
     import simtk.unit as unit
 from openabc.forcefields.mpipi_model import MpipiModel
-from openabc.forcefields import functional_terms
 from openabc.forcefields.functional_terms.zero_offset_nonbonded_terms import dh_elec_zero_offset_term
-from openabc.lib.protein_lib import _amino_acids
-from openabc.lib.rna_lib import _rna_nucleotides
 import sys
 import os
 

@@ -1,0 +1,820 @@
+LAMMPS (5 Nov 2016)
+Processor partition = 0
+# For lammps simulation
+units               real
+atom_style          awsemmd
+boundary            p p p
+newton              on  #yes
+
+#   ---         Variables for debye huckel potential        ---     #
+#   parallel replica temperatures
+variable            T   equal   300
+variable v1 equal random(1,1000,5753)
+variable            random      equal   round(v_v1)
+
+variable            salt        equal   150.0       # Salt concentration [mM]
+variable            ldby        equal   7.853761    # debye screen length, depend on both T and salt, determined from known formula given that dielec=78
+variable            ldbi        equal   1.0/v_ldby  # debye screen length
+variable            cut_coul    equal   v_ldby*4.0  # coulombic cutoff is four times the debye length.
+                                                    # This is consistent with the DNA model
+variable            cut_lj      equal   15.0
+variable            cut_lj_pair equal   20.0
+variable            dielec      equal   78.0
+
+read_data           /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/data.prot_dna2
+  orthogonal box = (-1000 -1000 -1000) to (1000 1000 1000)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  3708 atoms
+  scanning bonds ...
+  2 = max bonds/atom
+  scanning angles ...
+  3 = max angles/atom
+  scanning dihedrals ...
+  2 = max dihedrals/atom
+  reading bonds ...
+  3688 bonds
+  reading angles ...
+  4832 angles
+  reading dihedrals ...
+  3688 dihedrals
+  3 = max # of 1-2 neighbors
+  4 = max # of 1-3 neighbors
+  6 = max # of 1-4 neighbors
+  9 = max # of special neighbors
+#read_dump           ../../DUMP_initial.dcd 0 x y z box no format molfile dcd /home/xclin/lib/vmd.old/plugins/LINUXAMD64/molfile
+
+variable            inputdir    string "/nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies"
+# Specify the different interaction styles
+bond_style          hybrid list ${inputdir}/dna_list_files_replica/in00_bond.list list/ca ${inputdir}/prot_list_files_replica/ca_bond_list.txt
+bond_style          hybrid list /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/dna_list_files_replica/in00_bond.list list/ca ${inputdir}/prot_list_files_replica/ca_bond_list.txt
+bond_style          hybrid list /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/dna_list_files_replica/in00_bond.list list/ca /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/prot_list_files_replica/ca_bond_list.txt
+angle_style         hybrid stacking/3spn2   list    ${inputdir}/dna_list_files_replica/in00_angl.list list/ca ${inputdir}/prot_list_files_replica/ca_angle_list.txt
+angle_style         hybrid stacking/3spn2   list    /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/dna_list_files_replica/in00_angl.list list/ca ${inputdir}/prot_list_files_replica/ca_angle_list.txt
+angle_style         hybrid stacking/3spn2   list    /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/dna_list_files_replica/in00_angl.list list/ca /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/prot_list_files_replica/ca_angle_list.txt
+dihedral_style      hybrid list ${inputdir}/dna_list_files_replica/in00_dihe.list list/ca ${inputdir}/prot_list_files_replica/ca_dihed_list.txt
+dihedral_style      hybrid list /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/dna_list_files_replica/in00_dihe.list list/ca ${inputdir}/prot_list_files_replica/ca_dihed_list.txt
+dihedral_style      hybrid list /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/dna_list_files_replica/in00_dihe.list list/ca /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/prot_list_files_replica/ca_dihed_list.txt
+
+
+pair_style          hybrid/overlay 3spn2 bdna/curv ${T} ${salt} 18.0 50.0 list ${inputdir}/prot_list_files_replica/ca_pair_list.txt ${cut_lj_pair} nocheck lj/cut/coul/debye ${ldbi} 10.0 ${cut_coul}
+pair_style          hybrid/overlay 3spn2 bdna/curv 300 ${salt} 18.0 50.0 list ${inputdir}/prot_list_files_replica/ca_pair_list.txt ${cut_lj_pair} nocheck lj/cut/coul/debye ${ldbi} 10.0 ${cut_coul}
+pair_style          hybrid/overlay 3spn2 bdna/curv 300 150 18.0 50.0 list ${inputdir}/prot_list_files_replica/ca_pair_list.txt ${cut_lj_pair} nocheck lj/cut/coul/debye ${ldbi} 10.0 ${cut_coul}
+pair_style          hybrid/overlay 3spn2 bdna/curv 300 150 18.0 50.0 list /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/prot_list_files_replica/ca_pair_list.txt ${cut_lj_pair} nocheck lj/cut/coul/debye ${ldbi} 10.0 ${cut_coul}
+pair_style          hybrid/overlay 3spn2 bdna/curv 300 150 18.0 50.0 list /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/prot_list_files_replica/ca_pair_list.txt 20 nocheck lj/cut/coul/debye ${ldbi} 10.0 ${cut_coul}
+pair_style          hybrid/overlay 3spn2 bdna/curv 300 150 18.0 50.0 list /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/prot_list_files_replica/ca_pair_list.txt 20 nocheck lj/cut/coul/debye 0.127327531357269 10.0 ${cut_coul}
+pair_style          hybrid/overlay 3spn2 bdna/curv 300 150 18.0 50.0 list /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/prot_list_files_replica/ca_pair_list.txt 20 nocheck lj/cut/coul/debye 0.127327531357269 10.0 31.415044
+Read 4694 (0/0/0/4694) interacting pairs from /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/prot_list_files_replica/ca_pair_list.txt
+pair_coeff          * * list
+
+dielectric          ${dielec}
+dielectric          78
+
+# read in pair interaction
+include           /nobackup1/binz/chromatin_fiber_CG/tetra/commons/post_processing/forcefield_pp_interaction/proteinDna_pairCoeff.in
+
+# dna pair-wise interaction
+pair_coeff      1      1 3spn2      0.23900600      4.50000000
+pair_coeff      1      2 3spn2      0.23900600      5.35000000
+pair_coeff      1      3 3spn2      0.23900600      4.95000000
+pair_coeff      1      4 3spn2      0.23900600      5.80000000
+pair_coeff      1      5 3spn2      0.23900600      4.70000000
+pair_coeff      1      6 3spn2      0.23900600      5.45000000
+pair_coeff      1      7 3spn2      0.23900600      4.95000000
+pair_coeff      1      8 3spn2      0.23900600      5.80000000
+pair_coeff      1      9 3spn2      0.23900600      4.70000000
+pair_coeff      1     10 3spn2      0.23900600      5.45000000
+pair_coeff      1     11 3spn2      0.23900600      4.95000000
+pair_coeff      1     12 3spn2      0.23900600      5.80000000
+pair_coeff      1     13 3spn2      0.23900600      4.70000000
+pair_coeff      1     14 3spn2      0.23900600      5.45000000
+pair_coeff      2      2 3spn2      0.23900600      6.20000000
+pair_coeff      2      3 3spn2      0.23900600      5.80000000
+pair_coeff      2      4 3spn2      0.23900600      6.65000000
+pair_coeff      2      5 3spn2      0.23900600      5.55000000
+pair_coeff      2      6 3spn2      0.23900600      6.30000000
+pair_coeff      2      7 3spn2      0.23900600      5.80000000
+pair_coeff      2      8 3spn2      0.23900600      6.65000000
+pair_coeff      2      9 3spn2      0.23900600      5.55000000
+pair_coeff      2     10 3spn2      0.23900600      6.30000000
+pair_coeff      2     11 3spn2      0.23900600      5.80000000
+pair_coeff      2     12 3spn2      0.23900600      6.65000000
+pair_coeff      2     13 3spn2      0.23900600      5.55000000
+pair_coeff      2     14 3spn2      0.23900600      6.30000000
+pair_coeff      3      3 3spn2      0.23900600      5.40000000
+pair_coeff      3      4 3spn2      0.23900600      6.25000000
+pair_coeff      3      5 3spn2      0.23900600      5.15000000
+pair_coeff      3      6 3spn2      0.23900600      5.90000000
+pair_coeff      3      7 3spn2      0.23900600      5.40000000
+pair_coeff      3      8 3spn2      0.23900600      6.25000000
+pair_coeff      3      9 3spn2      0.23900600      5.15000000
+pair_coeff      3     10 3spn2      0.23900600      5.90000000
+pair_coeff      3     11 3spn2      0.23900600      5.40000000
+pair_coeff      3     12 3spn2      0.23900600      6.25000000
+pair_coeff      3     13 3spn2      0.23900600      5.15000000
+pair_coeff      3     14 3spn2      0.23900600      5.90000000
+pair_coeff      4      4 3spn2      0.23900600      7.10000000
+pair_coeff      4      5 3spn2      0.23900600      6.00000000
+pair_coeff      4      6 3spn2      0.23900600      6.75000000
+pair_coeff      4      7 3spn2      0.23900600      6.25000000
+pair_coeff      4      8 3spn2      0.23900600      7.10000000
+pair_coeff      4      9 3spn2      0.23900600      6.00000000
+pair_coeff      4     10 3spn2      0.23900600      6.75000000
+pair_coeff      4     11 3spn2      0.23900600      6.25000000
+pair_coeff      4     12 3spn2      0.23900600      7.10000000
+pair_coeff      4     13 3spn2      0.23900600      6.00000000
+pair_coeff      4     14 3spn2      0.23900600      6.75000000
+pair_coeff      5      5 3spn2      0.23900600      4.90000000
+pair_coeff      5      6 3spn2      0.23900600      5.65000000
+pair_coeff      5      7 3spn2      0.23900600      5.15000000
+pair_coeff      5      8 3spn2      0.23900600      6.00000000
+pair_coeff      5      9 3spn2      0.23900600      4.90000000
+pair_coeff      5     10 3spn2      0.23900600      5.65000000
+pair_coeff      5     11 3spn2      0.23900600      5.15000000
+pair_coeff      5     12 3spn2      0.23900600      6.00000000
+pair_coeff      5     13 3spn2      0.23900600      4.90000000
+pair_coeff      5     14 3spn2      0.23900600      5.65000000
+pair_coeff      6      6 3spn2      0.23900600      6.40000000
+pair_coeff      6      7 3spn2      0.23900600      5.90000000
+pair_coeff      6      8 3spn2      0.23900600      6.75000000
+pair_coeff      6      9 3spn2      0.23900600      5.65000000
+pair_coeff      6     10 3spn2      0.23900600      6.40000000
+pair_coeff      6     11 3spn2      0.23900600      5.90000000
+pair_coeff      6     12 3spn2      0.23900600      6.75000000
+pair_coeff      6     13 3spn2      0.23900600      5.65000000
+pair_coeff      6     14 3spn2      0.23900600      6.40000000
+pair_coeff      7      7 3spn2      0.23900600      5.40000000
+pair_coeff      7      8 3spn2      0.23900600      6.25000000
+pair_coeff      7      9 3spn2      0.23900600      5.15000000
+pair_coeff      7     10 3spn2      0.23900600      5.90000000
+pair_coeff      7     11 3spn2      0.23900600      5.40000000
+pair_coeff      7     12 3spn2      0.23900600      6.25000000
+pair_coeff      7     13 3spn2      0.23900600      5.15000000
+pair_coeff      7     14 3spn2      0.23900600      5.90000000
+pair_coeff      8      8 3spn2      0.23900600      7.10000000
+pair_coeff      8      9 3spn2      0.23900600      6.00000000
+pair_coeff      8     10 3spn2      0.23900600      6.75000000
+pair_coeff      8     11 3spn2      0.23900600      6.25000000
+pair_coeff      8     12 3spn2      0.23900600      7.10000000
+pair_coeff      8     13 3spn2      0.23900600      6.00000000
+pair_coeff      8     14 3spn2      0.23900600      6.75000000
+pair_coeff      9      9 3spn2      0.23900600      4.90000000
+pair_coeff      9     10 3spn2      0.23900600      5.65000000
+pair_coeff      9     11 3spn2      0.23900600      5.15000000
+pair_coeff      9     12 3spn2      0.23900600      6.00000000
+pair_coeff      9     13 3spn2      0.23900600      4.90000000
+pair_coeff      9     14 3spn2      0.23900600      5.65000000
+pair_coeff     10     10 3spn2      0.23900600      6.40000000
+pair_coeff     10     11 3spn2      0.23900600      5.90000000
+pair_coeff     10     12 3spn2      0.23900600      6.75000000
+pair_coeff     10     13 3spn2      0.23900600      5.65000000
+pair_coeff     10     14 3spn2      0.23900600      6.40000000
+pair_coeff     11     11 3spn2      0.23900600      5.40000000
+pair_coeff     11     12 3spn2      0.23900600      6.25000000
+pair_coeff     11     13 3spn2      0.23900600      5.15000000
+pair_coeff     11     14 3spn2      0.23900600      5.90000000
+pair_coeff     12     12 3spn2      0.23900600      7.10000000
+pair_coeff     12     13 3spn2      0.23900600      6.00000000
+pair_coeff     12     14 3spn2      0.23900600      6.75000000
+pair_coeff     13     13 3spn2      0.23900600      4.90000000
+pair_coeff     13     14 3spn2      0.23900600      5.65000000
+pair_coeff     14     14 3spn2      0.23900600      6.40000000
+
+# protein dna pair-wise interaction
+pair_coeff      1     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      1     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      2     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      3     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      4     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      5     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      6     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      7     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      8     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff      9     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     10     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     11     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     12     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     13     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     15 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     16 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     17 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     18 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     19 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     20 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     21 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     22 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     23 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     24 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     25 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     26 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     27 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     28 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     29 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     30 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     31 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     32 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     33 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+pair_coeff     14     34 lj/cut/coul/debye      0.02987572      5.70000000     14.25000000     31.41504539
+# protein protein pair-wise interaction
+pair_coeff     15     15 lj/cut/coul/debye      0.10425138      5.00000000     12.50000000     31.41504539
+pair_coeff     15     16 lj/cut/coul/debye      0.07013971      5.00000000     12.50000000     31.41504539
+pair_coeff     15     17 lj/cut/coul/debye      0.07052299      5.00000000     12.50000000     31.41504539
+pair_coeff     15     18 lj/cut/coul/debye      0.06515711      5.00000000     12.50000000     31.41504539
+pair_coeff     15     19 lj/cut/coul/debye      0.13682993      5.00000000     12.50000000     31.41504539
+pair_coeff     15     20 lj/cut/coul/debye      0.05787485      5.00000000     12.50000000     31.41504539
+pair_coeff     15     21 lj/cut/coul/debye      0.07243938      5.00000000     12.50000000     31.41504539
+pair_coeff     15     22 lj/cut/coul/debye      0.08853702      5.00000000     12.50000000     31.41504539
+pair_coeff     15     23 lj/cut/coul/debye      0.09236979      5.00000000     12.50000000     31.41504539
+pair_coeff     15     24 lj/cut/coul/debye      0.17554092      5.00000000     12.50000000     31.41504539
+pair_coeff     15     25 lj/cut/coul/debye      0.18818907      5.00000000     12.50000000     31.41504539
+pair_coeff     15     26 lj/cut/coul/debye      0.05020930      5.00000000     12.50000000     31.41504539
+pair_coeff     15     27 lj/cut/coul/debye      0.15101119      5.00000000     12.50000000     31.41504539
+pair_coeff     15     28 lj/cut/coul/debye      0.18435630      5.00000000     12.50000000     31.41504539
+pair_coeff     15     29 lj/cut/coul/debye      0.07780526      5.00000000     12.50000000     31.41504539
+pair_coeff     15     30 lj/cut/coul/debye      0.07703870      5.00000000     12.50000000     31.41504539
+pair_coeff     15     31 lj/cut/coul/debye      0.08892029      5.00000000     12.50000000     31.41504539
+pair_coeff     15     32 lj/cut/coul/debye      0.14641186      5.00000000     12.50000000     31.41504539
+pair_coeff     15     33 lj/cut/coul/debye      0.12878111      5.00000000     12.50000000     31.41504539
+pair_coeff     15     34 lj/cut/coul/debye      0.15484396      5.00000000     12.50000000     31.41504539
+pair_coeff     16     16 lj/cut/coul/debye      0.05940795      5.00000000     12.50000000     31.41504539
+pair_coeff     16     17 lj/cut/coul/debye      0.06285745      5.00000000     12.50000000     31.41504539
+pair_coeff     16     18 lj/cut/coul/debye      0.08777046      5.00000000     12.50000000     31.41504539
+pair_coeff     16     19 lj/cut/coul/debye      0.09850222      5.00000000     12.50000000     31.41504539
+pair_coeff     16     20 lj/cut/coul/debye      0.08700391      5.00000000     12.50000000     31.41504539
+pair_coeff     16     21 lj/cut/coul/debye      0.06898988      5.00000000     12.50000000     31.41504539
+pair_coeff     16     22 lj/cut/coul/debye      0.06592367      5.00000000     12.50000000     31.41504539
+pair_coeff     16     23 lj/cut/coul/debye      0.08278786      5.00000000     12.50000000     31.41504539
+pair_coeff     16     24 lj/cut/coul/debye      0.13912960      5.00000000     12.50000000     31.41504539
+pair_coeff     16     25 lj/cut/coul/debye      0.15446068      5.00000000     12.50000000     31.41504539
+pair_coeff     16     26 lj/cut/coul/debye      0.02261335      5.00000000     12.50000000     31.41504539
+pair_coeff     16     27 lj/cut/coul/debye      0.11958246      5.00000000     12.50000000     31.41504539
+pair_coeff     16     28 lj/cut/coul/debye      0.15254430      5.00000000     12.50000000     31.41504539
+pair_coeff     16     29 lj/cut/coul/debye      0.06515711      5.00000000     12.50000000     31.41504539
+pair_coeff     16     30 lj/cut/coul/debye      0.06209089      5.00000000     12.50000000     31.41504539
+pair_coeff     16     31 lj/cut/coul/debye      0.07282265      5.00000000     12.50000000     31.41504539
+pair_coeff     16     32 lj/cut/coul/debye      0.13069750      5.00000000     12.50000000     31.41504539
+pair_coeff     16     33 lj/cut/coul/debye      0.12111557      5.00000000     12.50000000     31.41504539
+pair_coeff     16     34 lj/cut/coul/debye      0.11766608      5.00000000     12.50000000     31.41504539
+pair_coeff     17     17 lj/cut/coul/debye      0.06439056      5.00000000     12.50000000     31.41504539
+pair_coeff     17     18 lj/cut/coul/debye      0.06439056      5.00000000     12.50000000     31.41504539
+pair_coeff     17     19 lj/cut/coul/debye      0.09926878      5.00000000     12.50000000     31.41504539
+pair_coeff     17     20 lj/cut/coul/debye      0.05787485      5.00000000     12.50000000     31.41504539
+pair_coeff     17     21 lj/cut/coul/debye      0.06554039      5.00000000     12.50000000     31.41504539
+pair_coeff     17     22 lj/cut/coul/debye      0.06669022      5.00000000     12.50000000     31.41504539
+pair_coeff     17     23 lj/cut/coul/debye      0.07972164      5.00000000     12.50000000     31.41504539
+pair_coeff     17     24 lj/cut/coul/debye      0.12418179      5.00000000     12.50000000     31.41504539
+pair_coeff     17     25 lj/cut/coul/debye      0.14334565      5.00000000     12.50000000     31.41504539
+pair_coeff     17     26 lj/cut/coul/debye      0.04637653      5.00000000     12.50000000     31.41504539
+pair_coeff     17     27 lj/cut/coul/debye      0.11306675      5.00000000     12.50000000     31.41504539
+pair_coeff     17     28 lj/cut/coul/debye      0.14372892      5.00000000     12.50000000     31.41504539
+pair_coeff     17     29 lj/cut/coul/debye      0.05864140      5.00000000     12.50000000     31.41504539
+pair_coeff     17     30 lj/cut/coul/debye      0.06055779      5.00000000     12.50000000     31.41504539
+pair_coeff     17     31 lj/cut/coul/debye      0.07205610      5.00000000     12.50000000     31.41504539
+pair_coeff     17     32 lj/cut/coul/debye      0.11766608      5.00000000     12.50000000     31.41504539
+pair_coeff     17     33 lj/cut/coul/debye      0.10578449      5.00000000     12.50000000     31.41504539
+pair_coeff     17     34 lj/cut/coul/debye      0.10846743      5.00000000     12.50000000     31.41504539
+pair_coeff     18     18 lj/cut/coul/debye      0.04637653      5.00000000     12.50000000     31.41504539
+pair_coeff     18     19 lj/cut/coul/debye      0.09236979      5.00000000     12.50000000     31.41504539
+pair_coeff     18     20 lj/cut/coul/debye      0.03909427      5.00000000     12.50000000     31.41504539
+pair_coeff     18     21 lj/cut/coul/debye      0.05595846      5.00000000     12.50000000     31.41504539
+pair_coeff     18     22 lj/cut/coul/debye      0.06094106      5.00000000     12.50000000     31.41504539
+pair_coeff     18     23 lj/cut/coul/debye      0.08892029      5.00000000     12.50000000     31.41504539
+pair_coeff     18     24 lj/cut/coul/debye      0.12149885      5.00000000     12.50000000     31.41504539
+pair_coeff     18     25 lj/cut/coul/debye      0.13031422      5.00000000     12.50000000     31.41504539
+pair_coeff     18     26 lj/cut/coul/debye      0.06439056      5.00000000     12.50000000     31.41504539
+pair_coeff     18     27 lj/cut/coul/debye      0.09850222      5.00000000     12.50000000     31.41504539
+pair_coeff     18     28 lj/cut/coul/debye      0.13338044      5.00000000     12.50000000     31.41504539
+pair_coeff     18     29 lj/cut/coul/debye      0.05097586      5.00000000     12.50000000     31.41504539
+pair_coeff     18     30 lj/cut/coul/debye      0.06247417      5.00000000     12.50000000     31.41504539
+pair_coeff     18     31 lj/cut/coul/debye      0.06898988      5.00000000     12.50000000     31.41504539
+pair_coeff     18     32 lj/cut/coul/debye      0.10885070      5.00000000     12.50000000     31.41504539
+pair_coeff     18     33 lj/cut/coul/debye      0.10578449      5.00000000     12.50000000     31.41504539
+pair_coeff     18     34 lj/cut/coul/debye      0.09505273      5.00000000     12.50000000     31.41504539
+pair_coeff     19     19 lj/cut/coul/debye      0.20850276      5.00000000     12.50000000     31.41504539
+pair_coeff     19     20 lj/cut/coul/debye      0.08700391      5.00000000     12.50000000     31.41504539
+pair_coeff     19     21 lj/cut/coul/debye      0.10923398      5.00000000     12.50000000     31.41504539
+pair_coeff     19     22 lj/cut/coul/debye      0.12111557      5.00000000     12.50000000     31.41504539
+pair_coeff     19     23 lj/cut/coul/debye      0.13797977      5.00000000     12.50000000     31.41504539
+pair_coeff     19     24 lj/cut/coul/debye      0.21080242      5.00000000     12.50000000     31.41504539
+pair_coeff     19     25 lj/cut/coul/debye      0.22345057      5.00000000     12.50000000     31.41504539
+pair_coeff     19     26 lj/cut/coul/debye      0.07473904      5.00000000     12.50000000     31.41504539
+pair_coeff     19     27 lj/cut/coul/debye      0.19125529      5.00000000     12.50000000     31.41504539
+pair_coeff     19     28 lj/cut/coul/debye      0.22230073      5.00000000     12.50000000     31.41504539
+pair_coeff     19     29 lj/cut/coul/debye      0.11766608      5.00000000     12.50000000     31.41504539
+pair_coeff     19     30 lj/cut/coul/debye      0.10961726      5.00000000     12.50000000     31.41504539
+pair_coeff     19     31 lj/cut/coul/debye      0.11919919      5.00000000     12.50000000     31.41504539
+pair_coeff     19     32 lj/cut/coul/debye      0.18972218      5.00000000     12.50000000     31.41504539
+pair_coeff     19     33 lj/cut/coul/debye      0.15944328      5.00000000     12.50000000     31.41504539
+pair_coeff     19     34 lj/cut/coul/debye      0.19010546      5.00000000     12.50000000     31.41504539
+pair_coeff     20     20 lj/cut/coul/debye      0.03487822      5.00000000     12.50000000     31.41504539
+pair_coeff     20     21 lj/cut/coul/debye      0.05442535      5.00000000     12.50000000     31.41504539
+pair_coeff     20     22 lj/cut/coul/debye      0.04675981      5.00000000     12.50000000     31.41504539
+pair_coeff     20     23 lj/cut/coul/debye      0.08240458      5.00000000     12.50000000     31.41504539
+pair_coeff     20     24 lj/cut/coul/debye      0.12533162      5.00000000     12.50000000     31.41504539
+pair_coeff     20     25 lj/cut/coul/debye      0.13759649      5.00000000     12.50000000     31.41504539
+pair_coeff     20     26 lj/cut/coul/debye      0.06898988      5.00000000     12.50000000     31.41504539
+pair_coeff     20     27 lj/cut/coul/debye      0.11076709      5.00000000     12.50000000     31.41504539
+pair_coeff     20     28 lj/cut/coul/debye      0.13644666      5.00000000     12.50000000     31.41504539
+pair_coeff     20     29 lj/cut/coul/debye      0.04829292      5.00000000     12.50000000     31.41504539
+pair_coeff     20     30 lj/cut/coul/debye      0.05672501      5.00000000     12.50000000     31.41504539
+pair_coeff     20     31 lj/cut/coul/debye      0.06669022      5.00000000     12.50000000     31.41504539
+pair_coeff     20     32 lj/cut/coul/debye      0.11459986      5.00000000     12.50000000     31.41504539
+pair_coeff     20     33 lj/cut/coul/debye      0.10693432      5.00000000     12.50000000     31.41504539
+pair_coeff     20     34 lj/cut/coul/debye      0.10233499      5.00000000     12.50000000     31.41504539
+pair_coeff     21     21 lj/cut/coul/debye      0.05902468      5.00000000     12.50000000     31.41504539
+pair_coeff     21     22 lj/cut/coul/debye      0.06362400      5.00000000     12.50000000     31.41504539
+pair_coeff     21     23 lj/cut/coul/debye      0.07588887      5.00000000     12.50000000     31.41504539
+pair_coeff     21     24 lj/cut/coul/debye      0.14066271      5.00000000     12.50000000     31.41504539
+pair_coeff     21     25 lj/cut/coul/debye      0.15484396      5.00000000     12.50000000     31.41504539
+pair_coeff     21     26 lj/cut/coul/debye      0.04944275      5.00000000     12.50000000     31.41504539
+pair_coeff     21     27 lj/cut/coul/debye      0.12648145      5.00000000     12.50000000     31.41504539
+pair_coeff     21     28 lj/cut/coul/debye      0.15714362      5.00000000     12.50000000     31.41504539
+pair_coeff     21     29 lj/cut/coul/debye      0.06630694      5.00000000     12.50000000     31.41504539
+pair_coeff     21     30 lj/cut/coul/debye      0.05710829      5.00000000     12.50000000     31.41504539
+pair_coeff     21     31 lj/cut/coul/debye      0.07282265      5.00000000     12.50000000     31.41504539
+pair_coeff     21     32 lj/cut/coul/debye      0.11919919      5.00000000     12.50000000     31.41504539
+pair_coeff     21     33 lj/cut/coul/debye      0.11383331      5.00000000     12.50000000     31.41504539
+pair_coeff     21     34 lj/cut/coul/debye      0.11766608      5.00000000     12.50000000     31.41504539
+pair_coeff     22     22 lj/cut/coul/debye      0.08585408      5.00000000     12.50000000     31.41504539
+pair_coeff     22     23 lj/cut/coul/debye      0.08240458      5.00000000     12.50000000     31.41504539
+pair_coeff     22     24 lj/cut/coul/debye      0.14487875      5.00000000     12.50000000     31.41504539
+pair_coeff     22     25 lj/cut/coul/debye      0.15944328      5.00000000     12.50000000     31.41504539
+pair_coeff     22     26 lj/cut/coul/debye      0.04407687      5.00000000     12.50000000     31.41504539
+pair_coeff     22     27 lj/cut/coul/debye      0.12993095      5.00000000     12.50000000     31.41504539
+pair_coeff     22     28 lj/cut/coul/debye      0.15829345      5.00000000     12.50000000     31.41504539
+pair_coeff     22     29 lj/cut/coul/debye      0.07167282      5.00000000     12.50000000     31.41504539
+pair_coeff     22     30 lj/cut/coul/debye      0.06975644      5.00000000     12.50000000     31.41504539
+pair_coeff     22     31 lj/cut/coul/debye      0.07972164      5.00000000     12.50000000     31.41504539
+pair_coeff     22     32 lj/cut/coul/debye      0.13108078      5.00000000     12.50000000     31.41504539
+pair_coeff     22     33 lj/cut/coul/debye      0.11536642      5.00000000     12.50000000     31.41504539
+pair_coeff     22     34 lj/cut/coul/debye      0.12954767      5.00000000     12.50000000     31.41504539
+pair_coeff     23     23 lj/cut/coul/debye      0.11689952      5.00000000     12.50000000     31.41504539
+pair_coeff     23     24 lj/cut/coul/debye      0.15867673      5.00000000     12.50000000     31.41504539
+pair_coeff     23     25 lj/cut/coul/debye      0.17400782      5.00000000     12.50000000     31.41504539
+pair_coeff     23     26 lj/cut/coul/debye      0.05174241      5.00000000     12.50000000     31.41504539
+pair_coeff     23     27 lj/cut/coul/debye      0.15254430      5.00000000     12.50000000     31.41504539
+pair_coeff     23     28 lj/cut/coul/debye      0.18282319      5.00000000     12.50000000     31.41504539
+pair_coeff     23     29 lj/cut/coul/debye      0.08623735      5.00000000     12.50000000     31.41504539
+pair_coeff     23     30 lj/cut/coul/debye      0.08087147      5.00000000     12.50000000     31.41504539
+pair_coeff     23     31 lj/cut/coul/debye      0.09275306      5.00000000     12.50000000     31.41504539
+pair_coeff     23     32 lj/cut/coul/debye      0.15254430      5.00000000     12.50000000     31.41504539
+pair_coeff     23     33 lj/cut/coul/debye      0.13491355      5.00000000     12.50000000     31.41504539
+pair_coeff     23     34 lj/cut/coul/debye      0.13721321      5.00000000     12.50000000     31.41504539
+pair_coeff     24     24 lj/cut/coul/debye      0.25066324      5.00000000     12.50000000     31.41504539
+pair_coeff     24     25 lj/cut/coul/debye      0.26982710      5.00000000     12.50000000     31.41504539
+pair_coeff     24     26 lj/cut/coul/debye      0.11536642      5.00000000     12.50000000     31.41504539
+pair_coeff     24     27 lj/cut/coul/debye      0.23073283      5.00000000     12.50000000     31.41504539
+pair_coeff     24     28 lj/cut/coul/debye      0.26216156      5.00000000     12.50000000     31.41504539
+pair_coeff     24     29 lj/cut/coul/debye      0.14411220      5.00000000     12.50000000     31.41504539
+pair_coeff     24     30 lj/cut/coul/debye      0.13491355      5.00000000     12.50000000     31.41504539
+pair_coeff     24     31 lj/cut/coul/debye      0.15446068      5.00000000     12.50000000     31.41504539
+pair_coeff     24     32 lj/cut/coul/debye      0.22153418      5.00000000     12.50000000     31.41504539
+pair_coeff     24     33 lj/cut/coul/debye      0.20122049      5.00000000     12.50000000     31.41504539
+pair_coeff     24     34 lj/cut/coul/debye      0.23188266      5.00000000     12.50000000     31.41504539
+pair_coeff     25     25 lj/cut/coul/debye      0.28247524      5.00000000     12.50000000     31.41504539
+pair_coeff     25     26 lj/cut/coul/debye      0.12916439      5.00000000     12.50000000     31.41504539
+pair_coeff     25     27 lj/cut/coul/debye      0.24568064      5.00000000     12.50000000     31.41504539
+pair_coeff     25     28 lj/cut/coul/debye      0.27902575      5.00000000     12.50000000     31.41504539
+pair_coeff     25     29 lj/cut/coul/debye      0.16097639      5.00000000     12.50000000     31.41504539
+pair_coeff     25     30 lj/cut/coul/debye      0.15024463      5.00000000     12.50000000     31.41504539
+pair_coeff     25     31 lj/cut/coul/debye      0.16634227      5.00000000     12.50000000     31.41504539
+pair_coeff     25     32 lj/cut/coul/debye      0.23533216      5.00000000     12.50000000     31.41504539
+pair_coeff     25     33 lj/cut/coul/debye      0.21731813      5.00000000     12.50000000     31.41504539
+pair_coeff     25     34 lj/cut/coul/debye      0.24836358      5.00000000     12.50000000     31.41504539
+pair_coeff     26     26 lj/cut/coul/debye      0.00459933      5.00000000     12.50000000     31.41504539
+pair_coeff     26     27 lj/cut/coul/debye      0.09505273      5.00000000     12.50000000     31.41504539
+pair_coeff     26     28 lj/cut/coul/debye      0.12878111      5.00000000     12.50000000     31.41504539
+pair_coeff     26     29 lj/cut/coul/debye      0.03717788      5.00000000     12.50000000     31.41504539
+pair_coeff     26     30 lj/cut/coul/debye      0.04024410      5.00000000     12.50000000     31.41504539
+pair_coeff     26     31 lj/cut/coul/debye      0.05020930      5.00000000     12.50000000     31.41504539
+pair_coeff     26     32 lj/cut/coul/debye      0.10310155      5.00000000     12.50000000     31.41504539
+pair_coeff     26     33 lj/cut/coul/debye      0.09965205      5.00000000     12.50000000     31.41504539
+pair_coeff     26     34 lj/cut/coul/debye      0.09543600      5.00000000     12.50000000     31.41504539
+pair_coeff     27     27 lj/cut/coul/debye      0.20926931      5.00000000     12.50000000     31.41504539
+pair_coeff     27     28 lj/cut/coul/debye      0.25142980      5.00000000     12.50000000     31.41504539
+pair_coeff     27     29 lj/cut/coul/debye      0.13223061      5.00000000     12.50000000     31.41504539
+pair_coeff     27     30 lj/cut/coul/debye      0.11613297      5.00000000     12.50000000     31.41504539
+pair_coeff     27     31 lj/cut/coul/debye      0.13453027      5.00000000     12.50000000     31.41504539
+pair_coeff     27     32 lj/cut/coul/debye      0.21271881      5.00000000     12.50000000     31.41504539
+pair_coeff     27     33 lj/cut/coul/debye      0.18818907      5.00000000     12.50000000     31.41504539
+pair_coeff     27     34 lj/cut/coul/debye      0.20390343      5.00000000     12.50000000     31.41504539
+pair_coeff     28     28 lj/cut/coul/debye      0.27825919      5.00000000     12.50000000     31.41504539
+pair_coeff     28     29 lj/cut/coul/debye      0.16289278      5.00000000     12.50000000     31.41504539
+pair_coeff     28     30 lj/cut/coul/debye      0.15407741      5.00000000     12.50000000     31.41504539
+pair_coeff     28     31 lj/cut/coul/debye      0.16404261      5.00000000     12.50000000     31.41504539
+pair_coeff     28     32 lj/cut/coul/debye      0.23609871      5.00000000     12.50000000     31.41504539
+pair_coeff     28     33 lj/cut/coul/debye      0.21693485      5.00000000     12.50000000     31.41504539
+pair_coeff     28     34 lj/cut/coul/debye      0.24108131      5.00000000     12.50000000     31.41504539
+pair_coeff     29     29 lj/cut/coul/debye      0.06707350      5.00000000     12.50000000     31.41504539
+pair_coeff     29     30 lj/cut/coul/debye      0.06017451      5.00000000     12.50000000     31.41504539
+pair_coeff     29     31 lj/cut/coul/debye      0.07282265      5.00000000     12.50000000     31.41504539
+pair_coeff     29     32 lj/cut/coul/debye      0.14296237      5.00000000     12.50000000     31.41504539
+pair_coeff     29     33 lj/cut/coul/debye      0.12226540      5.00000000     12.50000000     31.41504539
+pair_coeff     29     34 lj/cut/coul/debye      0.12724801      5.00000000     12.50000000     31.41504539
+pair_coeff     30     30 lj/cut/coul/debye      0.06400728      5.00000000     12.50000000     31.41504539
+pair_coeff     30     31 lj/cut/coul/debye      0.07512232      5.00000000     12.50000000     31.41504539
+pair_coeff     30     32 lj/cut/coul/debye      0.11459986      5.00000000     12.50000000     31.41504539
+pair_coeff     30     33 lj/cut/coul/debye      0.10655104      5.00000000     12.50000000     31.41504539
+pair_coeff     30     34 lj/cut/coul/debye      0.11689952      5.00000000     12.50000000     31.41504539
+pair_coeff     31     31 lj/cut/coul/debye      0.08125475      5.00000000     12.50000000     31.41504539
+pair_coeff     31     32 lj/cut/coul/debye      0.12341523      5.00000000     12.50000000     31.41504539
+pair_coeff     31     33 lj/cut/coul/debye      0.11536642      5.00000000     12.50000000     31.41504539
+pair_coeff     31     34 lj/cut/coul/debye      0.13261389      5.00000000     12.50000000     31.41504539
+pair_coeff     32     32 lj/cut/coul/debye      0.19393823      5.00000000     12.50000000     31.41504539
+pair_coeff     32     33 lj/cut/coul/debye      0.17860714      5.00000000     12.50000000     31.41504539
+pair_coeff     32     34 lj/cut/coul/debye      0.19853755      5.00000000     12.50000000     31.41504539
+pair_coeff     33     33 lj/cut/coul/debye      0.15982656      5.00000000     12.50000000     31.41504539
+pair_coeff     33     34 lj/cut/coul/debye      0.17707403      5.00000000     12.50000000     31.41504539
+pair_coeff     34     34 lj/cut/coul/debye      0.21156897      5.00000000     12.50000000     31.41504539
+
+## shift the cutoff energy
+pair_modify         shift yes
+
+include           ${inputdir}/forcefield/bonded_ff.txt
+include           /nobackup1c/users/smliu/test-smog-3spn2-openmm/two-601-nucl/two-601-nucl-structure/post_processing_2copies/forcefield/bonded_ff.txt
+bond_coeff          1       list
+bond_coeff          2       list/ca
+
+
+angle_coeff     1	list
+angle_coeff 	2	stacking/3spn2	3.303059	3.580000	100.130000	3.000000	6.000000
+angle_coeff 	3	stacking/3spn2	3.597036	3.560000	90.480000	3.000000	6.000000
+angle_coeff 	4	stacking/3spn2	3.183556	3.850000	104.390000	3.000000	6.000000
+angle_coeff 	5	stacking/3spn2	3.781071	3.450000	93.230000	3.000000	6.000000
+angle_coeff 	6	stacking/3spn2	2.186902	4.150000	102.590000	3.000000	6.000000
+angle_coeff 	7	stacking/3spn2	2.973231	3.930000	93.320000	3.000000	6.000000
+angle_coeff 	8	stacking/3spn2	2.289675	4.320000	103.700000	3.000000	6.000000
+angle_coeff 	9	stacking/3spn2	3.133365	3.870000	94.550000	3.000000	6.000000
+angle_coeff 	10	stacking/3spn2	3.288719	3.510000	95.450000	3.000000	6.000000
+angle_coeff 	11	stacking/3spn2	3.487094	3.470000	87.630000	3.000000	6.000000
+angle_coeff 	12	stacking/3spn2	3.530115	3.670000	106.360000	3.000000	6.000000
+angle_coeff 	13	stacking/3spn2	3.625717	3.420000	83.120000	3.000000	6.000000
+angle_coeff 	14	stacking/3spn2	2.210803	4.150000	102.690000	3.000000	6.000000
+angle_coeff 	15	stacking/3spn2	2.968451	3.990000	96.050000	3.000000	6.000000
+angle_coeff 	16	stacking/3spn2	2.110421	4.340000	100.460000	3.000000	6.000000
+angle_coeff 	17	stacking/3spn2	3.348470	3.840000	100.680000	3.000000	6.000000
+angle_coeff     18      list/ca
+
+
+dihedral_coeff	    1	list
+dihedral_coeff	    2	list/ca
+
+#   ---         group definitions       --- #
+#include             ${inputdir}/groupsDefinition/group_rigid_2nucl.txt
+#group nonRigidBody  subtract all nucl1 nucl2
+#group2ndx           groups.ndx
+
+# ---     from AWSEM simulation   ---
+neighbor            5      bin
+# exclude interactions
+#neigh_modify exclude group nucl1 nucl1 check no
+#neigh_modify exclude group nucl2 nucl2 check no
+neigh_modify        check  yes     one 5000    # this avoids the error "boost neigh_modify one"
+atom_modify         sort 0 0.0
+#special_bonds       fene
+special_bonds       lj 0.0 0.0 0.0
+#delete_bonds nucl1 multi remove
+#delete_bonds nucl2 multi remove
+
+# compute different components of DNA non-bonded energy
+# code from LAMMPS-3SPN2/GCGI/example/DNA_with_GCGI_ions.in
+compute edna all pair 3spn2
+variable ebp equal c_edna[1] # Base pairing energy
+variable ecstk equal c_edna[2] # Cross stacking energy
+variable eexcl equal c_edna[3] # Excluded volume energy
+variable dna_ecoul equal c_edna[4] # DNA coulombic energy
+variable nbp equal c_edna[5] # Number of base pairs
+
+compute e_bonds all bond
+compute e_angles all angle
+compute e_dihedrals all dihedral
+compute e_sbm_pair all pair list
+compute e_lj_debye all pair lj/cut/coul/debye
+compute e_lj_debye_vdwl all pair lj/cut/coul/debye evdwl
+compute e_lj_debye_coul all pair lj/cut/coul/debye ecoul
+
+variable e_all_coul equal "v_dna_ecoul+c_e_lj_debye_coul"
+variable e_all_vdwl equal "v_eexcl+c_e_lj_debye_vdwl"
+
+#####################################################
+#timestep            10.0
+thermo              1
+#thermo_style        multi
+thermo_style        custom step pe v_ebp v_ecstk v_eexcl v_dna_ecoul v_nbp c_e_bonds[*] c_e_angles[*] c_e_dihedrals[*] c_e_sbm_pair c_e_lj_debye c_e_lj_debye_vdwl c_e_lj_debye_coul v_e_all_vdwl v_e_all_coul
+
+#velocity            all create ${T} ${random} rot yes mom yes dist gaussian
+
+#minimize        1.0e-4 1.0e-6 100 1000
+reset_timestep 0
+
+#fix                 pl all plumed plumedfile plumed.txt outfile plumed.out
+
+#dump                1 all dcd 10000 DUMP_FILE.dcd
+#dump_modify         1 sort id
+
+#fix                 rigidBody core rigid/nvt group 2 nucl1 nucl2 temp ${T} ${T} 1000.0
+#fix                 myfix nonRigidBody nvt temp ${T} ${T} 1000.0
+
+balance 1.1 shift xyz 10 1.0
+Neighbor list info ...
+  3 neighbor list requests
+  update every 1 steps, delay 10 steps, check yes
+  max neighbors/atom: 5000, page size: 100000
+  master list distance cutoff = 55
+  ghost atom cutoff = 55
+  binsize = 27.5 -> bins = 73 73 73
+#run 100000
+
+rerun traj.dcd skip 1 dump x y z format molfile dcd /home/xclin/lib/vmd.old/plugins/LINUXAMD64/molfile
+Dump reader uses molfile plugin: CHARMM,NAMD,XPLOR DCD Trajectory v1.11 by Axel Kohlmeyer, Justin Gullingsrud, John Stone
+WARNING: No fixes defined, atoms won't move (../verlet.cpp:55)
+Memory usage per processor = 4.42706 Mbytes
+Step PotEng v_ebp v_ecstk v_eexcl v_dna_ecoul v_nbp c_e_bonds[1] c_e_bonds[2] c_e_angles[1] c_e_angles[2] c_e_angles[3] c_e_dihedrals[1] c_e_dihedrals[2] c_e_sbm_pair c_e_lj_debye c_e_lj_debye_vdwl c_e_lj_debye_coul v_e_all_vdwl v_e_all_coul 
+       0    10884.503   -41.692413   -154.83371    197.53903    101.92987           56    1726.8292    1.9743505    8617.2762    4550.4665  0.058361609     -1320.99 0.0066324917   -2804.7619    10.700514    288.96147   -278.26096     486.5005   -176.33109 
+       1    4819.7911   -393.77803   -187.57679    123.40845    93.523788          139     2143.522    1650.8789    2644.0175    3168.1501    189.63504   -1469.2446    5.1024655   -2802.8902   -344.95746   -67.443161    -277.5143    55.965294   -183.99051 
+       2    4820.9252   -406.78932   -188.36252     123.5598    92.255754          140    2142.6327    1654.8768    2640.0102    3193.5924    189.08271   -1474.4761    5.1024681   -2802.8902   -347.66958   -62.925011   -284.74457    60.634785   -192.48882 
+       3     4810.702   -407.74272   -186.77415    123.31216    96.347659          144     2140.262    1646.2632    2646.2344    3191.2342    198.79266   -1468.2257    5.1024646   -2802.8902    -371.2141    -71.42567   -299.78843    51.886495   -203.44077 
+       4    4792.1817   -429.57223   -190.11397    123.51474    94.772646          158    2158.0365     1644.856    2637.2807    3216.8715    179.53397   -1470.9831    5.1024669   -2802.8902   -374.22724   -71.772308   -302.45493    51.742437   -207.68229 
+       5    4781.8124   -408.22826   -185.41071    124.23919    93.526288          149    2146.9874    1647.1562    2646.3739    3193.4045    174.62991   -1473.0273    5.1024798   -2802.8902   -380.05112   -68.170969   -311.88016    56.068217   -218.35387 
+       6    4850.2268   -404.40026   -181.05744    122.89744    95.741751          139    2149.1595    1659.4032     2661.891    3177.9062    201.84058    -1468.733    5.1024609   -2802.8902   -366.63439   -62.869178   -303.76521    60.028259   -208.02346 
+       7    4762.1031    -419.2594   -187.14699    123.53361    94.356239          148    2139.0015    1640.3246    2637.5376    3176.8564    203.55293   -1473.4325    5.1024663   -2802.8902   -375.43299   -71.836597   -303.59639     51.69701   -209.24015 
+       8    4853.6925   -402.72774   -184.08609    123.11999    93.221797          144    2156.8055    1649.8875    2646.8207    3200.6251    188.38712   -1472.6338    5.1024813   -2802.8902   -347.93993   -64.839849   -283.10008    58.280142   -189.87828 
+       9    4813.6552   -395.35103   -182.67585    123.27789    92.317037          139     2139.949    1649.5433    2647.3908    3193.2524     179.4663   -1468.9339    5.1024842   -2802.8902   -366.79293   -73.071519   -293.72141    50.206373   -201.40438 
+      10     4816.817   -412.89671   -185.00847    123.60586    91.691115          148    2150.1853     1651.764    2644.8075    3188.4887     197.5857   -1465.8711    5.1024909   -2802.8902   -369.74711   -73.026849   -296.72027    50.579015   -205.02915 
+Loop time of 0.683614 on 1 procs for 11 steps with 3708 atoms
+
+Performance: 1.390 ns/day, 17.263 hours/ns, 16.091 timesteps/s
+98.0% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Bond    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.6836     |            |       |100.00
+
+Nlocal:    3708 ave 3708 max 3708 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    0 ave 0 max 0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    1.04332e+06 ave 1.04332e+06 max 1.04332e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1043318
+Ave neighs/atom = 281.369
+Ave special neighs/atom = 6.56095
+Neighbor list builds = 0
+Dangerous builds = 0
+
+
+Total wall time: 0:00:01

@@ -6,8 +6,7 @@ except ImportError:
     import simtk.unit as unit
 from openabc.forcefields.cg_model import CGModel
 from openabc.forcefields import functional_terms
-from openabc.lib.protein_lib import _amino_acids
-from openabc.lib.unit_conversion import _kcal_to_kj
+from openabc.lib import _amino_acids, _kcal_to_kj
 import sys
 import os
 

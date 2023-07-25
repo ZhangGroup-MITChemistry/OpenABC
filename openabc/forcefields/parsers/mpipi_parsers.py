@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
 from openabc.utils import helper_functions
-from openabc.lib.protein_lib import _amino_acids
-from openabc.lib.rna_lib import _rna_nucleotides
-from openabc.lib.unit_conversion import _kcal_to_kj, _angstrom_to_nm
+from openabc.lib import _amino_acids, _rna_nucleotides, _kcal_to_kj, _angstrom_to_nm
 import sys
 import os
 
