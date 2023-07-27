@@ -283,7 +283,7 @@ class CGModel(object):
         positions = positions - center_of_mass + box_center
         self.simulation.context.setPositions(positions*unit.nanometer)
     
-    def add_reporters(self, report_interval, output_dcd='output.dcd', report_dcd=True, report_state=True):
+    def add_reporters(self, report_interval, output_dcd='output.dcd', report_dcd=True, report_state_data=True):
         """
         Add reporters for OpenMM simulation. 
         
@@ -298,18 +298,18 @@ class CGModel(object):
         report_dcd : bool
             Whether to output dcd file. 
         
-        report_state : bool
-            Whether to output simulation state. 
+        report_state_data : bool
+            Whether to output simulation state and data. 
         
         """
         if report_dcd:
             dcd_reporter = app.DCDReporter(output_dcd, report_interval, enforcePeriodicBox=self.use_pbc)
             self.simulation.reporters.append(dcd_reporter)
-        if report_state:
-            state_reporter = app.StateDataReporter(sys.stdout, report_interval, step=True, time=True, 
-                                                   potentialEnergy=True, kineticEnergy=True, totalEnergy=True, 
-                                                   temperature=True, speed=True)
-            self.simulation.reporters.append(state_reporter)
+        if report_state_data:
+            state_data_reporter = app.StateDataReporter(sys.stdout, report_interval, step=True, time=True, 
+                                                        potentialEnergy=True, kineticEnergy=True, totalEnergy=True, 
+                                                        temperature=True, speed=True)
+            self.simulation.reporters.append(state_data_reporter)
         
     
     

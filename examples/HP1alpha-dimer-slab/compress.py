@@ -35,10 +35,10 @@ simulation.context.setVelocitiesToTemperature(temperature)
 output_dcd = 'output.dcd'
 output_interval = 100000
 dcd_reporter = app.DCDReporter(output_dcd, output_interval, enforcePeriodicBox=True)
-state_reporter = app.StateDataReporter(sys.stdout, output_interval, step=True, time=True, potentialEnergy=True,
-                                       kineticEnergy=True, totalEnergy=True, temperature=True, speed=True)
+state_data_reporter = app.StateDataReporter(sys.stdout, output_interval, step=True, time=True, potentialEnergy=True,
+                                            kineticEnergy=True, totalEnergy=True, temperature=True, speed=True)
 simulation.reporters.append(dcd_reporter)
-simulation.reporters.append(state_reporter)
+simulation.reporters.append(state_data_reporter)
 n_steps = 5000000
 simulation.step(n_steps)
 

@@ -206,6 +206,8 @@ def legacy_find_ca_pairs_from_atomistic_pdb(atomistic_pdb, frame=0, radius=0.1, 
         if (a1 in dict_res_CA) and (a2 in dict_res_CA):
             df_ca_pairs.loc[len(df_ca_pairs.index)] = [a1, a2, None]
             ca_atom_pairs.append([dict_res_CA[a1], dict_res_CA[a2]])
+    if len(ca_atom_pairs) == 0:
+        return df_ca_pairs
     ca_atom_pairs = np.array(ca_atom_pairs)
     traj = mdtraj.load_pdb(atomistic_pdb)
     df_ca_pairs['mu'] = mdtraj.compute_distances(traj, ca_atom_pairs, use_pbc)[frame]

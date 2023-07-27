@@ -11,9 +11,7 @@ Detailed tutorials with all the necessary input files are provided in "tutorials
 
 ## Manual
 
-The output html manual file is docs/index.html. 
-
-The manual is also shown in: https://zhanggroup-mitchemistry.github.io/OpenABC/
+The output html manual file is docs/index.html. The manual is also shown in: <https://zhanggroup-mitchemistry.github.io/OpenABC/>
 
 Instructions for class methods and functions are also included as comments in the source code. 
 
@@ -83,7 +81,7 @@ condensate.add_all_default_forces()
 Please read the tutorials for more instructions. 
 
 
-## Tip
+## Tips
 
 For version 1.0.2: When using `openabc.utils.insert.insert_molecules`, users may see such warnings: `UserWarning: Found no information for attr: 'formalcharges' Using default value of '0'` and `warnings.warn("Found no information for attr: '{}'"`. Such warning can be ignored as atom charge is not required when we insert molecules. To suppress such warning, users can add such lines at the beginning of the script:
 
@@ -126,5 +124,24 @@ SMOG+3SPN2 force fields are enabled.
 Please cite the following paper if you use openabc package: 
 
     "OpenABC Enables Flexible, Simplified, and Efficient GPU Accelerated Simulations of Biomolecular Condensates", doi: https://doi.org/10.1101/2023.04.19.537533
+
+
+## References
+
+Here are the references for the force fields and tools included in OpenABC. Please refer to these papers to find the most appropriate model for your study. 
+
+- HPS model KR scale: Dignon, Gregory L., et al. "Sequence determinants of protein phase behavior from a coarse-grained model." PLoS computational biology 14.1 (2018): e1005941.
+
+- HPS model KR and Urry scale: Regy, Roshan Mammen, et al. "Improved coarse‐grained model for studying sequence dependent phase separation of disordered proteins." Protein Science 30.7 (2021): 1371-1379.
+
+- MOFF model: Latham, Andrew P., and Bin Zhang. "Consistent force field captures homologue-resolved HP1 phase separation." Journal of chemical theory and computation 17.5 (2021): 3134-3144.
+
+- MOFF + MRG model: Latham, Andrew P., and Bin Zhang. "On the stability and layered organization of protein-DNA condensates." Biophysical Journal 121.9 (2022): 1727-1737. 
+
+- Mpipi model: Joseph, Jerelle A., et al. "Physics-driven coarse-grained model for biomolecular phase separation with near-quantitative accuracy." Nature Computational Science 1.11 (2021): 732-743. 
+
+- OpenAWSEM + Open3SPN2 models: Lu, Wei, et al. "OpenAWSEM with Open3SPN2: A fast, flexible, and accessible framework for large-scale coarse-grained biomolecular simulations." PLoS computational biology 17.2 (2021): e1008308.
+
+
 
 

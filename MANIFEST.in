@@ -9,5 +9,6 @@ prune sphinx-files
 prune tests
 prune tutorials
 
+include README.md
 include LICENSE
 

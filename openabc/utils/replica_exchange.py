@@ -133,10 +133,10 @@ class TemperatureReplicaExchange(object):
         """
         use_pbc = self.system.usesPeriodicBoundaryConditions()
         if report_state:
-            state_reporter = app.StateDataReporter(sys.stdout, report_interval, step=True, time=True, 
-                                                   potentialEnergy=True, kineticEnergy=True, totalEnergy=True, 
-                                                   temperature=True, speed=True)
-            self.simulation.reporters.append(state_reporter)
+            state_data_reporter = app.StateDataReporter(sys.stdout, report_interval, step=True, time=True, 
+                                                        potentialEnergy=True, kineticEnergy=True, totalEnergy=True, 
+                                                        temperature=True, speed=True)
+            self.simulation.reporters.append(state_data_reporter)
         if report_dcd:
             if output_dcd is None:
                 output_dcd = f'output.{self.rank}.dcd'

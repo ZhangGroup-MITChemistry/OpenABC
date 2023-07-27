@@ -55,10 +55,10 @@ for temperature_i in np.linspace(start_temperature, args.temperature, n_iteratio
     simulation.step(1000)
 
 dcd_reporter = app.DCDReporter(args.output_dcd, args.output_interval, enforcePeriodicBox=True)
-state_reporter = app.StateDataReporter(sys.stdout, args.output_interval, step=True, time=True, potentialEnergy=True, 
-                                       kineticEnergy=True, totalEnergy=True, temperature=True, speed=True)
+state_data_reporter = app.StateDataReporter(sys.stdout, args.output_interval, step=True, time=True, potentialEnergy=True, 
+                                            kineticEnergy=True, totalEnergy=True, temperature=True, speed=True)
 simulation.reporters.append(dcd_reporter)
-simulation.reporters.append(state_reporter)
+simulation.reporters.append(state_data_reporter)
 simulation.step(args.steps)
 
 
