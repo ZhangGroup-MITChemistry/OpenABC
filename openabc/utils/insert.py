@@ -50,6 +50,9 @@ def insert_molecules(new_pdb, output_pdb, n_mol, radius=0.5, existing_pdb=None, 
     
     reset_serial : bool
         Whether to reset serial to 0, 1, ..., N - 1. 
+        If True, the serial in the final pdb is reset as 0, 1, ..., N - 1. 
+        If False, the serial remains unchanged. 
+        If True and atom number > 1,000,000, the serial remains unchanged since the largest atom serial number allowed in pdb is 999,999. 
     
     """
     assert method in ['FastNS', 'distance_array'] # check method
@@ -115,7 +118,11 @@ def insert_molecules(new_pdb, output_pdb, n_mol, radius=0.5, existing_pdb=None, 
         print(f'Could not successfully insert {n_mol} molecules in {count_n_attempts} attempts.')
         print(f'Only added {count_n_mol} molecules. Try increasing the box size or number of attempts to add more molecules.')
     if reset_serial:
-        atoms['serial'] = list(range(len(atoms.index)))
+        n_atoms = len(atoms.index)
+        if n_atoms > 1000000:
+            print(f'Too many atoms. Cannot reset serial as 0, 1, ..., N - 1. Serial remains unchanged.')
+        else:
+            atoms['serial'] = list(range(len(atoms.index)))
     # write the final pdb
     helper_functions.write_pdb(atoms, output_pdb)
 
