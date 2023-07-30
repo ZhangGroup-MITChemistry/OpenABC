@@ -14,7 +14,7 @@ import os
 try:
     import torch
 except ImportError:
-    print('torch is not supported.')
+    print('Please install torch to facilitate replica exchange simulations.')
 import math
 import time
 

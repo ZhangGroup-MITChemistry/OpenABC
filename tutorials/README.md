@@ -16,6 +16,10 @@ This folder provides tutorials for setting up and performing simulations with MO
 
 - MRG-dsDNA provides an example for runing simulations of a dsDNA with MRG. 
 
+- Mpipi-protein-RNA-condensate shows how to run protein-RNA condensate simulation. 
+
+- SMOG-3SPN2-two-nucleosomes shows how to run the simulation of two nucleosomes with SMOG and 3SPN2 models. 
+
 - build-new-forcefield provides the tutorial for building a new force field. 
 
 To view the structures and trajectories, we use nglview package in some tutorials to render the structures or trajectories directly in the jupyter notebook. Based on our test, nglview is not very robust and sometimes it fails to render. Rerun the code block or restart the kernel may be helpful. Users can also use other popular tools to view the structures, such as VMD and Mol* Viewer. 

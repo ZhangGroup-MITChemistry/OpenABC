@@ -11,7 +11,7 @@ except ImportError:
 try:
     from openmmplumed import PlumedForce
 except ImportError:
-    print('openmmplumed is not installed. PlumedForce is not supported.')
+    print('Please install openmmplumed to facilitate plumed functions.')
 from openabc.forcefields.rigid import createRigidBodies
 import openabc.utils.helper_functions as helper_functions
 import sys

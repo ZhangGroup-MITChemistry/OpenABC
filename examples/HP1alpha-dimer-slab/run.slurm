@@ -18,7 +18,7 @@ python compress.py
 # run slab simulation
 T=260
 output_dcd=slab_${T}K.dcd
-python run_slab.py --temperature ${T} --box_a 25 --box_b 25 --box_c 400 --output_dcd ${output_dcd} --output_interval 20000 --steps 20000000
+python run_slab.py --temperature ${T} --box_a 25 --box_b 25 --box_c 400 --output_dcd ${output_dcd} --output_interval 20000 --steps 200000000
 
 # align slab trajectory so that the largest cluster is at the center of the box
 # the aligned center of mass (COM) coordinates are saved in ${aligned_COM_traj_npy}
@@ -27,10 +27,10 @@ aligned_COM_traj_npy=aligned_COM_traj.npy
 python align_slab_traj.py ${output_dcd} ${aligned_output_dcd} ${aligned_COM_traj_npy}
 
 # compute density profile
-# use the second half of the trajectory, which is of frame index 500-999
+# use the second half of the trajectory, which is of frame index 5000-9999
 # use regime -10<=z<=10 to compute density
-start_frame_id=500
-end_frame_id=999
+start_frame_id=5000
+end_frame_id=9999
 boundary=10
 output_csv=slab_density_${T}K.csv
 python compute_density.py ${aligned_COM_traj_npy} ${start_frame_id} ${end_frame_id} ${boundary} ${output_csv}

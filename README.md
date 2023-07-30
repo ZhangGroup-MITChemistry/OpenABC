@@ -140,7 +140,11 @@ Here are the references for the force fields and tools included in OpenABC. Plea
 
 - Mpipi model: Joseph, Jerelle A., et al. "Physics-driven coarse-grained model for biomolecular phase separation with near-quantitative accuracy." Nature Computational Science 1.11 (2021): 732-743. 
 
-- OpenAWSEM + Open3SPN2 models: Lu, Wei, et al. "OpenAWSEM with Open3SPN2: A fast, flexible, and accessible framework for large-scale coarse-grained biomolecular simulations." PLoS computational biology 17.2 (2021): e1008308.
+- SMOG model: Noel, Jeffrey K., et al. "SMOG 2: a versatile software package for generating structure-based models." PLoS computational biology 12.3 (2016): e1004794.
+
+- 3SPN2 model: (1) Hinckley, Daniel M., et al. "An experimentally-informed coarse-grained 3-site-per-nucleotide model of DNA: Structure, thermodynamics, and dynamics of hybridization." The Journal of chemical physics 139.14 (2013). (2) Freeman, Gordon S., et al. "Coarse-grained modeling of DNA curvature." The Journal of chemical physics 141.16 (2014).
+
+- Open3SPN2 model: Lu, Wei, et al. "OpenAWSEM with Open3SPN2: A fast, flexible, and accessible framework for large-scale coarse-grained biomolecular simulations." PLoS computational biology 17.2 (2021): e1008308.
 
 
 
