@@ -419,7 +419,7 @@ def fix_pdb(pdb_file):
     return atoms
 
 
-def get_WC_paired_seq(sequence):
+def get_WC_paired_sequence(sequence):
     """
     Get WC-paired sequence. 
     

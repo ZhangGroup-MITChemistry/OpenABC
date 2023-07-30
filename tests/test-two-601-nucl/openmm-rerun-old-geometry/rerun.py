@@ -16,7 +16,7 @@ sys.path.append('../../..')
 
 from openabc.forcefields.parsers import SMOGParser, DNA3SPN2Parser
 from openabc.forcefields import SMOG3SPN2Model
-from openabc.utils.helper_functions import get_WC_paired_seq
+from openabc.utils.helper_functions import get_WC_paired_sequence
 from openabc.utils.chromatin_helper_functions import remove_histone_tail_dihedrals, remove_histone_tail_native_pairs_and_exclusions
 from openabc.utils.insert import insert_molecules
 
@@ -40,7 +40,7 @@ single_nucl.append_mol(histone)
 
 with open('dna_seq.txt', 'r') as f:
     seq1 = f.readlines()[0].strip()
-seq2 = get_WC_paired_seq(seq1)
+seq2 = get_WC_paired_sequence(seq1)
 target_seq = seq1 + seq2
 dna = DNA3SPN2Parser.from_atomistic_pdb('../single-nucl-pdb-files/dna.pdb', 'cg_dna.pdb', new_sequence=target_seq, 
                                         default_parse=False)
