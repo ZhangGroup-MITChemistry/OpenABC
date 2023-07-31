@@ -69,7 +69,7 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
         if n_chains == 2:
             sequence1, sequence2 = sequence_list[0], sequence_list[1]
             if len(sequence1) == len(sequence2):
-                if helper_functions.get_WC_paired_seq(sequence1) == sequence2:
+                if helper_functions.get_WC_paired_sequence(sequence1) == sequence2:
                     # one dsDNA molecule with W-C paired sequence
                     flag = True
         if flag:
