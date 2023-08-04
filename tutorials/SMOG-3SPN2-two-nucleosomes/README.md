@@ -10,5 +10,13 @@ Tutorial about how to simulation two nucleosomes with SMOG and 3SPN2 models. The
 
 Note 3SPN2 has already been implemented in OpenMM framework as Open3SPN2, and we further adapt Open3SPN2 into OpenABC framework. Please follow the steps in *two_nucl.ipynb* to learn how to use these two models. 
 
-Note to run simulation with 3SPN2, user have to install x3dna, since 3SPN2 B_curved DNA get force field parameters from the DNA template built by x3dna. 
+## Important notes
+
+To run simulation with 3SPN2, user have to install **X3DNA**, since 3SPN2 B_curved DNA get force field parameters from the DNA template built by X3DNA. After installing X3DNA, set environment variable with 
+
+```
+export X3DNA='path/to/x3dna'
+``` 
+
+
 

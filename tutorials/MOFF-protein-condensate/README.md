@@ -19,6 +19,6 @@ Tutorials on simulations with MOFF, which was introduced in the following refere
 
 - The jupyter notebook file *condensate_analysis.ipynb* includes python scripts for analyzing slab simulations and computing density profiles. Such analyses are essential for computing phase diagrams. 
 
-For instructional purposes, some intermediate results are prepared in advance so that the users do not need to wait. The full workflow as python scripts, starting from HP1alpha dimer PDB structure, to achieving a density profile of the slab simulation, is shown in <https://github.com/ZhangGroup-MITChemistry/OpenABC/tree/main/examples/HP1alpha-dimer-slab>. 
+For instructional purposes, some intermediate results and input trajectories are prepared in advance so that the users do not need to wait for long-time simulations. The full workflow as python scripts, starting from HP1alpha dimer PDB structure, to achieving a density profile of the slab simulation, is shown in <https://github.com/ZhangGroup-MITChemistry/OpenABC/tree/main/examples/HP1alpha-dimer-slab>. 
 
 

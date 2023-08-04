@@ -23,18 +23,18 @@ _normalized_Urry_hydropathy_scale = dict(ALA=0.602942, ARG=0.558824, ASN=0.58823
                                          MET=0.676471, PHE=0.82353, PRO=0.758824, SER=0.588236, 
                                          THR=0.588236, TRP=1.0, TYR=0.897059, VAL=0.664707)
 
-_HPS_amino_acid_radius_dict = dict(ALA=0.504, ARG=0.656, ASN=0.568, ASP=0.558, CYS=0.548, 
-                                   GLN=0.602, GLU=0.592, GLY=0.450, HIS=0.608, ILE=0.618,
-                                   LEU=0.618, LYS=0.636, MET=0.618, PHE=0.636, PRO=0.556,
-                                   SER=0.518, THR=0.562, TRP=0.678, TYR=0.646, VAL=0.586)
+_HPS_amino_acid_sigma_dict = dict(ALA=0.504, ARG=0.656, ASN=0.568, ASP=0.558, CYS=0.548, 
+                                  GLN=0.602, GLU=0.592, GLY=0.450, HIS=0.608, ILE=0.618,
+                                  LEU=0.618, LYS=0.636, MET=0.618, PHE=0.636, PRO=0.556,
+                                  SER=0.518, THR=0.562, TRP=0.678, TYR=0.646, VAL=0.586)
 
 df_KR_scale = pd.DataFrame(columns=['atom_type1', 'atom_type2', 'sigma', 'lambda'])
 for i in range(len(_amino_acids)):
     for j in range(i, len(_amino_acids)):
         atom_type_i = _amino_acids[i]
         atom_type_j = _amino_acids[j]
-        sigma_i = _HPS_amino_acid_radius_dict[atom_type_i]
-        sigma_j = _HPS_amino_acid_radius_dict[atom_type_j]
+        sigma_i = _HPS_amino_acid_sigma_dict[atom_type_i]
+        sigma_j = _HPS_amino_acid_sigma_dict[atom_type_j]
         sigma_ij = 0.5*(sigma_i + sigma_j)
         lambda_i = _normalized_KR_hydropathy_scale[atom_type_i]
         lambda_j = _normalized_KR_hydropathy_scale[atom_type_j]
@@ -49,8 +49,8 @@ for i in range(len(_amino_acids)):
     for j in range(i, len(_amino_acids)):
         atom_type_i = _amino_acids[i]
         atom_type_j = _amino_acids[j]
-        sigma_i = _HPS_amino_acid_radius_dict[atom_type_i]
-        sigma_j = _HPS_amino_acid_radius_dict[atom_type_j]
+        sigma_i = _HPS_amino_acid_sigma_dict[atom_type_i]
+        sigma_j = _HPS_amino_acid_sigma_dict[atom_type_j]
         sigma_ij = 0.5*(sigma_i + sigma_j)
         lambda_i = _normalized_Urry_hydropathy_scale[atom_type_i]
         lambda_j = _normalized_Urry_hydropathy_scale[atom_type_j]
