@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
-import pdbfixer
+try:
+    import pdbfixer
+except Exception as e:
+    print('Cannot import pdbfixer. This may affect 3SPN2 model.')
 try:
     import openmm.unit as unit
 except ImportError:

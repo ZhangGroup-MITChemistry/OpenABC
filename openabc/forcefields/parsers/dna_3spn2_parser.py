@@ -580,7 +580,10 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
             Additional input template.
         
         """
-        atomistic_atoms = helper_functions.fix_pdb(atomistic_pdb) # fix pdb
+        try:
+            atomistic_atoms = helper_functions.fix_pdb(atomistic_pdb) # fix pdb
+        except Exception as e:
+            print('Do not fix pdb file.')
         cg_atoms = cls.aa_to_cg(atomistic_atoms, PSB_order=PSB_order) # do coarse-graining
         if new_sequence is not None:
             print(f'Change to new sequence: {new_sequence}')

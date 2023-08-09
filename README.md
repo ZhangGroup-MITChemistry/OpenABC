@@ -14,7 +14,7 @@ The first version available with pip install.
 
 ### Version 1.0.3 
 
-Update `openabc.utils.insert.insert_molecules`, MDAnalysis warnings will not appear. Both "FastNS" and "distance_array" methods are supported. 
+Update `openabc.utils.insert.insert_molecules`, MDAnalysis warnings will not appear. Both `FastNS` and `distance_array` methods are supported. 
 
 ### Version 1.0.4
 
@@ -22,7 +22,7 @@ OpenMM of version < 7.6 and >= 7.6 are both supported. Mpipi force field is incl
 
 ### Version 1.0.5 
 
-SMOG+3SPN2 force fields are enabled. 
+SMOG+3SPN2 force fields are enabled. 3SPN2 is adapted from Wolynes groups' Open3SPN2. To run this, you may need to install pdbfixer and X3DNA. Other models do not require pdbfixer or X3DNA.
 
 ## Tutorials
 
