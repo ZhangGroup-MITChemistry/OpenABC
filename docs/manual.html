@@ -151,7 +151,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.build_straight_chain"><code class="docutils literal notranslate"><span class="pre">build_straight_chain()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.compute_rg"><code class="docutils literal notranslate"><span class="pre">compute_rg()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.fix_pdb"><code class="docutils literal notranslate"><span class="pre">fix_pdb()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.get_WC_paired_seq"><code class="docutils literal notranslate"><span class="pre">get_WC_paired_seq()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.get_WC_paired_sequence"><code class="docutils literal notranslate"><span class="pre">get_WC_paired_sequence()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.make_mol_whole"><code class="docutils literal notranslate"><span class="pre">make_mol_whole()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.move_atoms_to_closest_pbc_image"><code class="docutils literal notranslate"><span class="pre">move_atoms_to_closest_pbc_image()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#openabc.utils.helper_functions.parse_pdb"><code class="docutils literal notranslate"><span class="pre">parse_pdb()</span></code></a></li>
@@ -247,7 +247,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openabc.forcefields.cg_model.CGModel.add_reporters">
-<span class="sig-name descname"><span class="pre">add_reporters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report_interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dcd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output.dcd'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_dcd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.cg_model.CGModel.add_reporters" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_reporters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report_interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dcd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'output.dcd'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_dcd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_state_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.forcefields.cg_model.CGModel.add_reporters" title="Permalink to this definition"></a></dt>
 <dd><p>Add reporters for OpenMM simulation.</p>
 <section id="id1">
 <h3>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
@@ -258,7 +258,7 @@
 </dd>
 <dt>report_dcd<span class="classifier">bool</span></dt><dd><p>Whether to output dcd file.</p>
 </dd>
-<dt>report_state<span class="classifier">bool</span></dt><dd><p>Whether to output simulation state.</p>
+<dt>report_state_data<span class="classifier">bool</span></dt><dd><p>Whether to output simulation state and data.</p>
 </dd>
 </dl>
 </section>
@@ -1523,8 +1523,8 @@ This function is adapted from open3SPN2.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="openabc.utils.helper_functions.get_WC_paired_seq">
-<span class="sig-name descname"><span class="pre">get_WC_paired_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.get_WC_paired_seq" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="openabc.utils.helper_functions.get_WC_paired_sequence">
+<span class="sig-name descname"><span class="pre">get_WC_paired_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openabc.utils.helper_functions.get_WC_paired_sequence" title="Permalink to this definition"></a></dt>
 <dd><p>Get WC-paired sequence.</p>
 <section id="id73">
 <h3>Parameters<a class="headerlink" href="#id73" title="Permalink to this heading"></a></h3>
@@ -1917,7 +1917,10 @@ Currently this function only supports using orthogonal box.</p>
 This parameter can be ‘FastNS’ or ‘distance_array’. 
 FastNS should be faster than distance_array, especially for large systems.</p>
 </dd>
-<dt>reset_serial<span class="classifier">bool</span></dt><dd><p>Whether to reset serial to 0, 1, …, N - 1.</p>
+<dt>reset_serial<span class="classifier">bool</span></dt><dd><p>Whether to reset serial to 0, 1, …, N - 1. 
+If True, the serial in the final pdb is reset as 0, 1, …, N - 1. 
+If False, the serial remains unchanged. 
+If True and atom number &gt; 1,000,000, the serial remains unchanged since the largest atom serial number allowed in pdb is 999,999.</p>
 </dd>
 </dl>
 </section>
