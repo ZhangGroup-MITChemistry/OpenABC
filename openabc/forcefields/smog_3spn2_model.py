@@ -497,8 +497,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             self.system.addForce(force1)
             self.system.addForce(force2)
     
-    def add_all_vdwl(self, param_PP_MJ_path=f'{__location__}/parameters/pp_MJ.csv', cutoff_PD=1.425*unit.nanometer, 
-                     force_group=11):
+    def add_all_vdwl(self, param_PP_MJ_path=f'{__location__}/parameters/pp_MJ.csv', force_group=11):
         """
         Add all the nonbonded Van der Waals interactions. 
         
@@ -518,7 +517,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
         """
         print('Add all the nonbonded contact interactions.')
         param_PP_MJ = pd.read_csv(param_PP_MJ_path)
-        force = functional_terms.all_smog_MJ_3spn2_term(self, param_PP_MJ, cutoff_PD, force_group)
+        force = functional_terms.all_smog_MJ_3spn2_vdwl_term(self, param_PP_MJ, force_group)
         self.system.addForce(force)
     
     def add_all_elec(self, salt_conc=150*unit.millimolar, temperature=300*unit.kelvin, 

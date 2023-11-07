@@ -17,8 +17,6 @@ _moff_amino_acid_charge_dict = dict(ALA=0.0, ARG=1.0, ASN=0.0, ASP=-1.0, CYS=0.0
                                     LEU=0.0, LYS=1.0, MET=0.0, PHE=0.0, PRO=0.0,
                                     SER=0.0, THR=0.0, TRP=0.0, TYR=0.0, VAL=0.0)
 
-_kcal_to_kj = 4.184
-
 class MOFFParser(object):
     """
     MOFF protein parser.
