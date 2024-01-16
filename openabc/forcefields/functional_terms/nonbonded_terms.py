@@ -498,11 +498,17 @@ def all_smog_MJ_3spn2_explicit_ion_hydr_vdwl_term(mol, param_PP_MJ, force_group=
                 offset3=exp(-(cutoff-mu2)^2/(2*eta^2));
                 hydr1=gamma1*(exp(-(r-mu1)^2/(2*eta1^2))-offset2);
                 offset2=exp(-(cutoff-mu1)^2/(2*eta1^2));
+                gamma1=gamma1_map(atom_type1, atom_type2);
+                gamma2=gamma2_map(atom_type1, atom_type2);
+                mu1=mu1_map(atom_type1, atom_type2);
+                mu2=mu2_map(atom_type1, atom_type2);
+                eta1=eta1_map(atom_type1, atom_type2);
+                eta2=eta2_map(atom_type1, atom_type2);
                 vdwl=4*epsilon*((sigma/r)^12-(sigma/r)^6-offset1);
                 offset1=(sigma/cutoff)^12-(sigma/cutoff)^6;
                 epsilon=epsilon_map(atom_type1, atom_type2);
                 sigma=sigma_map(atom_type1, atom_type2);
-                cutoff=cutoff_map(atom_type1, atom_type2)''')
+                cutoff=cutoff_map(atom_type1, atom_type2);''')
     _ions = ['NA', 'MG', 'CL']
     n_atom_types = len(_amino_acids) + len(_dna_3spn2_atom_names) + len(_ions)
     
@@ -516,7 +522,7 @@ def all_smog_MJ_3spn2_explicit_ion_hydr_vdwl_term(mol, param_PP_MJ, force_group=
     eta2_map = np.ones((n_atom_types, n_atom_types)) # initialize as nonzero value to avoid division by zero
     epsilon_map = np.zeros((n_atom_types, n_atom_types))
     sigma_map = np.zeros((n_atom_types, n_atom_types))
-    cutoff_map = np.ones((n_atom_types, n_atom_types)) # initialize as zero, but will ensure it is nonzero after setting all the cutoffs
+    cutoff_map = np.zeros((n_atom_types, n_atom_types)) # initialize as zero, but will ensure it is nonzero after setting all the cutoffs
     
     # set atom type indices and classify atoms
     atom_type_index_dict = dict(zip(_amino_acids + _dna_3spn2_atom_names + _ions, list(range(n_atom_types))))
@@ -567,9 +573,8 @@ def all_smog_MJ_3spn2_explicit_ion_hydr_vdwl_term(mol, param_PP_MJ, force_group=
             j = negative_amino_acid_type_indices
         else:
             j = [atom_type_index_dict[k[1]]]
-        gamma1 = H1_dict[k] / (eta1_dict[k] * (2 * np.pi)**0.5)
-        gamma1_map[i, j] = gamma1
-        gamma1_map[j, i] = gamma1
+        gamma1_map[i, j] = H1_dict[k] / (eta1_dict[k] * (2 * np.pi)**0.5)
+        gamma1_map[j, i] = gamma1_map[i, j]
         mu1_map[i, j] = mu1_dict[k]
         mu1_map[j, i] = mu1_dict[k]
         eta1_map[i, j] = eta1_dict[k]
@@ -587,9 +592,8 @@ def all_smog_MJ_3spn2_explicit_ion_hydr_vdwl_term(mol, param_PP_MJ, force_group=
             j = negative_amino_acid_type_indices
         else:
             j = [atom_type_index_dict[k[1]]]
-        gamma2 = H2_dict[k] / (eta2_dict[k] * (2 * np.pi)**0.5)
-        gamma2_map[i, j] = gamma2
-        gamma2_map[j, i] = gamma2
+        gamma2_map[i, j] = H2_dict[k] / (eta2_dict[k] * (2 * np.pi)**0.5)
+        gamma2_map[j, i] = gamma2_map[i, j]
         mu2_map[i, j] = mu2_dict[k]
         mu2_map[j, i] = mu2_dict[k]
         eta2_map[i, j] = eta2_dict[k]
@@ -612,8 +616,8 @@ def all_smog_MJ_3spn2_explicit_ion_hydr_vdwl_term(mol, param_PP_MJ, force_group=
     # protein-protein contacts are all MJ potentials
     for _, row in param_PP_MJ.iterrows():
         atom_type1, atom_type2 = row['atom_type1'], row['atom_type2']
-        i = _amino_acids.index(atom_type1)
-        j = _amino_acids.index(atom_type2)
+        i = atom_type_index_dict[atom_type1]
+        j = atom_type_index_dict[atom_type2]
         epsilon_map[i, j] = row['epsilon (kj/mol)']
         epsilon_map[j, i] = epsilon_map[i, j]
         sigma_map[i, j] = row['sigma (nm)']
@@ -629,19 +633,18 @@ def all_smog_MJ_3spn2_explicit_ion_hydr_vdwl_term(mol, param_PP_MJ, force_group=
     param_DD.index = param_DD['name'] # rearrange to make sure the row order is based on dna_atom_names
     param_DD = param_DD.loc[_dna_3spn2_atom_names]
     param_DD.index = list(range(len(param_DD.index)))
-    for i1 in range(len(_dna_3spn2_atom_names)):
-        for j1 in range(i1, len(_dna_3spn2_atom_names)):
-            if (_dna_3spn2_atom_names[i1] == 'P') and (_dna_3spn2_atom_names[j1] == 'P'):
-                # in explicit ion model, P-P interaction does not use parameters in param_DD
+    for atom_type1 in _dna_3spn2_atom_names:
+        for atom_type2 in _dna_3spn2_atom_names:
+            if (atom_type1 == 'P') and (atom_type2 == 'P'):
                 continue
-            i = i1 + len(_amino_acids)
-            j = j1 + len(_amino_acids)
-            epsilon_i = param_DD.loc[i1, 'epsilon']
-            epsilon_j = param_DD.loc[j1, 'epsilon']
+            i = atom_type_index_dict[atom_type1]
+            j = atom_type_index_dict[atom_type2]
+            epsilon_i = param_DD.loc[i - len(_amino_acids), 'epsilon']
+            epsilon_j = param_DD.loc[j - len(_amino_acids), 'epsilon']
             epsilon_map[i, j] = (epsilon_i * epsilon_j)**0.5
             epsilon_map[j, i] = epsilon_map[i, j]
-            sigma_i = param_DD.loc[i1, 'sigma']
-            sigma_j = param_DD.loc[j1, 'sigma']
+            sigma_i = param_DD.loc[i - len(_amino_acids), 'sigma']
+            sigma_j = param_DD.loc[j - len(_amino_acids), 'sigma']
             sigma_map[i, j] = 0.5 * (sigma_i + sigma_j) * (2**(-1/6)) # be careful with sigma here
             sigma_map[j, i] = sigma_map[i, j]
             cutoff_map[i, j] = 0.5 * (sigma_i + sigma_j) # be careful with cutoff here
@@ -650,8 +653,8 @@ def all_smog_MJ_3spn2_explicit_ion_hydr_vdwl_term(mol, param_PP_MJ, force_group=
     # set protein-DNA interactions
     # we directly assign protein-DNA interaction parameters, which is convenient
     # note cutoff is different from the value in implicit solvent SMOG-3SPN2 model
-    amino_acid_atom_type_indices = list(range(len(_amino_acids)))
-    dna_atom_type_indices = list(range(len(_amino_acids), len(_amino_acids) + len(_dna_3spn2_atom_names)))
+    amino_acid_atom_type_indices = [atom_type_index_dict[i] for i in _amino_acids]
+    dna_atom_type_indices = [atom_type_index_dict[i] for i in _dna_3spn2_atom_names]
     epsilon_map[amino_acid_atom_type_indices, dna_atom_type_indices] = 0.02987572 * _kcal_to_kj
     epsilon_map[dna_atom_type_indices, amino_acid_atom_type_indices] = 0.02987572 * _kcal_to_kj
     sigma_map[amino_acid_atom_type_indices, dna_atom_type_indices] = 0.57
@@ -690,21 +693,21 @@ def all_smog_MJ_3spn2_explicit_ion_hydr_vdwl_term(mol, param_PP_MJ, force_group=
                                      ('NA', 'NA'): 0.01121 * _kcal_to_kj, ('NA', 'MG'): 0.04971 * _kcal_to_kj, 
                                      ('NA', 'CL'): 0.08387 * _kcal_to_kj, ('MG', 'MG'): 0.89460 * _kcal_to_kj, 
                                      ('MG', 'CL'): 0.49737 * _kcal_to_kj, ('CL', 'CL'): 0.03585 * _kcal_to_kj}
-    ion_charged_atom_sigma_dict = {('P', 'P'): 0.686, ('NA', 'P'): 0.344, ('NA', 'AA+'): 0.4065, ('NA', 'AA-'): 0.4065,
+    ion_charged_atom_sigma_dict = {('P', 'P'): 0.686, ('NA', 'P'): 0.414, ('NA', 'AA+'): 0.4065, ('NA', 'AA-'): 0.4065,
                                    ('MG', 'P'): 0.487, ('MG', 'AA+'): 0.3556, ('MG', 'AA-'): 0.3556, ('CL', 'P'): 0.55425, 
                                    ('CL', 'AA+'): 0.48725, ('CL', 'AA-'): 0.48725, ('NA', 'NA'): 0.243, ('NA', 'MG'): 0.237, 
                                    ('NA', 'CL'): 0.31352, ('MG', 'MG'): 0.1412, ('MG', 'CL'): 0.474, ('CL', 'CL'): 0.4045}
     for k in ion_charged_atom_epsilon_dict.keys():
         if k[0] == 'AA+':
-            i = [atom_type_index_dict[x] for x in ['ARG', 'LYS']]
+            i = positive_amino_acid_type_indices
         elif k[0] == 'AA-':
-            i = [atom_type_index_dict[x] for x in ['ASP', 'GLU']]
+            i = negative_amino_acid_type_indices
         else:
             i = atom_type_index_dict[k[0]]
         if k[1] == 'AA+':
-            j = [atom_type_index_dict[x] for x in ['ARG', 'LYS']]
+            j = positive_amino_acid_type_indices
         elif k[1] == 'AA-':
-            j = [atom_type_index_dict[x] for x in ['ASP', 'GLU']]
+            j = negative_amino_acid_type_indices
         else:
             j = atom_type_index_dict[k[1]]
         epsilon_map[i, j] = ion_charged_atom_epsilon_dict[k]
@@ -761,7 +764,7 @@ def all_smog_3spn2_explicit_ion_elec_term(mol, force_group=12):
     Type 1 for ARG and LYS CA atoms. 
     Type 2 for ASP and GLU CA atoms. 
     Type 3 for phosphate CG atoms. 
-    Type 4 to 3+len(_ions) for ions
+    Type 4-6 for ions.
     """
     # set atom types
     _ions = ['NA', 'MG', 'CL']
@@ -790,7 +793,7 @@ def all_smog_3spn2_explicit_ion_elec_term(mol, force_group=12):
     # for the 2 long-range PME forces, one has dielectric as 78, and the other has dielectric as 83
     # PME dielectric 78 for protein-protein and protein-DNA interactions, PME dielectric 83 for others
     # note in PME dielectric 83, we need to exclude all protein-protein and protein-DNA electrostatic pairs
-    # elec_short should correct the short range part of elec_PME_83 as it has distance-dependent dielectric at short range
+    # elec_short corrects the short range part of elec_PME_83 as it has distance-dependent dielectric at short range
     
     # set electrostatic interactions with PME
     elec_PME_78 = mm.NonbondedForce()
@@ -814,7 +817,7 @@ def all_smog_3spn2_explicit_ion_elec_term(mol, force_group=12):
         j = atom_type_index_dict[k[1]]
         q1 = atom_charge_dict[k[0]]
         q2 = atom_charge_dict[k[1]]
-        alpha_map[i, j] = (q1 * q2 * NA * EC**2 / (4 * np.pi * VEP * 78)).value_in_unit(unit.kilojoule_per_mole * unit.nanometer)
+        alpha_map[i, j] = (q1 * q2 * NA * EC**2 / (4 * np.pi * VEP)).value_in_unit(unit.kilojoule_per_mole * unit.nanometer)
         alpha_map[j, i] = alpha_map[i, j]
         mu_dielectric_map[i, j] = mu_dielectric_dict[k]
         mu_dielectric_map[j, i] = mu_dielectric_dict[k]
@@ -887,9 +890,12 @@ def all_smog_3spn2_explicit_ion_elec_term(mol, force_group=12):
         is_charged_1 = is_charged_amino_acid_1 or is_phosphate_1
         is_charged_2 = is_charged_amino_acid_2 or is_phosphate_2
         if is_charged_1 and is_charged_2:
+            # add exceptions for some atom pairs in the exclusion list
             if is_phosphate_1 and is_phosphate_2:
-                elec_PME_83.addException(a1, a2, 0, 1, 0) # set sigma as nonzero to avoid division by zero
+                # add exceptions for P-P pairs in the exclusion list in PME with dielectric = 83
+                elec_PME_83.addException(a1, a2, 0, 1, 0)
             else:
+                # add exceptions for charged AA-AA and AA-P pairs in the exclusion list in PME with dielectric = 78
                 elec_PME_78.addException(a1, a2, 0, 1, 0)
     n_charged_amino_acid_indices = len(charged_amino_acid_indices)
     if n_charged_amino_acid_indices >= 2:

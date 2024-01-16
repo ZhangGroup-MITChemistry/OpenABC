@@ -24,6 +24,12 @@ OpenMM of version < 7.6 and >= 7.6 are both supported. Mpipi force field is incl
 
 SMOG+3SPN2 force fields are enabled. 3SPN2 is adapted from Wolynes groups' Open3SPN2. To run this, you may need to install pdbfixer and X3DNA. Other models do not require pdbfixer or X3DNA.
 
+### Version 1.0.6
+
+Currently under development!
+Explicit ion model has been implemented.
+Scripts in `openabc/utils` are imported into name space `openabc.utils` (see `openabc/utils/__init__.py`) so they can be accessed from `openabc.utils``.
+
 ## Tutorials
 
 Detailed tutorials with all the necessary input files are provided in "tutorials" directory. 

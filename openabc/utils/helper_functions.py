@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd
+import mdtraj
+import warnings
 try:
     import pdbfixer
-except Exception as e:
-    print('Cannot import pdbfixer. This may affect 3SPN2 model.')
+except ImportError:
+    pdbfixer = None
 try:
     import openmm.unit as unit
 except ImportError:
@@ -26,6 +28,7 @@ _nucleotides = _dna_nucleotides + _rna_nucleotides
 def parse_pdb(pdb_file):
     """
     Load pdb file as pandas dataframe.
+    Note there should be only a single frame in the pdb file.
     
     Parameters
     ----------
@@ -38,6 +41,8 @@ def parse_pdb(pdb_file):
         A pandas dataframe includes atom information. 
     
     """
+    traj = mdtraj.load_pdb(pdb_file)
+    assert traj.n_frames == 1
     def pdb_line(line):
         return dict(recname=str(line[0:6]).strip(),
                     serial=int(line[6:11]),
@@ -387,6 +392,7 @@ def fix_pdb(pdb_file):
         Output fixed structure. 
 
     """
+    assert pdbfixer is not None
     fixer = pdbfixer.PDBFixer(filename=pdb_file)
     fixer.findMissingResidues()
     chains = list(fixer.topology.chains())

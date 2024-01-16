@@ -41,6 +41,45 @@ def harmonic_angle_term(df_angles, use_pbc, force_group=2):
     return angles
 
 
+def cosine_multi_angle_term(df_angles, use_pbc, scale_factor=5, force_group=2):
+    """
+    Cosine with mulitplicity angle term.
+    When scale_factor is small (e.g. 0.2), this is very close to harmonic angle term, but more stable.
+    
+    Parameters
+    ----------
+    df_angles : pd.DataFrame
+        Information for all the angles.
+    
+    use_pbc : bool
+        Whether to use PBC. 
+    
+    scale_factor : float or int
+        Scale factor of the cosine term.
+    
+    force_group : int
+        Force group.
+    
+    Returns
+    -------
+    angles : Force
+        OpenMM force object. 
+    
+    """
+    angles = mm.CustomAngleForce(f'k_angle*(1-cos({scale_factor}*(theta-theta0)))/{scale_factor**2}')
+    angles.addPerAngleParameter('k_angle')
+    angles.addPerAngleParameter('theta0')
+    for _, row in df_angles.iterrows():
+        a1 = int(row['a1'])
+        a2 = int(row['a2'])
+        a3 = int(row['a3'])
+        parameters = row[['k_angle', 'theta0']].tolist()
+        angles.addAngle(a1, a2, a3, parameters)
+    angles.setUsesPeriodicBoundaryConditions(use_pbc)
+    angles.setForceGroup(force_group)
+    return angles
+
+
 def class2_angle_term(df_angles, use_pbc, force_group=2):
     """
     Class 2 angle term.

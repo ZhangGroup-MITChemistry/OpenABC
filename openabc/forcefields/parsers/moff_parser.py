@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 import mdtraj
-from openabc.utils import helper_functions
-from openabc.utils.shadow_map import find_ca_pairs_from_atomistic_pdb
+from openabc.utils import parse_pdb, atomistic_pdb_to_ca_pdb, find_ca_pairs_from_atomistic_pdb
 from openabc.lib import _amino_acids
 import sys
 import os
@@ -39,7 +38,7 @@ class MOFFParser(object):
         """
         self.atomistic_pdb = atomistic_pdb
         self.pdb = ca_pdb
-        self.atoms = helper_functions.parse_pdb(ca_pdb)
+        self.atoms = parse_pdb(ca_pdb)
         # check if all the atoms are protein CA atoms
         assert ((self.atoms['resname'].isin(_amino_acids)).all() and self.atoms['name'].eq('CA').all())
         if default_parse:
@@ -71,7 +70,7 @@ class MOFFParser(object):
             A class instance. 
         
         """
-        helper_functions.atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
+        atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
         result = cls(atomistic_pdb, ca_pdb, default_parse)
         return result
     
@@ -163,7 +162,7 @@ class MOFFParser(object):
         ss : None or sequence-like
             Secondary structure type of each residue. 
             If None, no secondary structure information is provided and all the native pairs are kept.
-            If not None, then only native pairs within continuous ordered 
+            If not None, then only native pairs within continuous ordered domains are kept.
         
         ordered_ss_names : sequence-like
             The names of ordered secondary structures. 
@@ -222,6 +221,8 @@ class MOFFParser(object):
                     a2 = int(row['a2'])
                     if a1 > a2:
                         a1, a2 = a2, a1
+                    if self.atoms.loc[a1, 'chainID'] != self.atoms.loc[a2, 'chainID']:
+                        continue
                     if ss[a1] in ordered_ss_names:
                         if all([x == ss[a1] for x in ss[a1:a2 + 1]]):
                             new_native_pairs.loc[len(new_native_pairs.index)] = row

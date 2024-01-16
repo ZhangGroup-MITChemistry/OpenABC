@@ -14,7 +14,7 @@ import os
 try:
     import torch
 except ImportError:
-    print('Please install torch to facilitate replica exchange simulations.')
+    torch = None
 import math
 import time
 
@@ -86,6 +86,7 @@ class TemperatureReplicaExchange(object):
         https://pytorch.org/docs/stable/distributed.html
 
         """
+        assert torch is not None # ensure torch is installed and loaded correctly
         self.backend = backend
         self.n_replicas = n_replicas
         assert self.n_replicas == int(os.environ['WORLD_SIZE'])

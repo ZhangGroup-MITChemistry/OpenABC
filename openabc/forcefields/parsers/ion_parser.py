@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from openabc.utils import helper_functions
+from openabc.utils import parse_pdb
 
 class IonParser(object):
     """
@@ -17,7 +17,7 @@ class IonParser(object):
         
         """
         self.pdb = pdb
-        atoms = helper_functions.parse_pdb(pdb)
+        atoms = parse_pdb(pdb)
         atoms = atoms[atoms['resname'].isin(['NA', 'MG', 'CL'])].copy()
         atoms = atoms.reset_index(drop=True)
         self.atoms = atoms

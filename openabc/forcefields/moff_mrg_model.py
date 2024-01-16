@@ -78,6 +78,8 @@ class MOFFMRGModel(CGModel):
                     any_theta0_beyond_threshold = True
             if clip and any_theta0_beyond_threshold:
                 print(f'Decrease all the theta0 values larger than {threshold} to {threshold}.')
+                # set threshold as np.float32(threshold) to avoid warnings
+                threshold = np.float32(threshold)
                 self.protein_angles.loc[self.protein_angles['theta0'] > threshold, 'theta0'] = threshold
             force = functional_terms.harmonic_angle_term(self.protein_angles, self.use_pbc, force_group)
             self.system.addForce(force)

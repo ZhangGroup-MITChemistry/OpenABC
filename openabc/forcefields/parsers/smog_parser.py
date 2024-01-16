@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 import mdtraj
-from openabc.utils import helper_functions
-from openabc.utils.shadow_map import find_ca_pairs_from_atomistic_pdb
+from openabc.utils import parse_pdb, atomistic_pdb_to_ca_pdb, find_ca_pairs_from_atomistic_pdb
 from openabc.lib import _amino_acids
 import sys
 import os
@@ -39,7 +38,7 @@ class SMOGParser(object):
         """
         self.atomistic_pdb = atomistic_pdb
         self.pdb = ca_pdb
-        self.atoms = helper_functions.parse_pdb(ca_pdb)
+        self.atoms = parse_pdb(ca_pdb)
         # check if all the atoms are protein CA atoms
         assert ((self.atoms['resname'].isin(_amino_acids)).all() and self.atoms['name'].eq('CA').all())
         if default_parse:
@@ -66,7 +65,7 @@ class SMOGParser(object):
             Whether to parse with default settings. 
         
         """
-        helper_functions.atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
+        atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
         return cls(atomistic_pdb, ca_pdb, default_parse)
     
     def parse_exclusions(self, exclude12=True, exclude13=True, exclude14=True, exclude_native_pairs=True):

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from openabc.utils import helper_functions
+from openabc.utils import get_WC_paired_sequence, fix_pdb, write_pdb
 from openabc.forcefields.parameters import Mixin3SPN2ConfigParser
 from openabc.lib import _dna_nucleotides, _dna_WC_pair_dict, _angstrom_to_nm
 import subprocess
@@ -69,7 +69,7 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
         if n_chains == 2:
             sequence1, sequence2 = sequence_list[0], sequence_list[1]
             if len(sequence1) == len(sequence2):
-                if helper_functions.get_WC_paired_sequence(sequence1) == sequence2:
+                if get_WC_paired_sequence(sequence1) == sequence2:
                     # one dsDNA molecule with W-C paired sequence
                     flag = True
         if flag:
@@ -581,14 +581,14 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
         
         """
         try:
-            atomistic_atoms = helper_functions.fix_pdb(atomistic_pdb) # fix pdb
+            atomistic_atoms = fix_pdb(atomistic_pdb) # fix pdb
         except Exception as e:
             print('Do not fix pdb file.')
         cg_atoms = cls.aa_to_cg(atomistic_atoms, PSB_order=PSB_order) # do coarse-graining
         if new_sequence is not None:
             print(f'Change to new sequence: {new_sequence}')
             cg_atoms = cls.change_sequence(cg_atoms, new_sequence)
-        helper_functions.write_pdb(cg_atoms, cg_pdb)
+        write_pdb(cg_atoms, cg_pdb)
         self = cls(dna_type)
         # directly set self.atoms from cg_atoms instead of loading cg_pdb
         # numerical accuracy is decreased when saving coordinates to pdb
