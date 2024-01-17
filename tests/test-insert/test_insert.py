@@ -4,26 +4,26 @@ import sys
 import os
 import time
 
-sys.path.append('../..')
+sys.path.insert(0, '../..') # ensure use the specific openabc we aim to test
 from openabc.utils.insert import insert_molecules
 
-n_mol = 100
-n_repeat = 3
-box = [75, 75, 75]
-
-# test speed
+# test orthogonal box
+box1 = [75, 75, 75, 90.0, 90.0, 90.0]
 time1 = time.time()
-for i in range(n_repeat):
-    insert_molecules('hp1alpha_dimer_CA.pdb', 'start1.pdb', n_mol=n_mol, box=box, method='FastNS')
+insert_molecules('hp1alpha_dimer_CA.pdb', 'start1.pdb', n_copies=100, box=box1)
 time2 = time.time()
-print(f'On average, FastNS method takes {(time2 - time1)/n_repeat} seconds.')
-
-time3 = time.time()
-for i in range(n_repeat):
-    insert_molecules('hp1alpha_dimer_CA.pdb', 'start2.pdb', n_mol=n_mol, box=box, method='distance_array')
-time4 = time.time()
-print(f'On average, distance_array method takes {(time4 - time3)/n_repeat} seconds.')
+print(f'insert_molecules takes {time2 - time1} seconds.')
 
 # test with existing pdb
-insert_molecules('hp1alpha_dimer_CA.pdb', 'start3.pdb', n_mol=2, box=box, existing_pdb='start1.pdb', method='FastNS')
-insert_molecules('hp1alpha_dimer_CA.pdb', 'start4.pdb', n_mol=2, box=box, existing_pdb='start2.pdb', method='distance_array')
+time1 = time.time()
+insert_molecules('hp1alpha_dimer_CA.pdb', 'start2.pdb', n_copies=10, existing_pdb='start1.pdb', box=box1)
+time2 = time.time()
+print(f'insert_molecules takes {time2 - time1} seconds.')
+
+# test with non-orthogonal box
+box1 = [75, 75, 75, 60.0, 60.0, 60.0]
+time1 = time.time()
+insert_molecules('hp1alpha_dimer_CA.pdb', 'start3.pdb', n_copies=100, box=box1)
+time2 = time.time()
+print(f'insert_molecules takes {time2 - time1} seconds.')
+

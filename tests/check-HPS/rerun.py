@@ -12,8 +12,7 @@ import mdtraj
 import sys
 import os
 
-__location__ = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(f'{__location__}/../..')
+sys.path.insert(0, '../..') # ensure use the specific openabc we aim to test
 from openabc.forcefields.hps_zero_offset_model import HPSZeroOffsetModel
 from openabc.forcefields.parsers import HPSParser
 

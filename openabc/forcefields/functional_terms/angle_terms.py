@@ -41,10 +41,12 @@ def harmonic_angle_term(df_angles, use_pbc, force_group=2):
     return angles
 
 
-def cosine_multi_angle_term(df_angles, use_pbc, scale_factor=5, force_group=2):
+def harmonic_angle_cosine_term(df_angles, use_pbc, scale_factor=0.2, force_group=2):
     """
-    Cosine with mulitplicity angle term.
-    When scale_factor is small (e.g. 0.2), this is very close to harmonic angle term, but more stable.
+    An angle potential implemented with cosine function but effectively close to harmonic potential.
+    The expression is k_angle*(1-cos(scale_factor*(theta-theta0)))/scale_factor**2.
+    When scale_factor is close to 0 (e.g. 0.2), this is close to 0.5*k_angle*(theta-theta0)**2 when theta-theta0 is within [-pi, pi].
+    This term is more stable than the original harmonic angle term.
     
     Parameters
     ----------
@@ -56,6 +58,7 @@ def cosine_multi_angle_term(df_angles, use_pbc, scale_factor=5, force_group=2):
     
     scale_factor : float or int
         Scale factor of the cosine term.
+        If the value is close to 0 (e.g. 0.2), the potential is effectively close to the harmonic potential.
     
     force_group : int
         Force group.

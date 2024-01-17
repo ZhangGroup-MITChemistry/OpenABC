@@ -4,7 +4,7 @@ import mdtraj
 import sys
 import os
 
-sys.path.append('../../..')
+sys.path.insert(0, '../../..') # ensure use the specific openabc we aim to test
 from openabc.forcefields.parsers import MOFFParser
 import openabc.utils.legacy_shadow_map as legacy_shadow_map
 

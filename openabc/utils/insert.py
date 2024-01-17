@@ -4,6 +4,7 @@ from MDAnalysis.lib.nsgrid import FastNS
 from MDAnalysis.lib.distances import distance_array
 from scipy.spatial.transform import Rotation as R
 from openabc.utils import parse_pdb, write_pdb
+import math
 
 __author__ = 'Andrew Latham'
 
@@ -13,40 +14,147 @@ __modified_by__ = 'Shuming Liu'
 A python script for inserting molecules, similar to gmx insert-molecules. 
 """
 
-def insert_molecules(new_pdb, output_pdb, n_mol, radius=0.5, existing_pdb=None, max_n_attempts=10000, 
-                     box=[100, 100, 100], method='FastNS', reset_serial=True):
+def insert_molecules_dataframe(new_atoms, n_copies, radius=0.5, existing_atoms=None, max_n_attempts=10000, 
+                               box=[100, 100, 100, 90.0, 90.0, 90.0], reset_serial=True):
     """
-    Insert multiple copies of given molecule into an existing pdb or a new empty box. 
-    Note all the length parameter units are nm, though coordinates in pdb are in unit angstroms. 
-    Currently this function only supports using orthogonal box. 
+    Insert multiple copies of given atoms into a box with existing atoms or empty and ensure no non-physical overlap with FastNS method under PBC condition. 
+    Note all the input length parameter units are nm, though coordinates in pdb are in unit angstroms.
     
     Parameters
     ----------
-    new_pdb : str
-        Path of the new pdb file to be inserted. 
+    new_atoms : pd.DataFrame
+        New atoms of the molecule to be inserted. 
     
-    output_pdb : str
-        Path of the output pdb file. 
-    
-    n_mol : int
-        Number of copies of the new molecule to be inserted. 
+    n_copies : int
+        Number of copies of the new atoms to be inserted. 
     
     radius : float or int
         Radius for each atom in unit nm. Insertion ensures the distance between any two atoms are larger than 2*radius under periodic boundary condition. 
     
-    existing_pdb : None or str
-        Path of an existing pdb file. If None, the molecules will be inserted into a new empty box, otherwise, inserted into a copy of existing_pdb. 
+    existing_atoms : None or pd.DataFrame
+        Existing atoms. 
+        If None, the molecules will be inserted into a new empty box, otherwise, inserted into a copy of existing_atoms. 
     
     max_n_attempts : int
-        Maximal number of attempts to insert. Ensure this value no smaller than n_mol. 
+        Maximal number of attempts to insert. Ensure this value is >= n_copies.
     
-    box : list or numpy array, shape = (3,)
-        New box size in unit nm. 
+    box : 1d-array like, shape = (6,)
+        Box shape array as [a, b, c, alpha, beta, gamma]. 
+        Box lengths are a, b, and c in unit nm.
+        Box angles are alpha, beta, and gamma in unit degree.
+        Be careful with the unit of lengths and angles. 
     
-    method : str
-        Which method to use for detecting if the inserted molecule has contact with existing atoms. 
-        This parameter can be 'FastNS' or 'distance_array'. 
-        FastNS should be faster than distance_array, especially for large systems. 
+    reset_serial : bool
+        Whether to reset serial to 0, 1, ..., N - 1. 
+        If True, the serial in the final pdb is reset as 0, 1, ..., N - 1. 
+        If False, the serial remains unchanged. 
+        If True and atom number > 1,000,000, the serial remains unchanged since the largest atom serial number allowed in pdb is 999,999. 
+    
+    Returns
+    -------
+    atoms : pd.DataFrame
+        Output atoms.
+    
+    """
+    assert max_n_attempts >= n_copies
+    if existing_atoms is None:
+        atoms = pd.DataFrame()
+    else:
+        atoms = existing_atoms.copy()
+    new_coords = new_atoms[['x', 'y', 'z']].to_numpy() # in unit angstrom
+    new_coords -= np.mean(new_coords, axis=0) # move to origin to facilitate further operations
+    count_n_copies = 0
+    count_n_attempts = 0
+    cutoff = float(2 * 10 * radius) # convert nm to angstrom
+    assert len(box) == 6
+    if not isinstance(box, np.ndarray):
+        box = np.array(box)
+        box[:3] *= 10 # convert nm to angstrom
+        box = box.astype(np.float32)
+        if len(atoms.index) > 0:
+            coords = atoms[['x', 'y', 'z']].to_numpy().astype(np.float32)
+            grid_search = FastNS(cutoff, coords, box, pbc=True)
+    a = float(box[0]) # in unit angstrom
+    b = float(box[1]) # in unit angstrom
+    c = float(box[2]) # in unit angstrom
+    alpha = float(box[3]) * np.pi / 180 # in unit radian
+    beta = float(box[4]) * np.pi / 180 # in unit radian
+    gamma = float(box[5]) * np.pi / 180 # in unit radian
+    v1 = np.array([a, 0, 0]) # primitive cell vector 1
+    v2 = np.array([b * math.cos(gamma), b * math.sin(gamma), 0]) # primitive cell vector 2
+    v3_x = c * math.cos(beta)
+    v3_y = c * (math.cos(alpha) - math.cos(beta) * math.cos(gamma)) / math.sin(gamma)
+    v3_z = (c**2 - v3_x**2 - v3_y**2)**0.5
+    v3 = np.array([v3_x, v3_y, v3_z]) # primitive cell vector 3
+    v = np.stack([v1, v2, v3], axis=0) # primitive cell vectors
+    while (count_n_copies < n_copies) and (count_n_attempts < max_n_attempts):
+        rotate = R.random()
+        new_coords_i = rotate.apply(new_coords)
+        translate = np.dot(v.T, np.random.uniform(0, 1, 3)) # in unit angstrom
+        new_coords_i += translate # in unit angstrom
+        if len(atoms.index) == 0:
+            flag = True
+        else:
+            flag = False
+            results = grid_search.search(new_coords_i.astype(np.float32))
+            if len(results.get_pair_distances()) == 0:
+                flag = True # no overlap
+        if flag:
+            new_atoms_i = new_atoms.copy()
+            new_atoms_i[['x', 'y', 'z']] = new_coords_i
+            atoms = pd.concat([atoms, new_atoms_i], ignore_index=True)
+            count_n_copies += 1
+            coords = atoms[['x', 'y', 'z']].to_numpy().astype(np.float32) # in unit angstrom
+            grid_search = FastNS(cutoff, coords, box, pbc=True)
+        count_n_attempts += 1
+    
+    # determine if n_copies of new atoms were successfully added
+    if count_n_copies == n_copies:
+        print(f'Successfully inserted {n_copies} molecules.')
+    else:
+        print(f'Failed to insert {n_copies} molecules. Only {count_n_copies} molecules were inserted.')
+        print('You may need to increase the box size or the number of attempts and retry.')
+    if reset_serial:
+        n_atoms = len(atoms.index)
+        if n_atoms > 1000000:
+            print(f'Too many atoms. Cannot reset serial as 0, 1, ..., N - 1. Serial remains unchanged.')
+        else:
+            atoms['serial'] = np.arange(n_atoms)
+    return atoms
+    
+
+def insert_molecules(new_pdb, output_pdb, n_copies, radius=0.5, existing_pdb=None, max_n_attempts=10000, 
+                     box=[100, 100, 100, 90.0, 90.0, 90.0], reset_serial=True):
+    """
+    Insert multiple copies of given PDB into a box with existing PDB or empty and ensure no non-physical overlap with FastNS method under PBC condition. 
+    Note all the input length parameter units are nm, though coordinates in pdb are in unit angstroms.
+    
+    Parameters
+    ----------
+    new_pdb : str
+        Path of the new PDB file of the molecule to be inserted. 
+    
+    output_pdb : str
+        Path of the output PDB file with inserted molecules.
+    
+    n_copies : int
+        Number of copies of the new atoms to be inserted. 
+    
+    radius : float or int
+        Radius for each atom in unit nm. Insertion ensures the distance between any two atoms are larger than 2*radius under periodic boundary condition. 
+    
+    existing_pdb : str or None
+        Existing PDB of the molecules in the box. 
+        If None, the molecules will be inserted into a new empty box, otherwise, inserted into a box with atoms from existing_pdb.
+    
+    max_n_attempts : int
+        Maximal number of attempts to insert. Ensure this value is >= n_copies.
+    
+    box : 1d-array like, shape = (6,)
+        Box shape array as [a, b, c, alpha, beta, gamma]. 
+        Box lengths are a, b, and c in unit nm.
+        Box angles are alpha, beta, and gamma in unit degree.
+        Be careful with the unit of lengths and angles. 
     
     reset_serial : bool
         Whether to reset serial to 0, 1, ..., N - 1. 
@@ -55,74 +163,16 @@ def insert_molecules(new_pdb, output_pdb, n_mol, radius=0.5, existing_pdb=None, 
         If True and atom number > 1,000,000, the serial remains unchanged since the largest atom serial number allowed in pdb is 999,999. 
     
     """
-    assert method in ['FastNS', 'distance_array'] # check method
-    assert max_n_attempts >= n_mol
-    print(f'Check contact with {method} method. ')
-    if existing_pdb is None:
-        atoms = pd.DataFrame()
-    else:
-        atoms = parse_pdb(existing_pdb)
     new_atoms = parse_pdb(new_pdb)
-    new_coord = new_atoms[['x', 'y', 'z']].to_numpy()
-    new_coord -= np.mean(new_coord, axis=0)
-    count_n_mol = 0
-    count_n_attempts = 0
-    cutoff = float(2*10*radius) # convert nm to angstrom
-    box_a, box_b, box_c = 10*box[0], 10*box[1], 10*box[2] # convert nm to angstrom
-    dim = np.array([box_a, box_b, box_c, 90.0, 90.0, 90.0])
-    if method == 'FastNS':
-        dim = dim.astype(np.float32)
-        if len(atoms.index) > 0:
-            coord = atoms[['x', 'y', 'z']].to_numpy().astype(np.float32)
-            grid_search = FastNS(cutoff, coord, dim, pbc=True)
-    while (count_n_mol < n_mol) and (count_n_attempts < max_n_attempts):
-        # get a random rotation
-        rotate = R.random()
-        new_coord_i = rotate.apply(new_coord)
-        # get a random translation
-        translate = np.random.uniform(0, 1, 3)*np.array([box_a, box_b, box_c])
-        new_coord_i += translate
-        if len(atoms.index) == 0:
-            new_atoms_i = new_atoms.copy()
-            new_atoms_i[['x', 'y', 'z']] = new_coord_i
-            atoms = pd.concat([atoms, new_atoms_i], ignore_index=True)
-            count_n_mol += 1
-            if method == 'FastNS':
-                coord = atoms[['x', 'y', 'z']].to_numpy().astype(np.float32)
-                grid_search = FastNS(cutoff, coord, dim, pbc=True)
-        else:
-            flag = False
-            if method == 'distance_array':
-                coord = atoms[['x', 'y', 'z']].to_numpy()
-                d = distance_array(coord, new_coord_i, dim)
-                if np.amin(d) >= cutoff:
-                    flag = True
-            elif method == 'FastNS':
-                results = grid_search.search(new_coord_i.astype(np.float32))
-                if len(results.get_pair_distances()) == 0:
-                    flag = True
-            if flag:
-                new_atoms_i = new_atoms.copy()
-                new_atoms_i[['x', 'y', 'z']] = new_coord_i
-                atoms = pd.concat([atoms, new_atoms_i], ignore_index=True)
-                count_n_mol += 1
-                if method == 'FastNS':
-                    coord = atoms[['x', 'y', 'z']].to_numpy().astype(np.float32)
-                    grid_search = FastNS(cutoff, coord, dim, pbc=True)
-        count_n_attempts += 1
-    
-    # determine if the number of molecules were successfully added:
-    if count_n_mol == n_mol:
-        print(f'Successfully inserted {n_mol} molecules.')
+    if existing_pdb is None:
+        existing_atoms = None
     else:
-        print(f'Could not successfully insert {n_mol} molecules in {count_n_attempts} attempts.')
-        print(f'Only added {count_n_mol} molecules. Try increasing the box size or number of attempts to add more molecules.')
-    if reset_serial:
-        n_atoms = len(atoms.index)
-        if n_atoms > 1000000:
-            print(f'Too many atoms. Cannot reset serial as 0, 1, ..., N - 1. Serial remains unchanged.')
-        else:
-            atoms['serial'] = list(range(len(atoms.index)))
-    # write the final pdb
+        existing_atoms = parse_pdb(existing_pdb)
+    atoms = insert_molecules_dataframe(new_atoms, n_copies, radius, existing_atoms, max_n_attempts, box, 
+                                       reset_serial)
+    print(f'Write atoms to {output_pdb}')
     write_pdb(atoms, output_pdb)
+    
+
+
 
