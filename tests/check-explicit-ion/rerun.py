@@ -14,6 +14,7 @@ import os
 sys.path.insert(0, '../..') # ensure use the specific openabc we aim to test
 from openabc.forcefields.parsers import SMOGParser, DNA3SPN2Parser
 from openabc.forcefields import SMOG3SPN2ExplicitIonModel
+from openabc.utils import insert_molecules, insert_ions
 
 """
 Rerun a protein-DNA system with explicit ion model.
@@ -30,6 +31,10 @@ n_CL_ions = 482
 model.append_ions('NA', n_NA_ions)
 model.append_ions('CL', n_CL_ions)
 
-
+# prepare the pdb file
+box = [20, 20, 20, 90, 90, 90]
+insert_molecules('cg_dna.pdb', 1, 'tmp1.pdb', existing_pdb='cg_protein.pdb', box=box)
+insert_ions('NA', n_NA_ions, 'tmp2.pdb', existing_pdb='tmp1.pdb')
+insert_ions('CL', n_CL_ions, 'start.pdb', existing_pdb='tmp2.pdb')
 
 

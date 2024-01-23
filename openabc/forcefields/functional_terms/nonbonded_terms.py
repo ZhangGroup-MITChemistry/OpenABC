@@ -357,12 +357,12 @@ def all_smog_MJ_3spn2_vdwl_term(mol, param_PP_MJ, force_group=11):
     # we directly assign protein-DNA interaction parameters, which is convenient
     amino_acid_atom_type_indices = list(range(len(_amino_acids)))
     dna_atom_type_indices = list(range(len(_amino_acids), len(_amino_acids) + len(_dna_3spn2_atom_names)))
-    epsilon_map[amino_acid_atom_type_indices, dna_atom_type_indices] = 0.02987572 * _kcal_to_kj
-    epsilon_map[dna_atom_type_indices, amino_acid_atom_type_indices] = 0.02987572 * _kcal_to_kj # symmetric
-    sigma_map[amino_acid_atom_type_indices, dna_atom_type_indices] = 0.57
-    sigma_map[dna_atom_type_indices, amino_acid_atom_type_indices] = 0.57 # symmetric
-    cutoff_map[amino_acid_atom_type_indices, dna_atom_type_indices] = 1.425
-    cutoff_map[dna_atom_type_indices, amino_acid_atom_type_indices] = 1.425 # symmetric
+    epsilon_map[:len(_amino_acids), len(_amino_acids):] = 0.02987572 * _kcal_to_kj
+    epsilon_map[len(_amino_acids):, :len(_amino_acids)] = 0.02987572 * _kcal_to_kj # symmetric
+    sigma_map[:len(_amino_acids), len(_amino_acids):] = 0.57
+    sigma_map[len(_amino_acids):, :len(_amino_acids)] = 0.57 # symmetric
+    cutoff_map[:len(_amino_acids), len(_amino_acids):] = 1.425
+    cutoff_map[len(_amino_acids):, :len(_amino_acids)] = 1.425 # symmetric
     max_cutoff = np.amax(cutoff_map)
     epsilon_map = epsilon_map.flatten(order='F').tolist()
     sigma_map = sigma_map.flatten(order='F').tolist()

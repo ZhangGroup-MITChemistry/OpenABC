@@ -14,7 +14,7 @@ __modified_by__ = 'Shuming Liu'
 A python script for inserting molecules, similar to gmx insert-molecules. 
 """
 
-def insert_molecules_dataframe(new_atoms, n_copies, radius=0.5, existing_atoms=None, max_n_attempts=10000, 
+def insert_molecules_dataframe(new_atoms, n_copies, existing_atoms=None, radius=0.5, max_n_attempts=10000, 
                                box=[100, 100, 100, 90.0, 90.0, 90.0], reset_serial=True):
     """
     Insert multiple copies of given atoms into a box with existing atoms or empty and ensure no non-physical overlap with FastNS method under PBC condition. 
@@ -28,12 +28,12 @@ def insert_molecules_dataframe(new_atoms, n_copies, radius=0.5, existing_atoms=N
     n_copies : int
         Number of copies of the new atoms to be inserted. 
     
-    radius : float or int
-        Radius for each atom in unit nm. Insertion ensures the distance between any two atoms are larger than 2*radius under periodic boundary condition. 
-    
     existing_atoms : None or pd.DataFrame
         Existing atoms. 
         If None, the molecules will be inserted into a new empty box, otherwise, inserted into a copy of existing_atoms. 
+    
+    radius : float or int
+        Radius for each atom in unit nm. Insertion ensures the distance between any two atoms are larger than 2*radius under periodic boundary condition. 
     
     max_n_attempts : int
         Maximal number of attempts to insert. Ensure this value is >= n_copies.
@@ -123,7 +123,7 @@ def insert_molecules_dataframe(new_atoms, n_copies, radius=0.5, existing_atoms=N
     return atoms
     
 
-def insert_molecules(new_pdb, output_pdb, n_copies, radius=0.5, existing_pdb=None, max_n_attempts=10000, 
+def insert_molecules(new_pdb, n_copies, output_pdb, existing_pdb=None, radius=0.5, max_n_attempts=10000, 
                      box=[100, 100, 100, 90.0, 90.0, 90.0], reset_serial=True):
     """
     Insert multiple copies of given PDB into a box with existing PDB or empty and ensure no non-physical overlap with FastNS method under PBC condition. 
@@ -134,18 +134,18 @@ def insert_molecules(new_pdb, output_pdb, n_copies, radius=0.5, existing_pdb=Non
     new_pdb : str
         Path of the new PDB file of the molecule to be inserted. 
     
-    output_pdb : str
-        Path of the output PDB file with inserted molecules.
-    
     n_copies : int
         Number of copies of the new atoms to be inserted. 
     
-    radius : float or int
-        Radius for each atom in unit nm. Insertion ensures the distance between any two atoms are larger than 2*radius under periodic boundary condition. 
+    output_pdb : str
+        Path of the output PDB file with inserted molecules.
     
     existing_pdb : str or None
         Existing PDB of the molecules in the box. 
         If None, the molecules will be inserted into a new empty box, otherwise, inserted into a box with atoms from existing_pdb.
+    
+    radius : float or int
+        Radius for each atom in unit nm. Insertion ensures the distance between any two atoms are larger than 2*radius under periodic boundary condition. 
     
     max_n_attempts : int
         Maximal number of attempts to insert. Ensure this value is >= n_copies.
@@ -168,11 +168,74 @@ def insert_molecules(new_pdb, output_pdb, n_copies, radius=0.5, existing_pdb=Non
         existing_atoms = None
     else:
         existing_atoms = parse_pdb(existing_pdb)
-    atoms = insert_molecules_dataframe(new_atoms, n_copies, radius, existing_atoms, max_n_attempts, box, 
+    atoms = insert_molecules_dataframe(new_atoms, n_copies, existing_atoms, radius, max_n_attempts, box, 
                                        reset_serial)
     print(f'Write atoms to {output_pdb}')
     write_pdb(atoms, output_pdb)
     
 
-
+def insert_ions(ion_type, n_copies, output_pdb, existing_pdb=None, radius=0.5, max_n_attempts=10000, 
+                box=[100, 100, 100, 90.0, 90.0, 90.0], reset_serial=True):
+    """
+    Insert multiple copies of the given ion into a box with existing atoms or empty and ensure no non-physical overlap with FastNS method under PBC condition. 
+    Note all the input length parameter units are nm, though coordinates in pdb are in unit angstroms.
+    
+    Parameters
+    ----------
+    ion_type : str
+        Ion type such as NA, CL, MG, etc.
+    
+    n_copies : int
+        Number of copies of the ion to be inserted. 
+    
+    output_pdb : str
+        Output PDB file path.
+    
+    existing_pdb : str or None
+        Existing PDB of the molecules in the box. 
+        If None, the molecules will be inserted into a new empty box, otherwise, inserted into a box with atoms from existing_pdb.
+    
+    radius : float or int
+        Radius for each atom in unit nm. Insertion ensures the distance between any two atoms are larger than 2*radius under periodic boundary condition. 
+    
+    max_n_attempts : int
+        Maximal number of attempts to insert. Ensure this value is >= n_copies.
+    
+    box : 1d-array like, shape = (6,)
+        Box shape array as [a, b, c, alpha, beta, gamma]. 
+        Box lengths are a, b, and c in unit nm.
+        Box angles are alpha, beta, and gamma in unit degree.
+        Be careful with the unit of lengths and angles. 
+    
+    reset_serial : bool
+        Whether to reset serial to 0, 1, ..., N - 1. 
+        If True, the serial in the final pdb is reset as 0, 1, ..., N - 1. 
+        If False, the serial remains unchanged. 
+        If True and atom number > 1,000,000, the serial remains unchanged since the largest atom serial number allowed in pdb is 999,999. 
+    
+    """
+    df_ion = pd.DataFrame(dict(recname='ATOM', 
+                               serial=0, 
+                               name=ion_type, 
+                               altLoc='', 
+                               resname=ion_type, 
+                               chainID='X', 
+                               resSeq=0, 
+                               iCode='', 
+                               x=0.0, 
+                               y=0.0, 
+                               z=0.0, 
+                               occupancy=0.0, 
+                               tempFactor=0.0, 
+                               element=ion_type, 
+                               charge=''))
+    if existing_pdb is None:
+        existing_atoms = None
+    else:
+        existing_atoms = parse_pdb(existing_pdb)
+    atoms = insert_molecules_dataframe(df_ion, n_copies, radius, existing_atoms, max_n_attempts, box, reset_serial)
+    print(f'Write atoms to {output_pdb}')
+    write_pdb(atoms, output_pdb)
+    
+    
 

@@ -21,7 +21,6 @@ from openabc.utils.chromatin_helper_functions import remove_histone_tail_dihedra
 from openabc.utils.insert import insert_molecules
 
 n_nucl = 2
-platform_name = sys.argv[1]
 
 # load single nucleosome
 single_nucl = SMOG3SPN2Model()
@@ -52,7 +51,7 @@ box_a, box_b, box_c = 200, 200, 200
 for i in range(n_nucl):
     two_nucl.append_mol(histone)
     two_nucl.append_mol(dna)
-insert_molecules('cg_nucl.pdb', 'two_cg_nucl.pdb', n_mol=n_nucl, box=[box_a, box_b, box_c])
+insert_molecules('cg_nucl.pdb', n_nucl, 'two_cg_nucl.pdb', box=[box_a, box_b, box_c, 90.0, 90.0, 90.0])
 
 top = app.PDBFile('two_cg_nucl.pdb').getTopology()
 init_coord = app.PDBFile('two_cg_nucl.pdb').getPositions()
@@ -75,7 +74,7 @@ temperature = 300*unit.kelvin
 friction_coeff = 0.01/unit.picosecond
 timestep = 10*unit.femtosecond
 integrator = mm.LangevinMiddleIntegrator(temperature, friction_coeff, timestep)
-two_nucl.set_simulation(integrator, platform_name=platform_name, init_coord=init_coord)
+two_nucl.set_simulation(integrator, platform_name='CUDA', init_coord=init_coord)
 simulation = two_nucl.simulation
 
 dcd = '../lammps-rerun/traj.dcd'
@@ -104,4 +103,12 @@ for i in range(1, n_frames):
 #df_energies_kcal.round(6).to_csv(f'openmm_energy_kcal_{platform_name}.csv', index=False)
 df_energies_kj.round(6).to_csv(f'openmm_energy_kj.csv', index=False)
 df_energies_kcal.round(6).to_csv(f'openmm_energy_kcal.csv', index=False)
+
+# compare with lammps results
+df_lammps_energies_kj = pd.read_csv('../lammps-rerun/lammps_energy_kj.csv')
+columns = df_energies_kj.columns
+abs_diff = (df_energies_kj[columns] - df_lammps_energies_kj[columns]).abs().round(3)
+print('Absolute of the difference between openmm and lammps energies (in unit kJ/mol):')
+print(abs_diff)
+abs_diff.to_csv('abs_diff_kj.csv', index=False)
 
