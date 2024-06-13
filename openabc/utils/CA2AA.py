@@ -11,11 +11,12 @@ import os
 import argparse
 import subprocess
 import warnings
-from openabc.utils.helper_functions import parse_pdb, write_pdb
+from openabc.utils import parse_pdb, write_pdb
 
 __location__ = os.path.dirname(os.path.abspath(__file__))
 
 __author__ = 'Cong Wang'
+__modified_by__ = 'Shuming Liu'
 
 """
 This python script calls REMO (https://zhanggroup.org/REMO/) to reconstruct atomic configurations for protein condensates.
@@ -24,7 +25,7 @@ This python script calls REMO (https://zhanggroup.org/REMO/) to reconstruct atom
 
 default_REMO_path = __location__ + '/REMO'
 
-def args_parse():
+def _args_parse():
     """
     The function uses argparse module to create and manage the command-line interface.
 
@@ -229,7 +230,7 @@ def multiple_chains_CA2AA(input_pdbfile, num_chains, num_residues, REMO_path=def
 
 
 if __name__ == '__main__':
-    args = args_parse()
+    args = _args_parse()
     protein_ca = args.input_file
     num_chains = args.number_of_chains
     num_residues = args.number_of_residues

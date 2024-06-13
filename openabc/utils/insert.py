@@ -3,7 +3,7 @@ import pandas as pd
 from MDAnalysis.lib.nsgrid import FastNS
 from MDAnalysis.lib.distances import distance_array
 from scipy.spatial.transform import Rotation as R
-import openabc.utils.helper_functions as helper_functions
+from openabc.utils import parse_pdb, write_pdb
 
 __author__ = 'Andrew Latham'
 
@@ -61,8 +61,8 @@ def insert_molecules(new_pdb, output_pdb, n_mol, radius=0.5, existing_pdb=None, 
     if existing_pdb is None:
         atoms = pd.DataFrame()
     else:
-        atoms = helper_functions.parse_pdb(existing_pdb)
-    new_atoms = helper_functions.parse_pdb(new_pdb)
+        atoms = parse_pdb(existing_pdb)
+    new_atoms = parse_pdb(new_pdb)
     new_coord = new_atoms[['x', 'y', 'z']].to_numpy()
     new_coord -= np.mean(new_coord, axis=0)
     count_n_mol = 0
@@ -124,5 +124,5 @@ def insert_molecules(new_pdb, output_pdb, n_mol, radius=0.5, existing_pdb=None, 
         else:
             atoms['serial'] = list(range(len(atoms.index)))
     # write the final pdb
-    helper_functions.write_pdb(atoms, output_pdb)
+    write_pdb(atoms, output_pdb)
 

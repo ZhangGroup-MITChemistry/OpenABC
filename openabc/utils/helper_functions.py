@@ -1,9 +1,19 @@
 import numpy as np
 import pandas as pd
 try:
+    import openmm as mm
+    import openmm.app as app
+    import openmm.unit as unit
+except ImportError:
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+    import simtk.unit as unit
+import mdtraj
+import warnings
+try:
     import pdbfixer
-except Exception as e:
-    print('Cannot import pdbfixer. This may affect 3SPN2 model.')
+except ImportError:
+    pdbfixer = None
 try:
     import openmm.unit as unit
 except ImportError:
@@ -26,6 +36,7 @@ _nucleotides = _dna_nucleotides + _rna_nucleotides
 def parse_pdb(pdb_file):
     """
     Load pdb file as pandas dataframe.
+    Note there should be only a single frame in the pdb file.
     
     Parameters
     ----------
@@ -38,6 +49,9 @@ def parse_pdb(pdb_file):
         A pandas dataframe includes atom information. 
     
     """
+    # load with mdtraj to ensure there is only 1 frame
+    traj = mdtraj.load_pdb(pdb_file)
+    assert traj.n_frames == 1
     def pdb_line(line):
         return dict(recname=str(line[0:6]).strip(),
                     serial=int(line[6:11]),
@@ -387,6 +401,7 @@ def fix_pdb(pdb_file):
         Output fixed structure. 
 
     """
+    assert pdbfixer is not None
     fixer = pdbfixer.PDBFixer(filename=pdb_file)
     fixer.findMissingResidues()
     chains = list(fixer.topology.chains())
@@ -443,3 +458,50 @@ def get_WC_paired_sequence(sequence):
     paired_sequence = paired_sequence[::-1]
     return paired_sequence
     
+
+def compute_PE(traj, system, platform_name='Reference', properties={'Precision': 'double'}, groups=-1):
+    """
+    Compute the potential energy of samples in the trajectory with the given openmm system.
+    
+    Parameters
+    ----------
+    traj : mdtraj.Trajectory
+        The trajectory including all the samples.
+    
+    system : openmm.System
+        The openmm system.
+    
+    platform_name : str
+        The platform name for running openmm to evaulate energy.
+    
+    properties : dict
+        Properties for running openmm. Only used when platform_name is CUDA or OpenCL.
+    
+    groups : int or set
+        The force groups included when computing energy.
+        See openmm context.getState for details about this parameter.
+    
+    Returns
+    -------
+    energy : np.ndarray, shape = (traj.n_frames,)
+        The energy of each sample in the trajectory in unit kJ/mol.
+    
+    """
+    top = traj.topology.to_openmm()
+    # use any integrator with any parameter
+    timestep = 1.0 * unit.femtosecond
+    integrator = mm.VerletIntegrator(timestep)
+    platform = mm.Platform.getPlatformByName(platform_name)
+    if platform_name in ['CUDA', 'OpenCL']:
+        simulation = app.Simulation(top, system, integrator, platform, properties)
+    else:
+        simulation = app.Simulation(top, system, integrator, platform)
+    use_pbc = system.usesPeriodicBoundaryConditions()
+    energy = []
+    for i in range(traj.n_frames):
+        simulation.context.setPositions(traj.xyz[i])
+        state = simulation.context.getState(getEnergy=True, enforcePeriodicBox=use_pbc, groups=groups)
+        energy.append(state.getPotentialEnergy().value_in_unit(unit.kilojoule_per_mole))
+    energy = np.array(energy)
+    return energy
+
