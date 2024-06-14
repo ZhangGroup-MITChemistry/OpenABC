@@ -14,6 +14,8 @@ import os
 """
 Note addGlobalParameter can automatically convert the values to the correct unit. 
 Be careful that addGlobalParameter sets global parameters that is used by all the forces in the system. 
+Important: for Discrete2DFunction, if the 2d matrix is symmetric, then flatten in order 'F' or 'C' is equivalent.
+Start from version 1.0.7, for consistency, the 2d matrix is flattened in order 'F'.
 """
 
 _dna_3spn2_atom_names = ['P', 'S', 'A', 'T', 'C', 'G']
@@ -36,8 +38,11 @@ def moff_mrg_contact_term(atom_types, df_exclusions, use_pbc, alpha_map, epsilon
                epsilon_con=epsilon_con_map(atom_type1, atom_type2);
                ''')
     n_atom_types = alpha_map.shape[0]
-    discrete_2d_alpha_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, alpha_map.ravel().tolist())
-    discrete_2d_epsilon_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, epsilon_map.ravel().tolist())
+    # alpha_map and epsilon_map are symmetric
+    discrete_2d_alpha_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                  alpha_map.flatten(order='F').tolist())
+    discrete_2d_epsilon_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                    epsilon_map.flatten(order='F').tolist())
     contacts.addTabulatedFunction('alpha_con_map', discrete_2d_alpha_map)
     contacts.addTabulatedFunction('epsilon_con_map', discrete_2d_epsilon_map)
     contacts.addPerParticleParameter('atom_type')
@@ -70,8 +75,11 @@ def ashbaugh_hatch_term(atom_types, df_exclusions, use_pbc, epsilon, sigma_ah_ma
                lambda_ah=lambda_ah_map(atom_type1, atom_type2);
                ''')
     n_atom_types = sigma_ah_map.shape[0]
-    discrete_2d_sigma_ah_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, sigma_ah_map.ravel().tolist())
-    discrete_2d_lambda_ah_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, lambda_ah_map.ravel().tolist())
+    # sigma_ah_map and lambda_ah_map are symmetric
+    discrete_2d_sigma_ah_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                     sigma_ah_map.flatten(order='F').tolist())
+    discrete_2d_lambda_ah_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                      lambda_ah_map.flatten(order='F').tolist())
     contacts.addTabulatedFunction('sigma_ah_map', discrete_2d_sigma_ah_map)
     contacts.addTabulatedFunction('lambda_ah_map', discrete_2d_lambda_ah_map)
     contacts.addPerParticleParameter('atom_type')
@@ -277,12 +285,17 @@ def wang_frenkel_term(atom_types, df_exclusions, use_pbc, epsilon_wf_map, sigma_
                nu_wf=nu_wf_map(atom_type1, atom_type2);
                ''')
     n_atom_types = epsilon_wf_map.shape[0]
-    discrete_2d_epsilon_wf_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, epsilon_wf_map.ravel().tolist())
-    discrete_2d_sigma_wf_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, sigma_wf_map.ravel().tolist())
-    discrete_2d_mu_wf_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, mu_wf_map.ravel().tolist())
+    # epsilon_wf_map, sigma_wf_map, mu_wf_map, and nu_wf_map are symmetric
+    discrete_2d_epsilon_wf_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                       epsilon_wf_map.flatten(order='F').tolist())
+    discrete_2d_sigma_wf_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                     sigma_wf_map.flatten(order='F').tolist())
+    discrete_2d_mu_wf_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                  mu_wf_map.flatten(order='F').tolist())
     if (isinstance(nu_wf_map, int)) or (isinstance(nu_wf_map, float)):
         nu_wf_map = np.full((n_atom_types, n_atom_types), nu_wf_map)
-    discrete_2d_nu_wf_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, nu_wf_map.ravel().tolist())
+    discrete_2d_nu_wf_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                  nu_wf_map.flatten(order='F').tolist())
     contacts.addTabulatedFunction('epsilon_wf_map', discrete_2d_epsilon_wf_map)
     contacts.addTabulatedFunction('sigma_wf_map', discrete_2d_sigma_wf_map)
     contacts.addTabulatedFunction('mu_wf_map', discrete_2d_mu_wf_map)
@@ -373,12 +386,13 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
         cutoff_map[i, :len(_amino_acids)] = cutoff_PD.value_in_unit(unit.nanometer)
         cutoff_map[:len(_amino_acids), i] = cutoff_map[i, :len(_amino_acids)]
     max_cutoff = np.amax(cutoff_map)
-    epsilon_map = epsilon_map.ravel().tolist()
-    sigma_map = sigma_map.ravel().tolist()
-    cutoff_map = cutoff_map.ravel().tolist()
-    vdwl.addTabulatedFunction('epsilon_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, epsilon_map))
-    vdwl.addTabulatedFunction('sigma_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, sigma_map))
-    vdwl.addTabulatedFunction('cutoff_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, cutoff_map))
+    # epsilon_map, sigma_map, and cutoff_map are symmetric
+    vdwl.addTabulatedFunction('epsilon_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                                   epsilon_map.flatten(order='F').tolist()))
+    vdwl.addTabulatedFunction('sigma_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                                 sigma_map.flatten(order='F').tolist()))
+    vdwl.addTabulatedFunction('cutoff_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                                  cutoff_map.flatten(order='F').tolist()))
     vdwl.addPerParticleParameter('atom_type')
     # add atom type
     for _, row in mol.atoms.iterrows():
@@ -461,12 +475,13 @@ def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300
             ldby_map[i, j] = ldby_ij.value_in_unit(unit.nanometer)
             ldby_map[j, i] = ldby_map[i, j]
     max_cutoff = np.amax(cutoff_map)
-    alpha_map = alpha_map.ravel().tolist()
-    ldby_map = ldby_map.ravel().tolist()
-    cutoff_map = cutoff_map.ravel().tolist()
-    elec.addTabulatedFunction('alpha_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, alpha_map))
-    elec.addTabulatedFunction('ldby_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, ldby_map))
-    elec.addTabulatedFunction('cutoff_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, cutoff_map))
+    # alpha_map, ldby_map, and cutoff_map are symmetric
+    elec.addTabulatedFunction('alpha_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                                 alpha_map.flatten(order='F').tolist()))
+    elec.addTabulatedFunction('ldby_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                                ldby_map.flatten(order='F').tolist()))
+    elec.addTabulatedFunction('cutoff_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                                  cutoff_map.flatten(order='F').tolist()))
     elec.addPerParticleParameter('cg_atom_type')
     # add atom type
     for _, row in mol.atoms.iterrows():

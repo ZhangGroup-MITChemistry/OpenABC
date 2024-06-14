@@ -32,8 +32,10 @@ def ashbaugh_hatch_zero_offset_term(atom_types, df_exclusions, use_pbc, epsilon,
                lambda_ah=lambda_ah_map(atom_type1, atom_type2);
                ''')
     n_atom_types = sigma_ah_map.shape[0]
-    discrete_2d_sigma_ah_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, sigma_ah_map.ravel().tolist())
-    discrete_2d_lambda_ah_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, lambda_ah_map.ravel().tolist())
+    discrete_2d_sigma_ah_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                     sigma_ah_map.flatten(order='F').tolist())
+    discrete_2d_lambda_ah_map = mm.Discrete2DFunction(n_atom_types, n_atom_types, 
+                                                      lambda_ah_map.flatten(order='F').tolist())
     contacts.addTabulatedFunction('sigma_ah_map', discrete_2d_sigma_ah_map)
     contacts.addTabulatedFunction('lambda_ah_map', discrete_2d_lambda_ah_map)
     contacts.addPerParticleParameter('atom_type')

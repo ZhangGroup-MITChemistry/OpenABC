@@ -24,6 +24,10 @@ OpenMM of version < 7.6 and >= 7.6 are both supported. Mpipi force field is incl
 
 SMOG+3SPN2 force fields are enabled. 3SPN2 is adapted from Wolynes groups' Open3SPN2. To run this, you may need to install pdbfixer and X3DNA. Other models do not require pdbfixer or X3DNA.
 
+### Version 1.0.7
+
+For consistency, the 2d matrix for Discrete2DFunction is flattened in order 'F'. Note this does not change the result if the 2d matrix is symmetric, so please don't worry. 
+
 ## Tutorials
 
 Detailed tutorials with all the necessary input files are provided in "tutorials" directory. 
