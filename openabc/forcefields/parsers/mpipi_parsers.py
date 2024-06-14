@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from openabc.utils import helper_functions
+from openabc.utils import parse_pdb, write_pdb, atomistic_pdb_to_ca_pdb, build_straight_CA_chain
 from openabc.lib import _amino_acids, _rna_nucleotides, _kcal_to_kj, _angstrom_to_nm
 import sys
 import os
@@ -37,7 +37,7 @@ class MpipiProteinParser(object):
         
         """
         self.pdb = ca_pdb
-        self.atoms = helper_functions.parse_pdb(ca_pdb)
+        self.atoms = parse_pdb(ca_pdb)
         # check if all the atoms are protein CA atoms
         assert ((self.atoms['resname'].isin(_amino_acids)).all() and self.atoms['name'].eq('CA').all())
         if default_parse:
@@ -64,7 +64,7 @@ class MpipiProteinParser(object):
             Whether to parse with default settings. 
         
         """
-        helper_functions.atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
+        atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
         return cls(ca_pdb, default_parse)
     
     def parse_mol(self, exclude12=True, mass_dict=_mpipi_mass_dict, charge_dict=_mpipi_charge_dict):
@@ -124,7 +124,7 @@ class MpipiRNAParser(object):
         
         """
         self.pdb = cg_pdb
-        self.atoms = helper_functions.parse_pdb(self.pdb)
+        self.atoms = parse_pdb(self.pdb)
         # check if all the atoms are CG nucleotide atoms
         atom_names = self.atoms['name']
         assert (self.atoms['resname'].isin(_rna_nucleotides).all() and atom_names.eq('RN').all())
@@ -159,12 +159,12 @@ class MpipiRNAParser(object):
 
         """
         n_atoms = len(seq)
-        atoms = helper_functions.build_straight_CA_chain(n_atoms, chainID='A', r0=0.5)
+        atoms = build_straight_CA_chain(n_atoms, chainID='A', r0=0.5)
         atoms.loc[:, 'name'] = 'RN'
         # RNA resnames should be from A, C, G, and U
         for i in range(n_atoms):
             atoms.loc[i, 'resname'] = seq[i]
-        helper_functions.write_pdb(atoms, cg_pdb, write_TER)
+        write_pdb(atoms, cg_pdb, write_TER)
         result = cls(cg_pdb, default_parse)
         return result
     

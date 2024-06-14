@@ -86,7 +86,7 @@ class TemperatureReplicaExchange(object):
         https://pytorch.org/docs/stable/distributed.html
 
         """
-        assert torch is not None # ensure torch is installed and loaded correctly
+        assert torch is not None, 'torch is not installed.'
         self.backend = backend
         self.n_replicas = n_replicas
         assert self.n_replicas == int(os.environ['WORLD_SIZE'])

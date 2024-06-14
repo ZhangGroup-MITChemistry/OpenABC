@@ -401,7 +401,7 @@ def fix_pdb(pdb_file):
         Output fixed structure. 
 
     """
-    assert pdbfixer is not None
+    assert pdbfixer is not None, 'pdbfixer is not installed.'
     fixer = pdbfixer.PDBFixer(filename=pdb_file)
     fixer.findMissingResidues()
     chains = list(fixer.topology.chains())

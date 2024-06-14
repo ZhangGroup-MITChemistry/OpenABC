@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 import mdtraj
-from openabc.utils import helper_functions
-from openabc.utils.shadow_map import find_ca_pairs_from_atomistic_pdb
+from openabc.utils import parse_pdb, atomistic_pdb_to_ca_pdb, find_ca_pairs_from_atomistic_pdb
 from openabc.lib import _amino_acids
 import sys
 import os
@@ -16,8 +15,6 @@ _moff_amino_acid_charge_dict = dict(ALA=0.0, ARG=1.0, ASN=0.0, ASP=-1.0, CYS=0.0
                                     GLN=0.0, GLU=-1.0, GLY=0.0, HIS=0.25, ILE=0.0,
                                     LEU=0.0, LYS=1.0, MET=0.0, PHE=0.0, PRO=0.0,
                                     SER=0.0, THR=0.0, TRP=0.0, TYR=0.0, VAL=0.0)
-
-_kcal_to_kj = 4.184
 
 class MOFFParser(object):
     """
@@ -41,7 +38,7 @@ class MOFFParser(object):
         """
         self.atomistic_pdb = atomistic_pdb
         self.pdb = ca_pdb
-        self.atoms = helper_functions.parse_pdb(ca_pdb)
+        self.atoms = parse_pdb(ca_pdb)
         # check if all the atoms are protein CA atoms
         assert ((self.atoms['resname'].isin(_amino_acids)).all() and self.atoms['name'].eq('CA').all())
         if default_parse:
@@ -73,7 +70,7 @@ class MOFFParser(object):
             A class instance. 
         
         """
-        helper_functions.atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
+        atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
         result = cls(atomistic_pdb, ca_pdb, default_parse)
         return result
     
@@ -165,7 +162,7 @@ class MOFFParser(object):
         ss : None or sequence-like
             Secondary structure type of each residue. 
             If None, no secondary structure information is provided and all the native pairs are kept.
-            If not None, then only native pairs within continuous ordered 
+            If not None, then only native pairs within continuous ordered domains are kept.
         
         ordered_ss_names : sequence-like
             The names of ordered secondary structures. 
@@ -224,6 +221,8 @@ class MOFFParser(object):
                     a2 = int(row['a2'])
                     if a1 > a2:
                         a1, a2 = a2, a1
+                    if self.atoms.loc[a1, 'chainID'] != self.atoms.loc[a2, 'chainID']:
+                        continue
                     if ss[a1] in ordered_ss_names:
                         if all([x == ss[a1] for x in ss[a1:a2 + 1]]):
                             new_native_pairs.loc[len(new_native_pairs.index)] = row

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from openabc.utils import helper_functions
+from openabc.utils import parse_pdb, atomistic_pdb_to_nucleotide_pdb
 from openabc.lib import _dna_nucleotides, _kcal_to_kj, _deg_to_rad
 import sys
 import os
@@ -42,7 +42,7 @@ class MRGdsDNAParser(object):
         
         """
         self.pdb = cg_pdb
-        self.atoms = helper_functions.parse_pdb(self.pdb)
+        self.atoms = parse_pdb(self.pdb)
         # check if all the atoms are CG nucleotide atoms
         atom_names = self.atoms['name']
         assert (self.atoms['resname'].isin(_dna_nucleotides).all() and atom_names.eq('DN').all())
@@ -86,7 +86,7 @@ class MRGdsDNAParser(object):
             A class instance. 
         
         """
-        helper_functions.atomistic_pdb_to_nucleotide_pdb(atomistic_pdb, cg_pdb, write_TER)
+        atomistic_pdb_to_nucleotide_pdb(atomistic_pdb, cg_pdb, write_TER)
         result = cls(cg_pdb, default_parse)
         return result
     

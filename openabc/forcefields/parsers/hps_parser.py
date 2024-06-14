@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from openabc.utils import helper_functions
+from openabc.utils import parse_pdb, atomistic_pdb_to_ca_pdb
 from openabc.lib import _amino_acids, _kcal_to_kj
 import sys
 import os
@@ -33,7 +33,7 @@ class HPSParser(object):
         
         """
         self.pdb = ca_pdb
-        self.atoms = helper_functions.parse_pdb(ca_pdb)
+        self.atoms = parse_pdb(ca_pdb)
         # check if all the atoms are protein CA atoms
         assert ((self.atoms['resname'].isin(_amino_acids)).all() and self.atoms['name'].eq('CA').all())
         if default_parse:
@@ -65,7 +65,7 @@ class HPSParser(object):
             A class instance. 
         
         """
-        helper_functions.atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
+        atomistic_pdb_to_ca_pdb(atomistic_pdb, ca_pdb, write_TER)
         result = cls(ca_pdb, default_parse)
         return result
     

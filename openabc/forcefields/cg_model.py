@@ -11,9 +11,10 @@ except ImportError:
 try:
     from openmmplumed import PlumedForce
 except ImportError:
-    print('Please install openmmplumed to facilitate plumed functions.')
+    PlumedForce = None
+import warnings
 from openabc.forcefields.rigid import createRigidBodies
-import openabc.utils.helper_functions as helper_functions
+from openabc.utils import write_pdb
 import sys
 import os
 
@@ -91,7 +92,7 @@ class CGModel(object):
         atoms.loc[:, 'charge'] = ''
         if reset_serial:
             atoms['serial'] = list(range(1, len(atoms.index) + 1))
-        helper_functions.write_pdb(atoms, cg_pdb)
+        write_pdb(atoms, cg_pdb)
     
     def create_system(self, top, use_pbc=True, box_a=500, box_b=500, box_c=500, remove_cmmotion=True):
         """
@@ -194,11 +195,9 @@ class CGModel(object):
         """
         with open(plumed_script_path, 'r') as input_reader:
             plumed_script = input_reader.read()
-        try:
-            force = PlumedForce(plumed_script)
-            self.system.addForce(force)
-        except NameError:
-            print('PlumedForce is not loaded.')
+        assert PlumedForce is not None, 'openmmplumed is not installed.'
+        force = PlumedForce(plumed_script)
+        self.system.addForce(force)
     
     def save_system(self, system_xml='system.xml'):
         """
