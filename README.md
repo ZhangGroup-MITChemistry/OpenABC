@@ -26,9 +26,13 @@ SMOG+3SPN2 force fields are enabled. 3SPN2 is adapted from Wolynes groups' Open3
 
 ### Version 1.0.7
 
+Now functions defined in scripts at `openabc/utils` are available at `openabc.utils` level. For example, you can use `from openabc.utils import parse_pdb`.
+
 For consistency, the 2d matrix for Discrete2DFunction is flattened in order 'F'. Note this does not change the result if the 2d matrix is symmetric, so please don't worry. 
 
 We also cancel default REMO path starting from this version. Please specify REMO path when using it. 
+
+For `openabc.utils.insert.insert_molecules`, only `FastNS` is supported now. 
 
 ## Tutorials
 

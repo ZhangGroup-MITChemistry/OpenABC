@@ -15,7 +15,7 @@ author = 'Zhang group'
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath('..')) # ensure the openabc in "../" is imported
+sys.path.insert(0, os.path.abspath('..')) # ensure docs is rendered based on '../openabc'
 from openabc import __version__
 
 version = __version__
