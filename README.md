@@ -32,7 +32,7 @@ For consistency, the 2d matrix for Discrete2DFunction is flattened in order 'F'.
 
 We also cancel default REMO path starting from this version. Please specify REMO path when using it. 
 
-For `openabc.utils.insert.insert_molecules`, only `FastNS` is supported now. 
+For `openabc.utils.insert.insert_molecules` (equivalent to `openabc.utils.insert_molecules`), only `FastNS` is supported now. 
 
 ## Tutorials
 
