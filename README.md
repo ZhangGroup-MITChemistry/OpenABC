@@ -28,6 +28,8 @@ SMOG+3SPN2 force fields are enabled. 3SPN2 is adapted from Wolynes groups' Open3
 
 For consistency, the 2d matrix for Discrete2DFunction is flattened in order 'F'. Note this does not change the result if the 2d matrix is symmetric, so please don't worry. 
 
+We also cancel default REMO path starting from this version. Please specify REMO path when using it. 
+
 ## Tutorials
 
 Detailed tutorials with all the necessary input files are provided in "tutorials" directory. 

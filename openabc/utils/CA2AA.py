@@ -22,25 +22,6 @@ __modified_by__ = 'Shuming Liu'
 This python script calls REMO (https://zhanggroup.org/REMO/) to reconstruct atomic configurations for protein condensates.
 """
 
-
-default_REMO_path = __location__ + '/REMO'
-
-def _args_parse():
-    """
-    The function uses argparse module to create and manage the command-line interface.
-
-    Returns
-    -------
-    parser.parse_args(): the parsed command-line arguments object.
-    """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--input_file', type=str, help='A string that represents the path to the input protein PDB file')
-    parser.add_argument('-N', '--number_of_chains', nargs='+', type=int, help='A list of integers, where each element represents the number of chains for a particular protein type')
-    parser.add_argument('-n', '--number_of_residues', nargs='+', type=int, help='A list of integers, where each element represents the number of residues for a particular protein type')
-    parser.add_argument('-d', '--debug', action='store_true', help='A boolen variable that has a default value of False. By default this script does not store temporary files')
-    return parser.parse_args()
-
-
 def split_protein(input_pdbfile, num_chains, num_residues, output_path):
     """
     Split a PDB file containing multiple chains into individual files, each containing one chain.
@@ -76,7 +57,7 @@ def split_protein(input_pdbfile, num_chains, num_residues, output_path):
     return
 
 
-def single_chain_CA2AA(input_pdbfile, output_pdbfile, REMO_path=default_REMO_path, debug=False):
+def single_chain_CA2AA(input_pdbfile, output_pdbfile, REMO_path, debug=False):
     """
     Reconstruct all-atom representation for a single-chain protein from its alpha carbons using REMO.
     
@@ -177,7 +158,7 @@ def combine_proteins(pdbfile_lis, output_pdbflie):
     return
 
 
-def multiple_chains_CA2AA(input_pdbfile, num_chains, num_residues, REMO_path=default_REMO_path, debug=False):
+def multiple_chains_CA2AA(input_pdbfile, num_chains, num_residues, REMO_path, debug=False):
     """
     Reconstruct all-atom representation of a multiple-chain protein from its alpha carbons. If the name of input file is 'XXX.pdb', then output will be saved as 'XXX_AA.pdb' in the folder where 'XXX.pdb' is located.
     
@@ -230,10 +211,17 @@ def multiple_chains_CA2AA(input_pdbfile, num_chains, num_residues, REMO_path=def
 
 
 if __name__ == '__main__':
-    args = _args_parse()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input_file', type=str, help='A string that represents the path to the input protein PDB file')
+    parser.add_argument('-N', '--number_of_chains', nargs='+', type=int, help='A list of integers, where each element represents the number of chains for a particular protein type')
+    parser.add_argument('-n', '--number_of_residues', nargs='+', type=int, help='A list of integers, where each element represents the number of residues for a particular protein type')
+    parser.add_argument('-d', '--debug', action='store_true', help='A boolen variable that has a default value of False. By default this script does not store temporary files')
+    parser.add_argument('-r', '--REMO_path', type=str, help='REMO path')
+    args = parser.parse_args()
     protein_ca = args.input_file
     num_chains = args.number_of_chains
     num_residues = args.number_of_residues
+    REMO_path = args.REMO_path
     debug = args.debug
-    multiple_chains_CA2AA(protein_ca, num_chains, num_residues, REMO_path=default_REMO_path, debug=debug)
+    multiple_chains_CA2AA(protein_ca, num_chains, num_residues, REMO_path, debug)
 
