@@ -332,7 +332,7 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
     epsilon_map = np.zeros((n_atom_types, n_atom_types))
     sigma_map = np.zeros((n_atom_types, n_atom_types))
     cutoff_map = np.zeros((n_atom_types, n_atom_types))
-    # add protein-protein interactions
+    # set protein-protein interactions
     for _, row in param_PP_MJ.iterrows():
         atom_type1, atom_type2 = row['atom_type1'], row['atom_type2']
         i = _amino_acids.index(atom_type1)
@@ -343,7 +343,12 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
         sigma_map[j, i] = sigma_map[i, j]
         cutoff_map[i, j] = row['cutoff_LJ (nm)']
         cutoff_map[j, i] = cutoff_map[i, j]
-    # add DNA-DNA interactions
+    # set DNA-DNA interactions
+    # be careful with the definition of sigma_map and cutoff_map
+    # in the original 3SPN2, potential is defined as epsilon*((sigma/r)^12-2*(sigma/r)^6) with cutoff as sigma
+    # note for epsilon*((sigma/r)^12-2*(sigma/r)^6), the minimum is at r = sigma
+    # here we use 4*epsilon*((sigma'/r)^12-(sigma'/r)^6) instead, with sigma' = 2^(-1/6)*sigma
+    # note epsilon*((sigma/r)^12-2*(sigma/r)^6) = 4*epsilon*((sigma'/r)^12-(sigma'/r)^6)
     param_DD = mol.particle_definition[mol.particle_definition['DNA'] == mol.dna_type].copy()
     param_DD.index = param_DD['name'] # rearrange to make sure the row order is based on dna_atom_names
     param_DD = param_DD.loc[_dna_3spn2_atom_names]
@@ -354,15 +359,16 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
             j = j1 + len(_amino_acids)
             epsilon_i = param_DD.loc[i1, 'epsilon']
             epsilon_j = param_DD.loc[j1, 'epsilon']
-            epsilon_map[i, j] = (epsilon_i*epsilon_j)**0.5
+            epsilon_map[i, j] = (epsilon_i * epsilon_j)**0.5
             epsilon_map[j, i] = epsilon_map[i, j]
             sigma_i = param_DD.loc[i1, 'sigma']
             sigma_j = param_DD.loc[j1, 'sigma']
-            sigma_map[i, j] = 0.5*(sigma_i + sigma_j)*(2**(-1/6))
+            # sigma_i and sigma_j are the original sigma values, while sigam_map saves sigma'=2^(-1/6)*sigma.
+            sigma_map[i, j] = 0.5 * (sigma_i + sigma_j) * (2**(-1/6)) # be careful with the definition of sigma_map
             sigma_map[j, i] = sigma_map[i, j]
-            cutoff_map[i, j] = 0.5*(sigma_i + sigma_j)
+            cutoff_map[i, j] = 0.5 * (sigma_i + sigma_j) # be careful with the definition of cutoff_map
             cutoff_map[j, i] = cutoff_map[i, j]
-    # add protein-DNA interactions
+    # set protein-DNA interactions
     all_param_PD = mol.protein_dna_particle_definition
     param_dna_PD = all_param_PD[(all_param_PD['molecule'] == 'DNA') & (all_param_PD['DNA'] == mol.dna_type)].copy()
     param_dna_PD.index = param_dna_PD['name']
@@ -377,11 +383,11 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
         i = i1 + len(_amino_acids)
         epsilon_i = param_PD.loc[i1, 'epsilon']
         epsilon_j = param_PD.loc[len(_dna_3spn2_atom_names), 'epsilon']
-        epsilon_map[i, :len(_amino_acids)] = (epsilon_i*epsilon_j)**0.5
+        epsilon_map[i, :len(_amino_acids)] = (epsilon_i * epsilon_j)**0.5
         epsilon_map[:len(_amino_acids), i] = epsilon_map[i, :len(_amino_acids)]
         sigma_i = param_PD.loc[i1, 'sigma']
         sigma_j = param_PD.loc[len(_dna_3spn2_atom_names), 'sigma']
-        sigma_map[i, :len(_amino_acids)] = 0.5*(sigma_i + sigma_j)
+        sigma_map[i, :len(_amino_acids)] = 0.5 * (sigma_i + sigma_j)
         sigma_map[:len(_amino_acids), i] = sigma_map[i, :len(_amino_acids)]
         cutoff_map[i, :len(_amino_acids)] = cutoff_PD.value_in_unit(unit.nanometer)
         cutoff_map[:len(_amino_acids), i] = cutoff_map[i, :len(_amino_acids)]
@@ -394,7 +400,7 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
     vdwl.addTabulatedFunction('cutoff_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, 
                                                                   cutoff_map.flatten(order='F').tolist()))
     vdwl.addPerParticleParameter('atom_type')
-    # add atom type
+    # set atom types
     for _, row in mol.atoms.iterrows():
         resname = row['resname']
         name = row['name']
@@ -404,7 +410,7 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
             vdwl.addParticle([len(_amino_acids) + _dna_3spn2_atom_names.index(name)])
         else:
             sys.exit(f'Cannot recognize atom with resname {resname} and name {name}.')
-    # add exclusions
+    # set exclusions
     for _, row in mol.exclusions.iterrows():
         vdwl.addExclusion(int(row['a1']), int(row['a2']))
     # set PBC, cutoff, and force group
@@ -432,18 +438,18 @@ def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300
     """
     C = salt_conc.value_in_unit(unit.molar)
     T = temperature.value_in_unit(unit.kelvin)
-    print(f'For electrostatic interactions, set monovalent salt concentration as {1000*C} mM.')
+    print(f'For electrostatic interactions, set monovalent salt concentration as {1000 * C} mM.')
     print(f'For electrostatic interactions, set temperature as {T} K.')
-    e = 249.4 - 0.788*T + 7.2E-4*T**2
-    a = 1 - 0.2551*C + 5.151E-2*C**2 - 6.889E-3*C**3
-    dielectric_DD = e*a
+    e = 249.4 - 0.788 * T + 7.2E-4 * T**2
+    a = 1 - 0.2551 * C + 5.151E-2 * C**2 - 6.889E-3 * C**3
+    dielectric_DD = e * a
     print(f'DNA-DNA dielectric constant is {dielectric_DD}')
     print(f'Protein-protein and protein-DNA dielectric constant is {dielectric_PP_PD}.')
     elec = mm.CustomNonbondedForce('''energy;
            energy=alpha*exp(-r/ldby)*step(cutoff-r)/r;
-           alpha=alpha_map(cg_atom_type1, cg_atom_type2);
-           ldby=ldby_map(cg_atom_type1, cg_atom_type2);
-           cutoff=cutoff_map(cg_atom_type1, cg_atom_type2)''')
+           alpha=alpha_map(atom_type1, atom_type2);
+           ldby=ldby_map(atom_type1, atom_type2);
+           cutoff=cutoff_map(atom_type1, atom_type2)''')
     n_atom_types = 4
     charge_list = [0, 1, -1, -1]
     # use Discrete2DFunction to define mappings for alpha, sigma, and cutoff
@@ -460,15 +466,15 @@ def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300
                 q_i *= elec_DD_charge_scale
                 q_j *= elec_DD_charge_scale
                 cutoff_ij = cutoff_DD
-                denominator = 4*np.pi*VEP*dielectric_DD/(NA*(EC**2))
-                denominator = denominator.value_in_unit(unit.kilojoule_per_mole**-1*unit.nanometer**-1)
-                ldby_ij = (dielectric_DD*VEP*kB*temperature/(2.0*NA*(EC**2)*salt_conc))**0.5
+                denominator = 4 * np.pi * VEP * dielectric_DD / (NA * (EC**2))
+                denominator = denominator.value_in_unit(unit.kilojoule_per_mole**-1 * unit.nanometer**-1)
+                ldby_ij = (dielectric_DD * VEP * kB * temperature / (2.0 * NA * (EC**2) * salt_conc))**0.5
             else:
                 cutoff_ij = cutoff_PP_PD
-                denominator = 4*np.pi*VEP*dielectric_PP_PD/(NA*(EC**2))
-                denominator = denominator.value_in_unit(unit.kilojoule_per_mole**-1*unit.nanometer**-1)
-                ldby_ij = (dielectric_PP_PD*VEP*kB*temperature/(2.0*NA*(EC**2)*salt_conc))**0.5
-            alpha_map[i, j] = q_i*q_j/denominator
+                denominator = 4 * np.pi * VEP * dielectric_PP_PD / (NA * (EC**2))
+                denominator = denominator.value_in_unit(unit.kilojoule_per_mole**-1 * unit.nanometer**-1)
+                ldby_ij = (dielectric_PP_PD * VEP * kB * temperature / (2.0 * NA * (EC**2) * salt_conc))**0.5
+            alpha_map[i, j] = q_i * q_j / denominator
             alpha_map[j, i] = alpha_map[i, j]
             cutoff_map[i, j] = cutoff_ij.value_in_unit(unit.nanometer)
             cutoff_map[j, i] = cutoff_map[i, j]
@@ -482,7 +488,7 @@ def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300
                                                                 ldby_map.flatten(order='F').tolist()))
     elec.addTabulatedFunction('cutoff_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, 
                                                                   cutoff_map.flatten(order='F').tolist()))
-    elec.addPerParticleParameter('cg_atom_type')
+    elec.addPerParticleParameter('atom_type')
     # add atom type
     for _, row in mol.atoms.iterrows():
         resname = row['resname']
