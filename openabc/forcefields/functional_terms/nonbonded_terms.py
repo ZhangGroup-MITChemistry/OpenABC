@@ -6,7 +6,7 @@ try:
 except ImportError:
     import simtk.openmm as mm
     import simtk.unit as unit
-from openabc.lib import NA, kB, EC, VEP, _amino_acids, _dna_nucleotides
+from openabc.lib import NA, kB, EC, VEP, _amino_acids, _dna_nucleotides, _kcal_to_kj
 import math
 import sys
 import os
@@ -513,5 +513,348 @@ def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300
     elec.setForceGroup(force_group)
     return elec
 
+
+def all_smog_MJ_3spn2_explicit_ion_hydr_vdwl_term(mol, param_PP_MJ, force_group=11):
+    """
+    Combine all the SMOG-MJ, 3SPN2, and explicit ion hydration and vdwl interactions into one force.
+    CG atom type 0-19 for amino acids.
+    CG atom type 20-25 for DNA atoms. 
+    CG atom types 26-28 for ions.
+    Many parameters are saved as attributes of mol. 
+    
+    """
+    hydr_vdwl = mm.CustomNonbondedForce('''energy;
+                energy=(hydr1+hydr2+vdwl)*step(cutoff-r);
+                hydr2=gamma2*(exp(-(r-mu2)^2/(2*eta^2))-offset2);
+                offset2=exp(-(cutoff-mu2)^2/(2*eta^2));
+                hydr1=gamma1*(exp(-(r-mu1)^2/(2*eta1^2))-offset1);
+                offset1=exp(-(cutoff-mu1)^2/(2*eta1^2));
+                gamma1=gamma1_map(atom_type1, atom_type2);
+                gamma2=gamma2_map(atom_type1, atom_type2);
+                mu1=mu1_map(atom_type1, atom_type2);
+                mu2=mu2_map(atom_type1, atom_type2);
+                eta1=eta1_map(atom_type1, atom_type2);
+                eta2=eta2_map(atom_type1, atom_type2);
+                vdwl=4*epsilon*((sigma/r)^12-(sigma/r)^6-offset_vdwl);
+                offset_vdwl=(sigma/cutoff)^12-(sigma/cutoff)^6;
+                epsilon=epsilon_map(atom_type1, atom_type2);
+                sigma=sigma_map(atom_type1, atom_type2);
+                cutoff=cutoff_map(atom_type1, atom_type2);''')
+    _ions = ['NA', 'MG', 'CL']
+    n_atom_types = len(_amino_acids) + len(_dna_3spn2_atom_names) + len(_ions)
+    
+    # initialize parameter maps
+    # note cutoff is shared by hydration and vdwl
+    gamma1_map = np.zeros((n_atom_types, n_atom_types))
+    gamma2_map = np.zeros((n_atom_types, n_atom_types))
+    mu1_map = np.zeros((n_atom_types, n_atom_types))
+    mu2_map = np.zeros((n_atom_types, n_atom_types))
+    eta1_map = np.ones((n_atom_types, n_atom_types)) # initialize as nonzero value to avoid division by zero
+    eta2_map = np.ones((n_atom_types, n_atom_types)) # initialize as nonzero value to avoid division by zero
+    epsilon_map = np.zeros((n_atom_types, n_atom_types))
+    sigma_map = np.zeros((n_atom_types, n_atom_types))
+    cutoff_map = np.zeros((n_atom_types, n_atom_types)) # initialize as zero, but will ensure it is nonzero after setting all the cutoffs
+    
+    # set atom type indices and classify atoms
+    atom_type_index_dict = dict(zip(_amino_acids + _dna_3spn2_atom_names + _ions, 
+                                    list(range(n_atom_types)))) # a map from atom type to atom type index
+    positive_amino_acids = ['ARG', 'LYS'] # HIS is recognized as neutral amino acid
+    negative_amino_acids = ['ASP', 'GLU']
+    charged_amino_acids = positive_amino_acids + negative_amino_acids
+    neutral_amino_acids = [i for i in _amino_acids if i not in charged_amino_acids]
+    neutral_dna_atoms = [i for i in _dna_3spn2_atom_names if i != 'P']
+    neutral_amino_acid_atom_type_indices = [atom_type_index_dict[i] for i in neutral_amino_acids]
+    neutral_dna_atom_type_indices = [atom_type_index_dict[i] for i in neutral_dna_atoms]
+    neutral_atom_type_indices = neutral_amino_acid_atom_type_indices + neutral_dna_atom_type_indices
+    positive_amino_acid_type_indices = [atom_type_index_dict[i] for i in positive_amino_acids]
+    negative_amino_acid_type_indices = [atom_type_index_dict[i] for i in negative_amino_acids]
+    ion_type_indices = [atom_type_index_dict[i] for i in _ions]
+    
+    # set all the hydration parameters
+    H1_dict = {('NA', 'P'): 3.15488 * _kcal_to_kj, 
+               ('NA', 'AA+'): 3.15488 * _kcal_to_kj, 
+               ('NA', 'AA-'): 3.15488 * _kcal_to_kj, 
+               ('MG', 'P'): 1.29063 * _kcal_to_kj, 
+               ('MG', 'AA+'): 1.29063 * _kcal_to_kj, 
+               ('MG', 'AA-'): 1.29063 * _kcal_to_kj, 
+               ('CL', 'P'): 0.83652 * _kcal_to_kj, 
+               ('CL', 'AA+'): 0.83652 * _kcal_to_kj, 
+               ('CL', 'AA-'): 0.83652 * _kcal_to_kj, 
+               ('NA', 'NA'): 0.17925 * _kcal_to_kj, 
+               ('NA', 'CL'): 5.49713 * _kcal_to_kj, 
+               ('MG', 'CL'): 1.09943 * _kcal_to_kj, 
+               ('CL', 'CL'): 0.23901 * _kcal_to_kj}
+    H2_dict = {('NA', 'P'): 0.47801 * _kcal_to_kj, 
+               ('NA', 'AA-'): 0.47801 * _kcal_to_kj, 
+               ('MG', 'P'): 0.97992 * _kcal_to_kj, 
+               ('MG', 'AA-'): 0.97992 * _kcal_to_kj, 
+               ('CL', 'AA+'): 0.47801 * _kcal_to_kj, 
+               ('NA', 'CL'): 0.47801 * _kcal_to_kj, 
+               ('MG', 'CL'): 0.05975 * _kcal_to_kj}
+    mu1_dict = {('NA', 'P'): 0.41, ('NA', 'AA+'): 0.41, 
+                ('NA', 'AA-'): 0.41, ('MG', 'P'): 0.61, 
+                ('MG', 'AA+'): 0.61, ('MG', 'AA-'): 0.61, 
+                ('CL', 'P'): 0.67, ('CL', 'AA+'): 0.67, 
+                ('CL', 'AA-'): 0.67, ('NA', 'NA'): 0.58, 
+                ('NA', 'CL'): 0.33, ('MG', 'CL'): 0.548, 
+                ('CL', 'CL'): 0.62}
+    mu2_dict = {('NA', 'P'): 0.65, ('NA', 'AA-'): 0.65, 
+                ('MG', 'P'): 0.83, ('MG', 'AA-'): 0.83, 
+                ('CL', 'AA+'): 0.56, ('NA', 'CL'): 0.56, 
+                ('MG', 'CL'): 0.816}
+    eta1_dict = {('NA', 'P'): 0.057, ('NA', 'AA+'): 0.057, 
+                 ('NA', 'AA-'): 0.057, ('MG', 'P'): 0.05, 
+                 ('MG', 'AA+'): 0.05, ('MG', 'AA-'): 0.05, 
+                 ('CL', 'P'): 0.15, ('CL', 'AA+'): 0.15, 
+                 ('CL', 'AA-'): 0.15, ('NA', 'NA'): 0.057, 
+                 ('NA', 'CL'): 0.057, ('MG', 'CL'): 0.044, 
+                 ('CL', 'CL'): 0.05}
+    eta2_dict = {('NA', 'P'): 0.04, ('NA', 'AA-'): 0.04, 
+                 ('MG', 'P'): 0.12, ('MG', 'AA-'): 0.12, 
+                 ('CL', 'AA+'): 0.04, ('NA', 'CL'): 0.04, 
+                 ('MG', 'CL'): 0.035}
+    for k in H1_dict.keys():
+        assert k[0] in _ions # k[0] is always ion
+        i = [atom_type_index_dict[k[0]]]
+        if k[1] == 'AA+':
+            j = positive_amino_acid_type_indices
+        elif k[1] == 'AA-':
+            j = negative_amino_acid_type_indices
+        else:
+            j = [atom_type_index_dict[k[1]]]
+        gamma1_map[i, j] = H1_dict[k] / (eta1_dict[k] * (2 * np.pi)**0.5)
+        gamma1_map[j, i] = gamma1_map[i, j]
+        mu1_map[i, j] = mu1_dict[k]
+        mu1_map[j, i] = mu1_dict[k]
+        eta1_map[i, j] = eta1_dict[k]
+        eta1_map[j, i] = eta1_dict[k]
+    for k in H2_dict.keys():
+        assert k[0] in _ions # k[0] is always ion
+        i = [atom_type_index_dict[k[0]]]
+        if k[1] == 'AA+':
+            j = positive_amino_acid_type_indices
+        elif k[1] == 'AA-':
+            j = negative_amino_acid_type_indices
+        else:
+            j = [atom_type_index_dict[k[1]]]
+        gamma2_map[i, j] = H2_dict[k] / (eta2_dict[k] * (2 * np.pi)**0.5)
+        gamma2_map[j, i] = gamma2_map[i, j]
+        mu2_map[i, j] = mu2_dict[k]
+        mu2_map[j, i] = mu2_dict[k]
+        eta2_map[i, j] = eta2_dict[k]
+        eta2_map[j, i] = eta2_dict[k]
+    gamma1_map = gamma1_map.flatten(order='F').tolist()
+    gamma2_map = gamma2_map.flatten(order='F').tolist()
+    mu1_map = mu1_map.flatten(order='F').tolist()
+    mu2_map = mu2_map.flatten(order='F').tolist()
+    eta1_map = eta1_map.flatten(order='F').tolist()
+    eta2_map = eta2_map.flatten(order='F').tolist()
+    hydr_vdwl.addTabulatedFunction('gamma1_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, gamma1_map))
+    hydr_vdwl.addTabulatedFunction('gamma2_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, gamma2_map))
+    hydr_vdwl.addTabulatedFunction('mu1_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, mu1_map))
+    hydr_vdwl.addTabulatedFunction('mu2_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, mu2_map))
+    hydr_vdwl.addTabulatedFunction('eta1_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, eta1_map))
+    hydr_vdwl.addTabulatedFunction('eta2_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, eta2_map))
+    
+    # set vdwl
+    # set protein-protein interactions
+    # protein-protein vdwl interactions are all MJ potentials
+    for _, row in param_PP_MJ.iterrows():
+        atom_type1, atom_type2 = row['atom_type1'], row['atom_type2']
+        i = atom_type_index_dict[atom_type1]
+        j = atom_type_index_dict[atom_type2]
+        epsilon_map[i, j] = row['epsilon (kj/mol)']
+        epsilon_map[j, i] = epsilon_map[i, j]
+        sigma_map[i, j] = row['sigma (nm)']
+        sigma_map[j, i] = sigma_map[i, j]
+        cutoff_map[i, j] = row['cutoff_LJ (nm)']
+        cutoff_map[j, i] = cutoff_map[i, j]
+    
+    # set DNA-DNA interactions except phosphate-phosphate interactions
+    # be careful with the definition of sigma_map and cutoff_map
+    # in the original 3SPN2, potential is defined as epsilon*((sigma/r)^12-2*(sigma/r)^6) with cutoff as sigma
+    # note for epsilon*((sigma/r)^12-2*(sigma/r)^6), the minimum is at r = sigma
+    # here we use 4*epsilon*((sigma'/r)^12-(sigma'/r)^6) instead, with sigma' = 2^(-1/6)*sigma
+    # note epsilon*((sigma/r)^12-2*(sigma/r)^6) = 4*epsilon*((sigma'/r)^12-(sigma'/r)^6)
+    param_DD = mol.particle_definition[mol.particle_definition['DNA'] == mol.dna_type].copy()
+    param_DD.index = param_DD['name'] # rearrange to make sure the row order is based on dna_atom_names
+    param_DD = param_DD.loc[_dna_3spn2_atom_names]
+    param_DD.index = list(range(len(param_DD.index)))
+    for i1 in range(len(_dna_3spn2_atom_names)):
+        for j1 in range(i1, len(_dna_3spn2_atom_names)):
+            a_i = _dna_3spn2_atom_names[i1]
+            a_j = _dna_3spn2_atom_names[j1]
+            if (a_i == 'P') and (a_j == 'P'):
+                # do not set phosphate-phosphate vdwl parameters here
+                # phosphate-phosphate vdwl parameters are set elsewhere
+                continue
+            i = atom_type_index_dict[a_i]
+            j = atom_type_index_dict[a_j]
+            epsilon_i = param_DD.loc[i1, 'epsilon']
+            epsilon_j = param_DD.loc[j1, 'epsilon']
+            epsilon_map[i, j] = (epsilon_i * epsilon_j)**0.5
+            epsilon_map[j, i] = epsilon_map[i, j]
+            sigma_i = param_DD.loc[i1, 'sigma']
+            sigma_j = param_DD.loc[j1, 'sigma']
+            # sigma_i and sigma_j are the original sigma values, while sigam_map saves sigma'=2^(-1/6)*sigma.
+            sigma_map[i, j] = 0.5 * (sigma_i + sigma_j) * (2**(-1/6)) # be careful with the definition of sigma_map
+            sigma_map[j, i] = sigma_map[i, j]
+            cutoff_map[i, j] = 0.5 * (sigma_i + sigma_j) # be careful with the definition of cutoff_map
+            cutoff_map[j, i] = cutoff_map[i, j]
+    
+    # set protein-DNA interactions
+    # we directly assign protein-DNA interaction parameters, which is convenient
+    # note cutoff is different from the value in implicit solvent SMOG+3SPN2 model
+    amino_acid_atom_type_indices = [atom_type_index_dict[i] for i in _amino_acids]
+    dna_atom_type_indices = [atom_type_index_dict[i] for i in _dna_3spn2_atom_names]
+    epsilon_map[amino_acid_atom_type_indices, dna_atom_type_indices] = 0.02987572 * _kcal_to_kj
+    epsilon_map[dna_atom_type_indices, amino_acid_atom_type_indices] = 0.02987572 * _kcal_to_kj
+    sigma_map[amino_acid_atom_type_indices, dna_atom_type_indices] = 0.57
+    sigma_map[dna_atom_type_indices, amino_acid_atom_type_indices] = 0.57
+    cutoff_map[amino_acid_atom_type_indices, dna_atom_type_indices] = 2**(1/6) * 0.57
+    cutoff_map[dna_atom_type_indices, amino_acid_atom_type_indices] = 2**(1/6) * 0.57
+    
+    # set ion-neutral particle interactions
+    epsilon_map[neutral_atom_type_indices, ion_type_indices] = 0.239 * _kcal_to_kj
+    epsilon_map[ion_type_indices, neutral_atom_type_indices] = 0.239 * _kcal_to_kj
+    ion_neutral_atom_sigma_dict = {('NA', 'S'): 0.4315, 
+                                   ('NA', 'A'): 0.3915, 
+                                   ('NA', 'T'): 0.4765, 
+                                   ('NA', 'G'): 0.3665, 
+                                   ('NA', 'C'): 0.4415, 
+                                   ('NA', 'AA'): 0.4065, 
+                                   ('MG', 'S'): 0.3806, 
+                                   ('MG', 'A'): 0.3406, 
+                                   ('MG', 'T'): 0.4256, 
+                                   ('MG', 'G'): 0.3156, 
+                                   ('MG', 'C'): 0.3906, 
+                                   ('MG', 'AA'): 0.3556, 
+                                   ('CL', 'S'): 0.51225, 
+                                   ('CL', 'A'): 0.47225, 
+                                   ('CL', 'T'): 0.55725, 
+                                   ('CL', 'G'): 0.44725, 
+                                   ('CL', 'C'): 0.52225, 
+                                   ('CL', 'AA'): 0.48725}
+    for k, v in ion_neutral_atom_sigma_dict.items():
+        assert k[0] in _ions # k[0] is always ion
+        i = atom_type_index_dict[k[0]] # the first atom type is always ion
+        if k[1] == 'AA':
+            j = neutral_amino_acid_atom_type_indices
+        else:
+            j = atom_type_index_dict[k[1]]
+        sigma_map[i, j] = v
+        sigma_map[j, i] = v
+        cutoff_map[i, j] = 2**(1/6) * v
+        cutoff_map[j, i] = 2**(1/6) * v
+    
+    # set charged particle interactions (except both CG atoms are charged amino acids)
+    ion_charged_atom_epsilon_dict = {('P', 'P'): 0.18379 * _kcal_to_kj, 
+                                     ('NA', 'P'): 0.02510 * _kcal_to_kj, 
+                                     ('NA', 'AA+'): 0.239 * _kcal_to_kj, 
+                                     ('NA', 'AA-'): 0.239 * _kcal_to_kj, 
+                                     ('MG', 'P'): 0.1195 * _kcal_to_kj, 
+                                     ('MG', 'AA+'): 0.239 * _kcal_to_kj, 
+                                     ('MG', 'AA-'): 0.239 * _kcal_to_kj, 
+                                     ('CL', 'P'): 0.08121 * _kcal_to_kj, 
+                                     ('CL', 'AA+'): 0.239 * _kcal_to_kj, 
+                                     ('CL', 'AA-'): 0.239 * _kcal_to_kj, 
+                                     ('NA', 'NA'): 0.01121 * _kcal_to_kj, 
+                                     ('NA', 'MG'): 0.04971 * _kcal_to_kj, 
+                                     ('NA', 'CL'): 0.08387 * _kcal_to_kj, 
+                                     ('MG', 'MG'): 0.89460 * _kcal_to_kj, 
+                                     ('MG', 'CL'): 0.49737 * _kcal_to_kj, 
+                                     ('CL', 'CL'): 0.03585 * _kcal_to_kj}
+    ion_charged_atom_sigma_dict = {('P', 'P'): 0.686, 
+                                   ('NA', 'P'): 0.414, 
+                                   ('NA', 'AA+'): 0.4065, 
+                                   ('NA', 'AA-'): 0.4065,
+                                   ('MG', 'P'): 0.487, 
+                                   ('MG', 'AA+'): 0.3556, 
+                                   ('MG', 'AA-'): 0.3556, 
+                                   ('CL', 'P'): 0.55425, 
+                                   ('CL', 'AA+'): 0.48725, 
+                                   ('CL', 'AA-'): 0.48725, 
+                                   ('NA', 'NA'): 0.243, 
+                                   ('NA', 'MG'): 0.237, 
+                                   ('NA', 'CL'): 0.31352, 
+                                   ('MG', 'MG'): 0.1412, 
+                                   ('MG', 'CL'): 0.474, 
+                                   ('CL', 'CL'): 0.4045}
+    for k in ion_charged_atom_epsilon_dict.keys():
+        i = atom_type_index_dict[k[0]] # the first atom type is always ion or phosphate
+        if k[1] == 'AA+':
+            j = positive_amino_acid_type_indices
+        elif k[1] == 'AA-':
+            j = negative_amino_acid_type_indices
+        else:
+            j = atom_type_index_dict[k[1]]
+        epsilon_map[i, j] = ion_charged_atom_epsilon_dict[k]
+        epsilon_map[j, i] = ion_charged_atom_epsilon_dict[k]
+        sigma_map[i, j] = ion_charged_atom_sigma_dict[k]
+        sigma_map[j, i] = ion_charged_atom_sigma_dict[k]
+        cutoff_map[i, j] = 1.2 # all the charged atom contact cutoffs are 1.2 nm
+        cutoff_map[j, i] = 1.2
+    
+    # ensure cutoff is large enough for the hydration terms
+    # in our code, the cutoff_map is determined based on vdwl cutoff, and we expect this cutoff is large enough for hydration terms
+    for k in mu1_dict.keys():
+        assert k[0] in _ions
+        i = [atom_type_index_dict[k[0]]]
+        if k[1] == 'AA+':
+            j = positive_amino_acid_type_indices[0]
+        elif k[1] == 'AA-':
+            j = negative_amino_acid_type_indices[0]
+        else:
+            j = [atom_type_index_dict[k[1]]]
+        assert cutoff_map[i, j] > mu1_dict[k] + 5 * eta1_dict[k]
+    for k in mu2_dict.keys():
+        assert k[0] in _ions
+        i = [atom_type_index_dict[k[0]]]
+        if k[1] == 'AA+':
+            j = positive_amino_acid_type_indices[0]
+        elif k[1] == 'AA-':
+            j = negative_amino_acid_type_indices[0]
+        else:
+            j = [atom_type_index_dict[k[1]]]
+        assert cutoff_map[i, j] > mu2_dict[k] + 5 * eta2_dict[k]
+    
+    # assert no missing parameters
+    assert np.all(epsilon_map != 0) # there should be a non-zero epsilon for each type of pair
+    assert np.all(sigma_map > 0) # there should be a positive sigma for each type of pair
+    assert np.all(cutoff_map > 0) # there should be a positive cutoff for each type of pair
+    max_cutoff = np.amax(cutoff_map)
+    epsilon_map = epsilon_map.flatten(order='F').tolist()
+    sigma_map = sigma_map.flatten(order='F').tolist()
+    cutoff_map = cutoff_map.flatten(order='F').tolist()
+    hydr_vdwl.addTabulatedFunction('epsilon_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, epsilon_map))
+    hydr_vdwl.addTabulatedFunction('sigma_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, sigma_map))
+    hydr_vdwl.addTabulatedFunction('cutoff_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, cutoff_map))
+    hydr_vdwl.addPerParticleParameter('atom_type')
+    
+    # set atom types
+    for _, row in mol.atoms.iterrows():
+        resname = row['resname']
+        name = row['name']
+        if (resname in _amino_acids) and (name == 'CA'):
+            hydr_vdwl.addParticle([atom_type_index_dict[resname]])
+        elif (resname in _dna_nucleotides) and (name in _dna_3spn2_atom_names):
+            hydr_vdwl.addParticle([atom_type_index_dict[name]])
+        elif (resname in _ions) and (name in _ions):
+            hydr_vdwl.addParticle([atom_type_index_dict[resname]])
+        else:
+            sys.exit(f'Cannot recognize atom with resname {resname} and name {name}.')
+    
+    # set exclusions
+    for _, row in mol.exclusions.iterrows():
+        hydr_vdwl.addExclusion(int(row['a1']), int(row['a2']))
+    
+    # set PBC, cutoff, and force group
+    if mol.use_pbc:
+        hydr_vdwl.setNonbondedMethod(hydr_vdwl.CutoffPeriodic)
+    else:
+        hydr_vdwl.setNonbondedMethod(hydr_vdwl.CutoffNonPeriodic)
+    hydr_vdwl.setCutoffDistance(max_cutoff)
+    hydr_vdwl.setForceGroup(force_group)
+    return hydr_vdwl
 
 
