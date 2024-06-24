@@ -37,10 +37,12 @@ $$
 Note this term only exists between two charged species except when both CG atoms are charged amino acids (i.e. except (AA+, AA+), (AA+, AA-), (AA-, AA-) pairs). Charged species include phosphate, ions, AA+, and AA-. Some pairs have two sets of hydration potentials, while other pairs only have one set. The parameters are shown in Table 1 of ref [1]. In the code, we use notations $\mu = r_{mh}$, $\eta = \sigma_h$, $\gamma = \frac{H}{\sigma_h \sqrt{2\pi}}$. So that the hydration potential is written as
 
 $$
-U_{hydr} = \gamma \exp{\left[-\frac{(r-\mu)}{2\eta^2}\right]}
+U_{hydr} = \gamma \exp{\left[-\frac{(r-\mu)^2}{2\eta^2}\right]}
 $$
 
-In the code, the vdwl and hydration terms are combined in one `CustomNonbondedForce` and they share the nonbonded cutoff distances. Note in the code, the cutoff is determined based on vdwl cutoff values, and we check to ensure this cutoff is large enough for the hydration term. 
+The cutoff for the each hydration term is set as $\mu + 10\eta$ so that the numerical error due to cutoff is negligible. 
+
+In the code, the vdwl and hydration terms are combined in one `CustomNonbondedForce`. 
 
 
 
