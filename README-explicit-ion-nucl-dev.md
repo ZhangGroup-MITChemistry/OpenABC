@@ -44,8 +44,21 @@ The cutoff for the each hydration term is set as $\mu + 10\eta$ so that the nume
 
 In the code, the vdwl and hydration terms are combined in one `CustomNonbondedForce`. 
 
+### Electrostatic term
 
+Since the ions are explicit, the electrostatic interactions are unscreened Coulombic interactions. The electrostatic potential is 
 
+$$
+U_{elec} = \frac{q_i q_j}{4 \pi \epsilon_0 \epsilon_D r}
+$$
+
+where $\epsilon_0$ is the vacuum permittivity and $\epsilon_D$ is the dielectric. For pairs (AA*, AA*) and (AA*, P) (AA* includes AA+ and AA-), the dielectric is constant $\epsilon_D=78.0$, while for other pairs, dielectric is distance dependent
+
+$$
+\epsilon_D(r) = 41.6\left[1 + \tanh\left(\frac{r-r_{D}}{\zeta}\right)\right]
+$$
+
+with $r_D$ and $\zeta$ values shown in Table of 1 of ref [1] (they are named as $r_{m\epsilon}$ and $\sigma_\epsilon$ in ref [1]). 
 
 
 

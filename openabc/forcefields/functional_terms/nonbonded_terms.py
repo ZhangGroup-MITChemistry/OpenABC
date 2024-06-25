@@ -851,14 +851,155 @@ def all_smog_MJ_3spn2_explicit_ion_hydr_vdwl_term(mol, param_PP_MJ, force_group=
     for _, row in mol.exclusions.iterrows():
         hydr_vdwl.addExclusion(int(row['a1']), int(row['a2']))
     
-    # set PBC, cutoff, and force group
-    if mol.use_pbc:
-        hydr_vdwl.setNonbondedMethod(hydr_vdwl.CutoffPeriodic)
-    else:
-        hydr_vdwl.setNonbondedMethod(hydr_vdwl.CutoffNonPeriodic)
-    global_cutoff = max(np.max(cutoff_vdwl_map), np.max(cutoff_hydr1_map), np.max(cutoff_hydr2_map))
-    hydr_vdwl.setCutoffDistance(global_cutoff)
+    # set exclusions, nonbonded method, and force group
+    # use NoCutoff for vdwl for consistency as we use this nonbonded method for elec
+    hydr_vdwl.setNonbondedMethod(hydr_vdwl.NoCutoff)
     hydr_vdwl.setForceGroup(force_group)
     return hydr_vdwl
+
+
+def all_smog_MJ_3spn2_explicit_ion_elec_term(mol, force_group=12):
+    """
+    Implementation of all electrostatic interactions of explicit ion model into one force. 
+    Note this one does not use PME, but using a custom force without cutoff (i.e. all the N^2 pairs are considered).
+    
+    CG atom types: 
+    Type 0 for zero-charged CG atoms. 
+    Type 1 for ARG and LYS CA atoms. 
+    Type 2 for ASP and GLU CA atoms. 
+    Type 3 for phosphate CG atoms. 
+    Type 4-6 for NA, MG, and CL ions. 
+    
+    Parameters
+    ----------
+    force_group : int
+        Force group for this force.
+    
+    """
+    elec = mm.CustomNonbondedForce('''energy;
+           energy=alpha/(dielectric*r);
+           alpha=alpha_map(atom_type1, atom_type2);
+           dielectric=41.6*(1+tanh((r-r_D)/zeta))*flag_ddd+(1-flag_ddd)*78.0;
+           r_D=r_D_map(atom_type1, atom_type2);
+           zeta=zeta_map(atom_type1, atom_type2);
+           flag_ddd=flag_ddd_map(atom_type1, atom_type2);
+           ''')
+    all_atom_types = ['AA', 'AA+', 'AA-', 'P', 'NA', 'MG', 'CL']
+    n_atom_types = len(all_atom_types)
+    atom_type_index_dict = dict(zip(all_atom_types, list(range(n_atom_types))))
+    charge_dict = {'AA': 0.0, 'AA+': 1.0, 'AA-': -1.0, 'P': -1.0, 
+                   'NA': 1.0, 'MG': 2.0, 'CL': -1.0}
+    alpha_map = np.zeros((n_atom_types, n_atom_types))
+    r_D_map = np.zeros((n_atom_types, n_atom_types))
+    zeta_map = 0.01 * np.ones((n_atom_types, n_atom_types)) # initialize as 0.01 to avoid division by zero
+    flag_ddd_map = np.zeros((n_atom_types, n_atom_types))
+    
+    # set parameters for pairs with constant dielectric
+    constant_dielectric_pairs = [('AA+', 'AA+'), ('AA+', 'AA-'), ('AA-', 'AA-'), 
+                                 ('AA+', 'P'), ('AA-', 'P')]
+    for k in constant_dielectric_pairs:
+        i = atom_type_index_dict[k[0]]
+        j = atom_type_index_dict[k[1]]
+        q_i = charge_dict[k[0]]
+        q_j = charge_dict[k[1]]
+        alpha_map[i, j] = (q_i * q_j * NA * (EC**2) / (4 * np.pi * VEP)).value_in_unit(unit.kilojoule_per_mole * unit.nanometer)
+        alpha_map[j, i] = alpha_map[i, j]
+    
+    # set parameters for pairs with distance-dependent dielectric
+    r_D_dict = {('P', 'P'): 0.686, 
+                ('NA', 'P'): 0.344, 
+                ('NA', 'AA+'): 0.344, 
+                ('NA', 'AA-'): 0.344, 
+                ('MG', 'P'): 0.375, 
+                ('MG', 'AA+'): 0.375, 
+                ('MG', 'AA-'): 0.375, 
+                ('CL', 'P'): 0.42, 
+                ('CL', 'AA+'): 0.42, 
+                ('CL', 'AA-'): 0.42, 
+                ('NA', 'NA'): 0.27, 
+                ('NA', 'MG'): 0.237, 
+                ('NA', 'CL'): 0.39, 
+                ('MG', 'MG'): 0.1412, 
+                ('MG', 'CL'): 0.448, 
+                ('CL', 'CL'): 0.42}
+    zeta_dict = {('P', 'P'): 0.05, 
+                 ('NA', 'P'): 0.125, 
+                 ('NA', 'AA+'): 0.125, 
+                 ('NA', 'AA-'): 0.125, 
+                 ('MG', 'P'): 0.1, 
+                 ('MG', 'AA+'): 0.1, 
+                 ('MG', 'AA-'): 0.1, 
+                 ('CL', 'P'): 0.05, 
+                 ('CL', 'AA+'): 0.05, 
+                 ('CL', 'AA-'): 0.05, 
+                 ('NA', 'NA'): 0.057, 
+                 ('NA', 'MG'): 0.05, 
+                 ('NA', 'CL'): 0.206, 
+                 ('MG', 'MG'): 0.05, 
+                 ('MG', 'CL'): 0.057, 
+                 ('CL', 'CL'): 0.056}
+    for k in r_D_dict.keys():
+        i = atom_type_index_dict[k[0]]
+        j = atom_type_index_dict[k[1]]
+        q_i = charge_dict[k[0]]
+        q_j = charge_dict[k[1]]
+        alpha_map[i, j] = (q_i * q_j * NA * (EC**2) / (4 * np.pi * VEP)).value_in_unit(unit.kilojoule_per_mole * unit.nanometer)
+        alpha_map[j, i] = alpha_map[i, j]
+        r_D_map[i, j] = r_D_dict[k]
+        r_D_map[j, i] = r_D_map[i, j]
+        zeta_map[i, j] = zeta_dict[k]
+        zeta_map[j, i] = zeta_map[i, j]
+        flag_ddd_map[i, j] = 1.0
+        flag_ddd_map[j, i] = flag_ddd_map[i, j]
+    
+    # add parameters
+    alpha_map = alpha_map.flatten(order='F').tolist()
+    r_D_map = r_D_map.flatten(order='F').tolist()
+    zeta_map = zeta_map.flatten(order='F').tolist()
+    flag_ddd_map = flag_ddd_map.flatten(order='F').tolist()
+    elec.addTabulatedFunction('alpha_map', 
+                              mm.Discrete2DFunction(n_atom_types, n_atom_types, alpha_map))
+    elec.addTabulatedFunction('r_D_map',
+                              mm.Discrete2DFunction(n_atom_types, n_atom_types, r_D_map))
+    elec.addTabulatedFunction('zeta_map',
+                              mm.Discrete2DFunction(n_atom_types, n_atom_types, zeta_map))
+    elec.addTabulatedFunction('flag_ddd_map',
+                              mm.Discrete2DFunction(n_atom_types, n_atom_types, flag_ddd_map))
+    elec.addPerParticleParameter('atom_type')
+
+    # set atom types
+    positive_amino_acids = ['ARG', 'LYS'] # HIS is recognized as neutral amino acid
+    negative_amino_acids = ['ASP', 'GLU']
+    charged_amino_acids = positive_amino_acids + negative_amino_acids
+    neutral_amino_acids = [i for i in _amino_acids if i not in charged_amino_acids]
+    _ions = ['NA', 'MG', 'CL']
+    for _, row in mol.atoms.iterrows():
+        resname = row['resname']
+        name = row['name']
+        if (resname in _amino_acids) and (name == 'CA'):
+            if resname in positive_amino_acids:
+                elec.addParticle([1])
+            elif resname in negative_amino_acids:
+                elec.addParticle([2])
+            else:
+                elec.addParticle([0])
+        elif resname in _dna_nucleotides:
+            if name == 'P':
+                elec.addParticle([3])
+            else:
+                elec.addParticle([0])
+        elif (resname in _ions) and (name in _ions):
+            elec.addParticle([atom_type_index_dict[resname]])
+        else:
+            sys.exit(f'Cannot recognize atom with resname {resname} and name {name}.')
+    
+    # set exclusions, nonbonded method, and force group
+    assert hasattr(mol, 'exclusions'), 'Please set exclusions'
+    for _, row in mol.exclusions.iterrows():
+        elec.addExclusion(int(row['a1']), int(row['a2']))
+    elec.setNonbondedMethod(elec.NoCutoff)
+    elec.setForceGroup(force_group)
+    return elec
+
 
 

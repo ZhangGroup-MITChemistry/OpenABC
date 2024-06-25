@@ -88,7 +88,7 @@ class SMOG3SPN2ExplicitIonModel(SMOG3SPN2Model):
         
         """
         print('Add all the electrostatic interactions.')
-        # to be continued
-        return None
+        force = functional_terms.all_smog_MJ_3spn2_explicit_ion_elec_term(self, force_group=force_group)
+        self.system.addForce(force)
         
     
