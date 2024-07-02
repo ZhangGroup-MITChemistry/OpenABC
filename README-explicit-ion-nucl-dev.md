@@ -2,9 +2,9 @@
 
 This is the note for the development of the branch "explicit-ion-nucl-dev". This branch is developed for doing explicit ion simulation of nucleosomes. The model was first applied in Ref [1] in LAMMPS, and here we aim to move the model to OpenMM thus we can use GPU acceleration. Basically the model is to add explicit ions to the SMOG+3SPN2 model framework with certain modifications. 
 
-We mainly modify nonbonded terms, which include nonbonded contacts (including VDWL and hydration) and electrostatic interactions. There are three new types of CG atoms: sodium, magnesium, and chloride ions. For the modifications, the main technical challenge is to change the electrostatic potential from Debye-Huckel potential to unscreened Coulombic potential. 
+We mainly modify nonbonded terms, which include nonbonded contacts (including VDWL and hydration) and electrostatic interactions. There are three new types of CG atoms: sodium, magnesium, and chloride ions. For the modifications, our main challenge is: the electrostatic interactions require PME and some electrostatic pairs have distance dependent dielectric. Such distance dependent dielectric converges to constant at long distance. We use constant dielectric PME with additional term to correct the dielectric effects at short distance range. 
 
-We use AA+ and AA- to represent amino acids with positive or negative charges, respectively. 
+We use AA* to represent amino acids with positive (AA+) or negative (AA-) charges, respectively. 
 
 ## Nonbonded potential
 
@@ -34,15 +34,13 @@ $$
 U_{hydr} = \frac{H}{\sigma_h \sqrt{2\pi}} \exp\left[-\frac{(r-r_{mh})^2}{2\sigma_h^2}\right]
 $$
 
-Note this term only exists between two charged species except when both CG atoms are charged amino acids (i.e. except (AA+, AA+), (AA+, AA-), (AA-, AA-) pairs). Charged species include phosphate, ions, AA+, and AA-. Some pairs have two sets of hydration potentials, while other pairs only have one set. The parameters are shown in Table 1 of ref [1]. In the code, we use notations $\mu = r_{mh}$, $\eta = \sigma_h$, $\gamma = \frac{H}{\sigma_h \sqrt{2\pi}}$. So that the hydration potential is written as
+Note this term only exists between two charged species except when both CG atoms are charged amino acids (i.e. except (AA*, AA*) pairs). Charged species include phosphate, ions, and AA*. Some pairs have two sets of hydration potentials, while other pairs only have one set. The parameters are shown in Table 1 of ref [1]. In the code, we use notations $\mu = r_{mh}$, $\eta = \sigma_h$, $\gamma = \frac{H}{\sigma_h \sqrt{2\pi}}$. So that the hydration potential is written as
 
 $$
 U_{hydr} = \gamma \exp{\left[-\frac{(r-\mu)^2}{2\eta^2}\right]}
 $$
 
 The cutoff for the each hydration term is set as $\mu + 10\eta$ so that the numerical error due to cutoff is negligible. 
-
-In the code, the vdwl and hydration terms are combined in one `CustomNonbondedForce`. 
 
 ### Electrostatic term
 
@@ -52,13 +50,15 @@ $$
 U_{elec} = \frac{q_i q_j}{4 \pi \epsilon_0 \epsilon_D r}
 $$
 
-where $\epsilon_0$ is the vacuum permittivity and $\epsilon_D$ is the dielectric. For pairs (AA*, AA*) and (AA*, P) (AA* includes AA+ and AA-), the dielectric is constant $\epsilon_D=78.0$, while for other pairs, dielectric is distance dependent
+where $\epsilon_0$ is the vacuum permittivity and $\epsilon_D$ is the dielectric. For pairs (AA*, AA*) and (AA*, P), the dielectric is constant $\epsilon_D=78.0$, while for other pairs, dielectric is distance dependent
 
 $$
-\epsilon_D(r) = 41.6\left[1 + \tanh\left(\frac{r-r_{D}}{\zeta}\right)\right]
+\epsilon_D(r) = \frac{78.0 + 5.2}{2} + \frac{78.0 - 5.2}{2} \tanh\left(\frac{r-r_{D}}{\zeta}\right)
 $$
 
-with $r_D$ and $\zeta$ values shown in Table of 1 of ref [1] (they are named as $r_{m\epsilon}$ and $\sigma_\epsilon$ in ref [1]). 
+with $r_D$ and $\zeta$ values shown in Table of 1 of ref [1] (they are named as $r_{m\epsilon}$ and $\sigma_\epsilon$ in ref [1]). Be careful that there is a typo in ref [1] for the equation, and the correct form is from LAMMPS `pair_style coul/diel`. 
+
+In practice, for those pairs with distance dependent dielectric, we correct the potential at distance $r \leq r_D + 10\zeta$ range. Dielectric beyond $r_D + 10\zeta$ can be viewed as constant 78.0. In practice, we use `NonbondedForce` with PME to compute the electrostatic interactions with constant dielectric, and for those electrostatic pairs with distance dependent dielectric, we apply `CustomNonbondedForce` to correct within distance range $r \leq r_D + 10\zeta$. 
 
 
 

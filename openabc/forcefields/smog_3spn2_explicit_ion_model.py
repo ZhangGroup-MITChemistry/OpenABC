@@ -56,7 +56,7 @@ class SMOG3SPN2ExplicitIonModel(SMOG3SPN2Model):
         return self.atoms
     
     
-    def add_all_vdwl(self, param_PP_MJ_path=f'{__location__}/parameters/pp_MJ.csv', force_group=11):
+    def add_all_vdwl_elec(self, force_group_sr=11, force_group_PME=12):
         """
         Add all the nonbonded Van der Waals interactions. 
         
@@ -64,20 +64,20 @@ class SMOG3SPN2ExplicitIonModel(SMOG3SPN2Model):
         
         Parameters
         ----------
-        param_PP_MJ_path : str
-            The path of the MJ parameter file. 
+        force_group_sr : int
+            Force group for the short-ranged part, including vdwl, hydration, and electrostatic corrections at short range.
         
-        force_group : int
-            Force group. 
+        force_group_PME : int
+            Force group for the long-ranged PME part. 
         
         """
-        print('Add all the nonbonded contact interactions.')
-        param_PP_MJ = pd.read_csv(param_PP_MJ_path)
-        force = functional_terms.all_smog_MJ_3spn2_explicit_ion_hydr_vdwl_term(self, param_PP_MJ, force_group=force_group)
-        self.system.addForce(force)
+        print('Add all the nonbonded interactions, including vdwl, hydration, and electrostatic.')
+        force1, force2 = functional_terms.all_smog_MJ_3spn2_explicit_ion_vdwl_hydr_elec_term(self, force_group_sr, force_group_PME)
+        self.system.addForce(force1)
+        self.system.addForce(force2)
         
     
-    def add_all_elec(self, force_group=12):
+    def add_all_elec(self, force_group1=12, force_group2=13):
         """
         Add all the electrostatic interactions as the Coulombic interactions.
         
@@ -88,7 +88,9 @@ class SMOG3SPN2ExplicitIonModel(SMOG3SPN2Model):
         
         """
         print('Add all the electrostatic interactions.')
-        force = functional_terms.all_smog_MJ_3spn2_explicit_ion_elec_term(self, force_group=force_group)
-        self.system.addForce(force)
+        #force = functional_terms.all_smog_MJ_3spn2_explicit_ion_elec_term(self, force_group=force_group)
+        force1, force2 = functional_terms.all_smog_MJ_3spn2_explicit_ion_elec_PME_term(self, force_group1=force_group1, force_group2=force_group2)
+        self.system.addForce(force1)
+        self.system.addForce(force2)
         
     

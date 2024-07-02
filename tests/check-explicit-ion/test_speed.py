@@ -70,14 +70,12 @@ model.add_dna_dihedrals(force_group=8)
 model.add_dna_base_pairs(force_group=9)
 model.add_dna_cross_stackings(force_group=10)
 model.parse_all_exclusions() # set exclusions before adding nonbonded forces
-model.add_all_vdwl(force_group=11)
-model.add_all_elec(force_group=12)
-#model.save_system('system.xml')
+model.add_all_vdwl_elec(force_group_sr=11, force_group_PME=12)
 
 # run simulation on GPU
 T = 300 * unit.kelvin
 friction_coeff = 1 / unit.picosecond
-timestep = 10 * unit.femtosecond
+timestep = 5 * unit.femtosecond
 integrator = mm.LangevinMiddleIntegrator(T, friction_coeff, timestep)
 platform_name = 'CUDA'
 #init_coord = app.PDBFile('start.pdb').getPositions(asNumpy=True)
@@ -89,6 +87,6 @@ output_interval = 1000
 output_dcd = 'output.dcd'
 model.add_reporters(output_interval, output_dcd)
 model.simulation.context.setVelocitiesToTemperature(T)
-model.simulation.step(100000)
+model.simulation.step(10000)
 
 
