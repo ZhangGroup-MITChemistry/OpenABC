@@ -1,4 +1,6 @@
 *.pdb
 ref_frames.dat
 dna_template_parameters.par
+*.dcd
+*.csv
 

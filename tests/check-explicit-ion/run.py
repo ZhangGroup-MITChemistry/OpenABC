@@ -75,9 +75,17 @@ model.parse_all_exclusions() # set exclusions before adding nonbonded forces
 model.add_all_vdwl_elec(force_group_sr=11, force_group_PME=12)
 system = model.system
 #print(f'{system.getNumParticles()} atoms')
-#traj = mdtraj.load_dcd('lammps-run/DUMP_FILE_temp300.dcd', top='start.pdb')
-#energy = compute_PE(traj, system, 'CUDA', properties={'Precision', 'double'})
-#print(energy)
+T = 300 * unit.kelvin
+fric_coeff = 1 / unit.picosecond
+step_size = 10 * unit.femtosecond
+integrator = mm.LangevinMiddleIntegrator(T, fric_coeff, step_size)
+init_coord = app.PDBFile('start.pdb').getPositions()
+model.set_simulation(integrator, 'CUDA', init_coord=init_coord)
+model.simulation.minimizeEnergy()
+model.add_reporters(100, 'output.dcd')
+model.simulation.context.setVelocitiesToTemperature(T)
+model.simulation.step(1000)
+
 
 
 

@@ -55,7 +55,6 @@ class SMOG3SPN2ExplicitIonModel(SMOG3SPN2Model):
         self.atoms = pd.concat([self.atoms, df_ions], ignore_index=True)
         return self.atoms
     
-    
     def add_all_vdwl_elec(self, force_group_sr=11, force_group_PME=12):
         """
         Add all the nonbonded Van der Waals interactions. 
@@ -75,22 +74,18 @@ class SMOG3SPN2ExplicitIonModel(SMOG3SPN2Model):
         force1, force2 = functional_terms.all_smog_MJ_3spn2_explicit_ion_vdwl_hydr_elec_term(self, force_group_sr, force_group_PME)
         self.system.addForce(force1)
         self.system.addForce(force2)
-        
     
-    def add_all_elec(self, force_group1=12, force_group2=13):
+    def add_all_vdwl(self):
         """
-        Add all the electrostatic interactions as the Coulombic interactions.
-        
-        Parameters
-        ----------
-        force_group : int
-            Force group. 
-        
+        Disabled for the explicit ion model.
         """
-        print('Add all the electrostatic interactions.')
-        #force = functional_terms.all_smog_MJ_3spn2_explicit_ion_elec_term(self, force_group=force_group)
-        force1, force2 = functional_terms.all_smog_MJ_3spn2_explicit_ion_elec_PME_term(self, force_group1=force_group1, force_group2=force_group2)
-        self.system.addForce(force1)
-        self.system.addForce(force2)
-        
+        return None
     
+    def add_all_elec(self):
+        """
+        Disabled for the explicit ion model.
+        """
+        return None
+
+
+
