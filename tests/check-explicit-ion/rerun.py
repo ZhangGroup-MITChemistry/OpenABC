@@ -20,7 +20,7 @@ from openabc.utils import parse_pdb, write_pdb, insert_molecules, insert_molecul
 from openabc.lib import _amino_acids, _dna_nucleotides, df_sodium_ion, df_chloride_ion
 
 """
-Rerun a protein-DNA system with explicit ion model.
+Rerun the protein-DNA system with explicit ion model.
 """
 
 # separate the original pdb file into protein and dna pdb files
