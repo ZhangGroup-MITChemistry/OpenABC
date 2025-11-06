@@ -14,11 +14,15 @@ This folder provides tutorials for setting up and performing simulations with MO
 
 - MOFF-protein-MRG-dsDNA-condensate explains setting up complex condensate simulations with MOFF and MRG-DNA.
 
-- MRG-dsDNA provides an example for runing simulations of a dsDNA with MRG. 
+- MRG-dsDNA provides an example for running simulations of a dsDNA with MRG. 
 
 - Mpipi-protein-RNA-condensate shows how to run protein-RNA condensate simulation. 
 
 - SMOG-3SPN2-two-nucleosomes shows how to run the simulation of two nucleosomes with SMOG and 3SPN2 models. 
+
+- NEAT-DNA-dsDNA provides an example for running simulations of a dsDNA with NEAT-DNA. 
+
+- NEAT-DNA-MOFF-protein-nucleosome provides an example for running simulations of a nucleosome with NEAT-DNA and MOFF. 
 
 - build-new-forcefield provides the tutorial for building a new force field. 
 

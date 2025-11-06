@@ -14,7 +14,7 @@ except ImportError:
     PlumedForce = None
 import warnings
 from openabc.forcefields.rigid import createRigidBodies
-from openabc.utils import write_pdb
+from openabc.utils import write_pdb, write_mmCIF
 import sys
 import os
 
@@ -93,6 +93,27 @@ class CGModel(object):
         if reset_serial:
             atoms['serial'] = list(range(1, len(atoms.index) + 1))
         write_pdb(atoms, cg_pdb)
+
+    def atoms_to_mmCIF(self, cg_mmCIF, reset_serial=True):
+        """
+        Save atoms to mmCIF as topology will be read from the mmCIF file.
+        Required for OpenMM simulation.
+        
+        Parameters
+        ----------
+        cg_mmCIF : str
+            Output path for CG mmCIF file.
+        
+        reset_serial : bool
+            Reset serial to 1, 2, ...
+        
+        """
+        # do not write charge due to pdb space limit
+        atoms = self.atoms.copy()
+        atoms.loc[:, 'charge'] = ''
+        if reset_serial:
+            atoms['serial'] = list(range(1, len(atoms.index) + 1))
+        write_mmCIF(atoms, cg_mmCIF)
     
     def create_system(self, top, use_pbc=True, box_a=500, box_b=500, box_c=500, remove_cmmotion=True):
         """

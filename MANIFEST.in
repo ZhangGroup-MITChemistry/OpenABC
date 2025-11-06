@@ -12,3 +12,7 @@ prune tutorials
 include README.md
 include LICENSE
 
+global-exclude ._*
+global-exclude .DS_Store
+prune **/.ipynb_checkpoints
+

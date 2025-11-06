@@ -508,4 +508,79 @@ def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300
     return elec
 
 
+def dh_elec_term_map(mol, salt_conc=150.0 * unit.millimolar, temperature=300.0 * unit.kelvin, cutoff=4.0 * unit.nanometer, distance_dependent_dielectric=True, manning_scalar=1.0, force_group=6):
+    '''
+    Debye-Huckel potential.
+    CG atom types:
+    Type 0 for protein CG atoms.
+    Type 1 for DNA CG atoms.
+    '''
+    NA = unit.AVOGADRO_CONSTANT_NA # Avogadro constant
+    kB = unit.BOLTZMANN_CONSTANT_kB  # Boltzmann constant
+    EC = 1.602176634e-19*unit.coulomb # elementary charge
+    VEP = 8.8541878128e-12*unit.farad/unit.meter # vacuum electric permittivity
+    alpha = NA * EC ** 2 / (4 * np.pi * VEP)
+    gamma = VEP * kB * temperature / (2.0 * NA * salt_conc * EC ** 2)
+    # use a distance-dependent relative permittivity (dielectric)
+    dielectric_water = 78.4
+    A = -8.5525
+    kappa = 7.7839
+    B = dielectric_water - A
+    zeta = 0.03627
+    alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole * unit.nanometer)
+    gamma_value = gamma.value_in_unit(unit.nanometer ** 2)
+
+    # For mapping switching functions differently for p-p, p-n, and n-n interactions;
+    # p-p switch, p-n no switch, n-n no switch
+    # amino acids: atomtype = 0, nucleotides: atomtype = 1;
+    n_atom_types = 2
+
+    # Manning function for each atom type;
+    # p-p = p-n = 1.0, n-n = 0.36;
+    # Mimicking Manning codensation in the dna-dna interaction
+    manning_coeff_map = np.zeros((n_atom_types, n_atom_types))
+    for idx in range(0, 2, 1):
+        for jdx in range(0, 2, 1):
+            if (idx == 0 and jdx == 0):
+                manning_coeff_map[idx, jdx] = 1.0
+            elif (idx == 1 and jdx == 1):
+
+                manning_coeff_map[idx, jdx] = manning_scalar
+            else:
+                manning_coeff_map[idx, jdx] = 1.0
+    manning_coeff_map = manning_coeff_map.ravel().tolist()
+
+    # Spell out the switch function;
+    energy = (f'''energy;
+                  energy=manning_coeff*q1*q2*{alpha_value}*exp(-r/ldby)/(dielectric*r);
+                  manning_coeff=manning_coeff_map(atom_type1, atom_type2);
+                  ldby=(dielectric*{gamma_value})^0.5;
+              ''')
+    if distance_dependent_dielectric:
+        energy += f'''dielectric={A}+{B}/(1+{kappa}*exp(-{zeta}*{B}*r));'''
+    else:
+        energy += f'''dielectric={dielectric_water};'''
+
+    elec = mm.CustomNonbondedForce(energy)
+    elec.addTabulatedFunction('manning_coeff_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, manning_coeff_map))
+    elec.addPerParticleParameter('atom_type')
+    elec.addPerParticleParameter('q')
+
+    # add atom type
+    for _, row in mol.atoms.iterrows():
+        if row['resname'] in _amino_acids:
+            elec.addParticle([0, row['charge']])
+        else:
+            assert row['charge'] == -1, 'Manning condensation only makes sense with -1 charges on DNA beads.'
+            elec.addParticle([1, row['charge']])
+
+    for _, row in mol.exclusions.iterrows():
+        elec.addExclusion(int(row['a1']), int(row['a2']))
+    if mol.use_pbc:
+        elec.setNonbondedMethod(elec.CutoffPeriodic)
+    else:
+        elec.setNonbondedMethod(elec.CutoffNonPeriodic)
+    elec.setCutoffDistance(cutoff)
+    elec.setForceGroup(force_group)
+    return elec
 
