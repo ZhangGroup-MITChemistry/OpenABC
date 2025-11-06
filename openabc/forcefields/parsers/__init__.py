@@ -4,4 +4,5 @@ from .mrg_parser import MRGdsDNAParser
 from .mpipi_parsers import MpipiProteinParser, MpipiRNAParser
 from .smog_parser import SMOGParser
 from .dna_3spn2_parser import DNA3SPN2Parser
+from .neat_dna_parser import NEATDNAParser
 

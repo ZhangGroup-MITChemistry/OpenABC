@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["openabc"]
+include = ["openabc*"]
 namespaces = false
 
 [project]
@@ -23,6 +23,7 @@ dependencies = [
     "mdtraj", 
     "MDAnalysis", 
     "OpenMM", 
+	  "networkx",
 ]
 
 [tool.setuptools]
