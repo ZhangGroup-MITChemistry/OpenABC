@@ -34,6 +34,10 @@ We also cancel default REMO path starting from this version. Please specify REMO
 
 For `openabc.utils.insert.insert_molecules` (equivalent to `openabc.utils.insert_molecules`), only `FastNS` is supported now. 
 
+### Version 1.0.8
+
+Included MOFF+NEAT-DNA force field. Additionally mmCIF/PDBx parsers and writers have been added to openabc.utils for use with large structres.  
+
 ## Tutorials
 
 Detailed tutorials with all the necessary input files are provided in "tutorials" directory. 

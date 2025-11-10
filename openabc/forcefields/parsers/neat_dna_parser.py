@@ -5,7 +5,9 @@ from openabc.utils.helper_functions import parse_pdb,write_pdb
 from openabc.utils.openabc_mmCIF_parser import parse_mmCIF, write_mmCIF
 from openabc.lib import _dna_nucleotides,_rna_nucleotides
 import warnings
-_dna_nucleotides = _dna_nucleotides + [dnt+'5' for dnt in _dna_nucleotides] + [dnt+'3' for dnt in _dna_nucleotides]
+_terminal_dna_nucleotides = [dnt+'5' for dnt in _dna_nucleotides] + [dnt+'3' for dnt in _dna_nucleotides]
+_og_dna_nuc = _dna_nucleotides
+_dna_nucleotides = _dna_nucleotides + _terminal_dna_nucleotides
 _nucleotides = _dna_nucleotides + _rna_nucleotides
 
 __location__ = os.path.dirname(os.path.abspath(__file__))
@@ -181,6 +183,14 @@ class NEATDNAParser(object):
             'z': 'mean' }).reset_index()
         N = len(cg_nucleotide_pdb_atoms)
         cg_nucleotide_pdb_atoms['name'] = cg_nucleotide_pdb_atoms['resname'].apply(lambda name: 'RN' if name in _rna_nucleotides else 'DN')
+        def correct_term_bp(resname):
+            if resname not in _og_dna_nuc:
+                for dnt in _og_dna_nuc:
+                    if resname == dnt+'5' or resname == dnt+'3':
+                        return dnt
+            else:
+                return resname
+        cg_nucleotide_pdb_atoms['resname'] = cg_nucleotide_pdb_atoms['resname'].apply(correct_term_bp)
         cg_nucleotide_pdb_atoms['occupancy'] = np.ones(N)
         cg_nucleotide_pdb_atoms['tempFactor'] = np.ones(N)
         cg_nucleotide_pdb_atoms['element'] = ['P'] * N
