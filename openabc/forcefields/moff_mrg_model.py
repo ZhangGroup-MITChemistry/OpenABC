@@ -41,13 +41,13 @@ class MOFFMRGModel(CGModel):
             force = functional_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
 
-    def add_protein_angles(self, threshold=130*np.pi/180, clip=False, force_group=2, verbose=True):
+    def add_protein_angles(self, threshold=130 * np.pi / 180, clip=False, force_group=2, verbose=True):
         """
         Add protein angles.
         
         Note that the angle potential is a harmonic angle potential, which may lead to unstable simulation if harmonic potential center theta0 is too large.
         
-        Based on some tests, theta0 <= 130 degrees (130*np.pi/180 radians) can facilitate 10 fs timestep. 
+        Based on some tests, theta0 <= 130 degrees (130 * np.pi / 180 radians) can facilitate 10 fs timestep. 
         
         Parameters
         ----------
@@ -159,7 +159,7 @@ class MOFFMRGModel(CGModel):
             force = functional_terms.class2_bond_term(self.dna_fan_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
     
-    def add_contacts(self, eta=0.7/unit.angstrom, r0=8*unit.angstrom, cutoff=2.0*unit.nanometer, 
+    def add_contacts(self, eta=0.7 / unit.angstrom, r0=8 * unit.angstrom, cutoff=2.0 * unit.nanometer, 
                      alpha_protein_dna=1.6264e-3, alpha_dna_dna=1.678e-5, epsilon_protein_dna=0, epsilon_dna_dna=0, 
                      force_group=8):
         """
@@ -224,8 +224,8 @@ class MOFFMRGModel(CGModel):
                                                        epsilon_map, eta, r0, cutoff, force_group)
         self.system.addForce(force)
     
-    def add_elec_switch(self, salt_conc=150.0*unit.millimolar, temperature=300.0*unit.kelvin, 
-                        cutoff1=1.2*unit.nanometer, cutoff2=1.5*unit.nanometer, switch_coeff=[1, 0, 0, -10, 15, -6], 
+    def add_elec_switch(self, salt_conc=150.0 * unit.millimolar, temperature=300.0 * unit.kelvin, 
+                        cutoff1=1.2 * unit.nanometer, cutoff2=1.5 * unit.nanometer, switch_coeff=[1, 0, 0, -10, 15, -6], 
                         add_native_pair_elec=True, force_group=9):
         """
         Add electrostatic interaction with switch function. 

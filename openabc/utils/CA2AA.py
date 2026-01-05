@@ -192,17 +192,17 @@ def multiple_chains_CA2AA(input_pdbfile, num_chains, num_residues, REMO_path, de
     for i in tqdm(range(len(num_chains))):
         for j in tqdm(range(num_chains[i])):
             single_chain_CA2AA(
-                                 f'{pdb_name}/ca_splitted/protein_{i}_chain_{j}.pdb', 
-                                 f'{pdb_name}/aa_splitted_noaligned/protein_{i}_chain_{j}.pdb', 
-                                 REMO_path=REMO_path, 
-                                 debug=debug
-                                 )
+                input_pdbfile=f'{pdb_name}/ca_splitted/protein_{i}_chain_{j}.pdb', 
+                output_pdbfile=f'{pdb_name}/aa_splitted_noaligned/protein_{i}_chain_{j}.pdb', 
+                REMO_path=REMO_path, 
+                debug=debug
+            )
             align_protein(
-                          f'{pdb_name}/aa_splitted_noaligned/protein_{i}_chain_{j}.pdb', 
-                          f'{pdb_name}/ca_splitted/protein_{i}_chain_{j}.pdb', 
-                          f'{pdb_name}/aa_splitted_aligned/protein_{i}_chain_{j}.pdb', 
-                          reference_atoms='CA'
-                          )
+                input_pdbfile=f'{pdb_name}/aa_splitted_noaligned/protein_{i}_chain_{j}.pdb', 
+                reference_pdbfile=f'{pdb_name}/ca_splitted/protein_{i}_chain_{j}.pdb', 
+                output_pdbfile=f'{pdb_name}/aa_splitted_aligned/protein_{i}_chain_{j}.pdb', 
+                reference_atoms='CA'
+            )
             aligned_protein_list.append(f'{pdb_name}/aa_splitted_aligned/protein_{i}_chain_{j}.pdb')
     combine_proteins(aligned_protein_list, f'{pdb_name}_AA.pdb')
     if not debug:

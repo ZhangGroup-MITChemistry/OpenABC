@@ -95,7 +95,7 @@ class MpipiProteinParser(object):
         bonds = np.array(bonds)
         self.protein_bonds = pd.DataFrame(bonds, columns=['a1', 'a2'])
         self.protein_bonds.loc[:, 'r0'] = 0.381
-        self.protein_bonds.loc[:, 'k_bond'] = 2*9.6*_kcal_to_kj/(_angstrom_to_nm**2)
+        self.protein_bonds.loc[:, 'k_bond'] = 2 * 9.6 * _kcal_to_kj / (_angstrom_to_nm**2)
         if exclude12:
             self.exclusions = self.protein_bonds[['a1', 'a2']].copy()
         else:
@@ -196,7 +196,7 @@ class MpipiRNAParser(object):
         bonds = np.array(bonds)
         self.rna_bonds = pd.DataFrame(bonds, columns=['a1', 'a2'])
         self.rna_bonds.loc[:, 'r0'] = 0.5
-        self.rna_bonds.loc[:, 'k_bond'] = 2*9.6*_kcal_to_kj/(_angstrom_to_nm**2)
+        self.rna_bonds.loc[:, 'k_bond'] = 2 * 9.6 * _kcal_to_kj / (_angstrom_to_nm**2)
         if exclude12:
             self.exclusions = self.rna_bonds[['a1', 'a2']].copy()
         else:

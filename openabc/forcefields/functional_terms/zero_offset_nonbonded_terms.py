@@ -47,19 +47,19 @@ def ashbaugh_hatch_zero_offset_term(atom_types, df_exclusions, use_pbc, epsilon,
         contacts.setNonbondedMethod(contacts.CutoffPeriodic)
     else:
         contacts.setNonbondedMethod(contacts.CutoffNonPeriodic)
-    contacts.setCutoffDistance(4*np.amax(sigma_ah_map))
+    contacts.setCutoffDistance(4 * np.amax(sigma_ah_map))
     contacts.setForceGroup(force_group)
     return contacts
 
 
-def dh_elec_zero_offset_term(charges, df_exclusions, use_pbc, ldby=1*unit.nanometer, dielectric_water=80.0, 
-                             cutoff=3.5*unit.nanometer, force_group=3):
+def dh_elec_zero_offset_term(charges, df_exclusions, use_pbc, ldby=1 * unit.nanometer, dielectric_water=80.0, 
+                             cutoff=3.5 * unit.nanometer, force_group=3):
     """
     Debye-Huckel potential with a constant dielectric.
     """
-    alpha = NA*EC**2/(4*np.pi*VEP)
+    alpha = NA * EC**2 / (4 * np.pi * VEP)
     ldby_value = ldby.value_in_unit(unit.nanometer)
-    alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole*unit.nanometer)
+    alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole * unit.nanometer)
     cutoff_value = cutoff.value_in_unit(unit.nanometer)
     elec = mm.CustomNonbondedForce(f'''energy;
            energy=q1*q2*{alpha_value}*((exp(-r/{ldby_value})/r)-offset)*step({cutoff_value}-r)/{dielectric_water};

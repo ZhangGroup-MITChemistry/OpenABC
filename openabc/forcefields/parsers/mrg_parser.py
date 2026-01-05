@@ -5,22 +5,24 @@ from openabc.lib import _dna_nucleotides, _kcal_to_kj, _deg_to_rad
 import sys
 import os
 
-_k_mrg_dna_bonds = _kcal_to_kj*np.array([262.5, -226, 149])
+_k_mrg_dna_bonds = _kcal_to_kj * np.array([262.5, -226, 149])
 _r0_mrg_dna_bonds = 0.496
-_k_mrg_dna_angles = _kcal_to_kj*np.array([9.22, 4.16, 1.078])
-_theta0_mrg_dna_angles = 156*_deg_to_rad
+_k_mrg_dna_angles = _kcal_to_kj * np.array([9.22, 4.16, 1.078])
+_theta0_mrg_dna_angles = 156 * _deg_to_rad
 _delta_mrg_dna_fan_bonds = np.arange(-5, 6)
-_k_mrg_dna_fan_bonds = _kcal_to_kj*np.array([[4.67, 2.1, 1.46], 
-                                             [1.324e-4, -12.2, 18.5], 
-                                             [8.5, -44.4, 50], 
-                                             [12.3, -40, 37], 
-                                             [4, -10, 8], 
-                                             [292, 410, 720], 
-                                             [11.5, -41, 58], 
-                                             [9.55, -45.9, 50.2], 
-                                             [13.78, -52.7, 50], 
-                                             [13.86, -56.8, 50], 
-                                             [36.26, -77, 50]])
+_k_mrg_dna_fan_bonds = _kcal_to_kj * np.array([
+    [4.67, 2.1, 1.46], 
+    [1.324e-4, -12.2, 18.5], 
+    [8.5, -44.4, 50], 
+    [12.3, -40, 37], 
+    [4, -10, 8], 
+    [292, 410, 720], 
+    [11.5, -41, 58], 
+    [9.55, -45.9, 50.2], 
+    [13.78, -52.7, 50], 
+    [13.86, -56.8, 50], 
+    [36.26, -77, 50]
+])
 _r0_mrg_dna_fan_bonds = np.array([1.71, 1.635, 1.47, 1.345, 1.23, 1.13, 0.99, 0.92, 1.02, 1.25, 1.69])
 
 class MRGdsDNAParser(object):
@@ -51,9 +53,9 @@ class MRGdsDNAParser(object):
         assert len(unique_chainID) == 2
         # check if the first half is the first ssDNA, and the second half is the second ssDNA
         n_atoms = len(self.atoms.index)
-        n_bp = int(n_atoms/2)
-        first_half_atoms = self.atoms.loc[0:n_bp - 1]
-        second_half_atoms = self.atoms.loc[n_bp:n_atoms - 1]
+        n_bp = int(n_atoms / 2)
+        first_half_atoms = self.atoms.loc[0 : n_bp - 1]
+        second_half_atoms = self.atoms.loc[n_bp : n_atoms - 1]
         assert len(first_half_atoms.index) == len(second_half_atoms.index)
         assert first_half_atoms['chainID'].eq(first_half_atoms['chainID'].iloc[0]).all()
         assert second_half_atoms['chainID'].eq(second_half_atoms['chainID'].iloc[0]).all()
@@ -157,7 +159,7 @@ class MRGdsDNAParser(object):
                                                         'k_angle_4'])
         # set fan bonds
         self.dna_fan_bonds = pd.DataFrame(columns=['a1', 'a2', 'r0', 'k_bond_2', 'k_bond_3', 'k_bond_4'])
-        n_bp = int(n_atoms/2)
+        n_bp = int(n_atoms / 2)
         for atom1 in range(n_bp):
             for j in range(11):
                 atom2 = n_atoms - 1 - atom1 + _delta_mrg_dna_fan_bonds[j]

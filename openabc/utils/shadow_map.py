@@ -68,9 +68,9 @@ def get_neighbor_pairs_and_distances(coord, cutoff=0.6, box=None, use_pbc=False)
         z_min, z_max = np.amin(coord[:, 2]), np.amax(coord[:, 2])
         shifted_coord = coord.copy() - np.array([x_min, y_min, z_min])
         shifted_coord = shifted_coord.astype(np.float32)
-        lx = max(1.1*(x_max - x_min), 2.1*cutoff)
-        ly = max(1.1*(y_max - y_min), 2.1*cutoff)
-        lz = max(1.1*(z_max - z_min), 2.1*cutoff)
+        lx = max(1.1 * (x_max - x_min), 2.1 * cutoff)
+        ly = max(1.1 * (y_max - y_min), 2.1 * cutoff)
+        lz = max(1.1 * (z_max - z_min), 2.1 * cutoff)
         pseudo_box = np.array([lx, ly, lz, 90, 90, 90]).astype(np.float32) # build an orthogonal pseudo box
         grid_search = FastNS(cutoff, shifted_coord, pseudo_box, use_pbc)
     results = grid_search.self_search()
@@ -145,9 +145,9 @@ def light_is_blocked(d12, d13, d23, r2, r3):
     assert r3 >= 0
     assert r2 <= d12
     assert r3 <= d13
-    angle213 = math.acos((d12**2 + d13**2 - d23**2)/(2*d12*d13)) # law of cosines
-    theta12 = math.asin(r2/d12)
-    theta13 = math.asin(r3/d13)
+    angle213 = math.acos((d12**2 + d13**2 - d23**2) / (2 * d12 * d13)) # law of cosines
+    theta12 = math.asin(r2 / d12)
+    theta13 = math.asin(r3 / d13)
     if theta12 + theta13 >= angle213:
         flag = True
     else:

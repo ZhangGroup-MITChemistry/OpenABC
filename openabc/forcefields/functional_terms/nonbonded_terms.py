@@ -20,8 +20,8 @@ Start from version 1.0.7, for consistency, the 2d matrix is flattened in order '
 
 _dna_3spn2_atom_names = ['P', 'S', 'A', 'T', 'C', 'G']
 
-def moff_mrg_contact_term(atom_types, df_exclusions, use_pbc, alpha_map, epsilon_map, eta=0.7/unit.angstrom, 
-                          r0=8.0*unit.angstrom, cutoff=2.0*unit.nanometer, force_group=5):
+def moff_mrg_contact_term(atom_types, df_exclusions, use_pbc, alpha_map, epsilon_map, eta=0.7 / unit.angstrom, 
+                          r0=8.0 * unit.angstrom, cutoff=2.0 * unit.nanometer, force_group=5):
     """
     MOFF+MRG model nonbonded contact term.
     """
@@ -64,7 +64,7 @@ def ashbaugh_hatch_term(atom_types, df_exclusions, use_pbc, epsilon, sigma_ah_ma
     Ashbaugh-Hatch potential. 
     The cutoff is 4*sigma_ah. 
     """
-    lj_at_cutoff = 4*epsilon*((1/4)**12 - (1/4)**6)
+    lj_at_cutoff = 4 * epsilon * ((1 / 4)**12 - (1 / 4)**6)
     contacts = mm.CustomNonbondedForce(f'''energy;
                energy=(f1+f2-offset)*step(4*sigma_ah-r);
                offset=lambda_ah*{lj_at_cutoff};
@@ -91,18 +91,18 @@ def ashbaugh_hatch_term(atom_types, df_exclusions, use_pbc, epsilon, sigma_ah_ma
         contacts.setNonbondedMethod(contacts.CutoffPeriodic)
     else:
         contacts.setNonbondedMethod(contacts.CutoffNonPeriodic)
-    contacts.setCutoffDistance(4*np.amax(sigma_ah_map))
+    contacts.setCutoffDistance(4 * np.amax(sigma_ah_map))
     contacts.setForceGroup(force_group)
     return contacts
 
 
-def ddd_dh_elec_term(charges, df_exclusions, use_pbc, salt_conc=150.0*unit.millimolar, 
-                     temperature=300.0*unit.kelvin, cutoff=4.0*unit.nanometer, force_group=6):
+def ddd_dh_elec_term(charges, df_exclusions, use_pbc, salt_conc=150.0 * unit.millimolar, 
+                     temperature=300.0 * unit.kelvin, cutoff=4.0 * unit.nanometer, force_group=6):
     """
     Debye-Huckel potential with a distance-dependent dielectric.
     """
-    alpha = NA*EC**2/(4*np.pi*VEP)
-    gamma = VEP*kB*temperature/(2.0*NA*salt_conc*EC**2)
+    alpha = NA * EC**2 / (4 * np.pi * VEP)
+    gamma = VEP * kB * temperature / (2.0 * NA * salt_conc * EC**2)
     # use a distance-dependent relative permittivity (dielectric)
     dielectric_water = 78.4
     A = -8.5525
@@ -110,13 +110,13 @@ def ddd_dh_elec_term(charges, df_exclusions, use_pbc, salt_conc=150.0*unit.milli
     B = dielectric_water - A
     zeta = 0.03627
     cutoff_value = cutoff.value_in_unit(unit.nanometer)
-    alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole*unit.nanometer)
+    alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole * unit.nanometer)
     gamma_value = gamma.value_in_unit(unit.nanometer**2)
-    dielectric_at_cutoff = A + B/(1 + kappa*math.exp(-zeta*B*cutoff_value))
-    ldby_at_cutoff = (dielectric_at_cutoff*gamma_value)**0.5
+    dielectric_at_cutoff = A + B / (1 + kappa * math.exp(-zeta * B * cutoff_value))
+    ldby_at_cutoff = (dielectric_at_cutoff * gamma_value)**0.5
     elec = mm.CustomNonbondedForce(f'''energy;
            energy=q1*q2*{alpha_value}*((exp(-r/ldby)/r)-offset)*step({cutoff_value}-r)/dielectric;
-           offset={math.exp(-cutoff_value/ldby_at_cutoff)/cutoff_value};
+           offset={math.exp(-cutoff_value / ldby_at_cutoff) / cutoff_value};
            ldby=(dielectric*{gamma_value})^0.5;
            dielectric={A}+{B}/(1+{kappa}*exp(-{zeta}*{B}*r));
            ''')
@@ -134,23 +134,23 @@ def ddd_dh_elec_term(charges, df_exclusions, use_pbc, salt_conc=150.0*unit.milli
     return elec
     
 
-def ddd_dh_elec_switch_term(charges, df_exclusions, use_pbc, salt_conc=150.0*unit.millimolar, 
-                            temperature=300.0*unit.kelvin, cutoff1=1.2*unit.nanometer, cutoff2=1.5*unit.nanometer, 
+def ddd_dh_elec_switch_term(charges, df_exclusions, use_pbc, salt_conc=150.0 * unit.millimolar, 
+                            temperature=300.0 * unit.kelvin, cutoff1=1.2 * unit.nanometer, cutoff2=1.5 * unit.nanometer, 
                             switch_coeff=[1, 0, 0, -10, 15, -6], force_group=6):
     """
     Debye-Huckel potential with a distance-dependent dielectric and a switch function. 
     The switch function value changes from 1 to 0 smoothly as distance r changes from cutoff1 to cutoff2. 
     To make sure the switch function works properly, the zeroth order coefficient has to be 1, and the sum of all the coefficients in switch_coeff has to be 0. 
     """
-    alpha = NA*EC**2/(4*np.pi*VEP)
-    gamma = VEP*kB*temperature/(2.0*NA*salt_conc*EC**2)
+    alpha = NA * EC**2 / (4 * np.pi * VEP)
+    gamma = VEP * kB * temperature / (2.0 * NA * salt_conc * EC**2)
     # use a distance-dependent relative permittivity (dielectric)
     dielectric_water = 78.4
     A = -8.5525
     kappa = 7.7839
     B = dielectric_water - A
     zeta = 0.03627
-    alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole*unit.nanometer)
+    alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole * unit.nanometer)
     cutoff1_value = cutoff1.value_in_unit(unit.nanometer)
     cutoff2_value = cutoff2.value_in_unit(unit.nanometer)
     gamma_value = gamma.value_in_unit(unit.nanometer**2)
@@ -183,8 +183,8 @@ def ddd_dh_elec_switch_term(charges, df_exclusions, use_pbc, salt_conc=150.0*uni
     return elec
 
 
-def dh_elec_term(charges, df_exclusions, use_pbc, ldby=1*unit.nanometer, dielectric_water=80.0, 
-                 cutoff=3.5*unit.nanometer, force_group=3):
+def dh_elec_term(charges, df_exclusions, use_pbc, ldby=1 * unit.nanometer, dielectric_water=80.0, 
+                 cutoff=3.5 * unit.nanometer, force_group=3):
     """
     Debye-Huckel potential with a constant dielectric. 
     
@@ -217,13 +217,13 @@ def dh_elec_term(charges, df_exclusions, use_pbc, ldby=1*unit.nanometer, dielect
         Electrostatic interaction force. 
     
     """
-    alpha = NA*EC**2/(4*np.pi*VEP)
+    alpha = NA * EC**2 / (4 * np.pi * VEP)
     ldby_value = ldby.value_in_unit(unit.nanometer)
-    alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole*unit.nanometer)
+    alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole * unit.nanometer)
     cutoff_value = cutoff.value_in_unit(unit.nanometer)
     elec = mm.CustomNonbondedForce(f'''energy;
            energy=q1*q2*{alpha_value}*((exp(-r/{ldby_value})/r)-offset)*step({cutoff_value}-r)/{dielectric_water};
-           offset={math.exp(-cutoff_value/ldby_value)/cutoff_value};
+           offset={math.exp(-cutoff_value / ldby_value) / cutoff_value};
            ''')
     elec.addPerParticleParameter('q')
     for q in charges:
@@ -309,12 +309,12 @@ def wang_frenkel_term(atom_types, df_exclusions, use_pbc, epsilon_wf_map, sigma_
         contacts.setNonbondedMethod(contacts.CutoffPeriodic)
     else:
         contacts.setNonbondedMethod(contacts.CutoffNonPeriodic)
-    contacts.setCutoffDistance(cutoff_to_sigma_ratio*np.amax(sigma_wf_map))
+    contacts.setCutoffDistance(cutoff_to_sigma_ratio * np.amax(sigma_wf_map))
     contacts.setForceGroup(force_group)
     return contacts
     
 
-def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, force_group=11):
+def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425 * unit.nanometer, force_group=11):
     """
     Combine all the SMOG (MJ potential for protein-protein nonbonded pairs) and 3SPN2 nonbonded interactions into one force.
     CG atom type 0-19 for amino acids.
@@ -354,13 +354,13 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
             j = j1 + len(_amino_acids)
             epsilon_i = param_DD.loc[i1, 'epsilon']
             epsilon_j = param_DD.loc[j1, 'epsilon']
-            epsilon_map[i, j] = (epsilon_i*epsilon_j)**0.5
+            epsilon_map[i, j] = (epsilon_i * epsilon_j)**0.5
             epsilon_map[j, i] = epsilon_map[i, j]
             sigma_i = param_DD.loc[i1, 'sigma']
             sigma_j = param_DD.loc[j1, 'sigma']
-            sigma_map[i, j] = 0.5*(sigma_i + sigma_j)*(2**(-1/6))
+            sigma_map[i, j] = 0.5 * (sigma_i + sigma_j) * (2**(-1 / 6))
             sigma_map[j, i] = sigma_map[i, j]
-            cutoff_map[i, j] = 0.5*(sigma_i + sigma_j)
+            cutoff_map[i, j] = 0.5 * (sigma_i + sigma_j)
             cutoff_map[j, i] = cutoff_map[i, j]
     # add protein-DNA interactions
     all_param_PD = mol.protein_dna_particle_definition
@@ -377,11 +377,11 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
         i = i1 + len(_amino_acids)
         epsilon_i = param_PD.loc[i1, 'epsilon']
         epsilon_j = param_PD.loc[len(_dna_3spn2_atom_names), 'epsilon']
-        epsilon_map[i, :len(_amino_acids)] = (epsilon_i*epsilon_j)**0.5
+        epsilon_map[i, :len(_amino_acids)] = (epsilon_i * epsilon_j)**0.5
         epsilon_map[:len(_amino_acids), i] = epsilon_map[i, :len(_amino_acids)]
         sigma_i = param_PD.loc[i1, 'sigma']
         sigma_j = param_PD.loc[len(_dna_3spn2_atom_names), 'sigma']
-        sigma_map[i, :len(_amino_acids)] = 0.5*(sigma_i + sigma_j)
+        sigma_map[i, :len(_amino_acids)] = 0.5 * (sigma_i + sigma_j)
         sigma_map[:len(_amino_acids), i] = sigma_map[i, :len(_amino_acids)]
         cutoff_map[i, :len(_amino_acids)] = cutoff_PD.value_in_unit(unit.nanometer)
         cutoff_map[:len(_amino_acids), i] = cutoff_map[i, :len(_amino_acids)]
@@ -417,9 +417,9 @@ def all_smog_MJ_3spn2_term(mol, param_PP_MJ, cutoff_PD=1.425*unit.nanometer, for
     return vdwl
 
 
-def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300*unit.kelvin, 
-                             elec_DD_charge_scale=0.6, cutoff_DD=5*unit.nanometer, 
-                             cutoff_PP_PD=3.141504539*unit.nanometer, dielectric_PP_PD=78, force_group=12):
+def all_smog_3spn2_elec_term(mol, salt_conc=150 * unit.millimolar, temperature=300 * unit.kelvin, 
+                             elec_DD_charge_scale=0.6, cutoff_DD=5 * unit.nanometer, 
+                             cutoff_PP_PD=3.141504539 * unit.nanometer, dielectric_PP_PD=78, force_group=12):
     """
     Combine all the SMOG and 3SPN2 electrostatic interactions into one force. 
     
@@ -432,11 +432,11 @@ def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300
     """
     C = salt_conc.value_in_unit(unit.molar)
     T = temperature.value_in_unit(unit.kelvin)
-    print(f'For electrostatic interactions, set monovalent salt concentration as {1000*C} mM.')
+    print(f'For electrostatic interactions, set monovalent salt concentration as {1000 * C} mM.')
     print(f'For electrostatic interactions, set temperature as {T} K.')
-    e = 249.4 - 0.788*T + 7.2E-4*T**2
-    a = 1 - 0.2551*C + 5.151E-2*C**2 - 6.889E-3*C**3
-    dielectric_DD = e*a
+    e = 249.4 - 0.788 * T + 7.2E-4 * T**2
+    a = 1 - 0.2551 * C + 5.151E-2 * C**2 - 6.889E-3 * C**3
+    dielectric_DD = e * a
     print(f'DNA-DNA dielectric constant is {dielectric_DD}')
     print(f'Protein-protein and protein-DNA dielectric constant is {dielectric_PP_PD}.')
     elec = mm.CustomNonbondedForce('''energy;
@@ -460,15 +460,15 @@ def all_smog_3spn2_elec_term(mol, salt_conc=150*unit.millimolar, temperature=300
                 q_i *= elec_DD_charge_scale
                 q_j *= elec_DD_charge_scale
                 cutoff_ij = cutoff_DD
-                denominator = 4*np.pi*VEP*dielectric_DD/(NA*(EC**2))
-                denominator = denominator.value_in_unit(unit.kilojoule_per_mole**-1*unit.nanometer**-1)
-                ldby_ij = (dielectric_DD*VEP*kB*temperature/(2.0*NA*(EC**2)*salt_conc))**0.5
+                denominator = 4 * np.pi * VEP * dielectric_DD / (NA * (EC**2))
+                denominator = denominator.value_in_unit(unit.kilojoule_per_mole**-1 * unit.nanometer**-1)
+                ldby_ij = (dielectric_DD * VEP * kB * temperature / (2.0 * NA * (EC**2) * salt_conc))**0.5
             else:
                 cutoff_ij = cutoff_PP_PD
-                denominator = 4*np.pi*VEP*dielectric_PP_PD/(NA*(EC**2))
-                denominator = denominator.value_in_unit(unit.kilojoule_per_mole**-1*unit.nanometer**-1)
-                ldby_ij = (dielectric_PP_PD*VEP*kB*temperature/(2.0*NA*(EC**2)*salt_conc))**0.5
-            alpha_map[i, j] = q_i*q_j/denominator
+                denominator = 4 * np.pi * VEP * dielectric_PP_PD / (NA * (EC**2))
+                denominator = denominator.value_in_unit(unit.kilojoule_per_mole**-1 * unit.nanometer**-1)
+                ldby_ij = (dielectric_PP_PD * VEP * kB * temperature / (2.0 * NA * (EC**2) * salt_conc))**0.5
+            alpha_map[i, j] = q_i * q_j / denominator
             alpha_map[j, i] = alpha_map[i, j]
             cutoff_map[i, j] = cutoff_ij.value_in_unit(unit.nanometer)
             cutoff_map[j, i] = cutoff_map[i, j]
@@ -517,8 +517,8 @@ def dh_elec_term_map(mol, salt_conc=150.0 * unit.millimolar, temperature=300.0 *
     '''
     NA = unit.AVOGADRO_CONSTANT_NA # Avogadro constant
     kB = unit.BOLTZMANN_CONSTANT_kB  # Boltzmann constant
-    EC = 1.602176634e-19*unit.coulomb # elementary charge
-    VEP = 8.8541878128e-12*unit.farad/unit.meter # vacuum electric permittivity
+    EC = 1.602176634e-19 * unit.coulomb # elementary charge
+    VEP = 8.8541878128e-12 * unit.farad / unit.meter # vacuum electric permittivity
     alpha = NA * EC ** 2 / (4 * np.pi * VEP)
     gamma = VEP * kB * temperature / (2.0 * NA * salt_conc * EC ** 2)
     # use a distance-dependent relative permittivity (dielectric)

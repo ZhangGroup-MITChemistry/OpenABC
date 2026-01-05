@@ -117,10 +117,10 @@ def get_chromatin_rigid_bodies(n_nucl, nrl, n_rigid_bp_per_nucl=73):
         List of rigid bodies. 
     
     """
-    n_bp = nrl*(n_nucl - 1) + _n_bp_per_nucl
+    n_bp = nrl * (n_nucl - 1) + _n_bp_per_nucl
     assert n_rigid_bp_per_nucl > 0
-    n_CA_atoms = n_nucl*_n_CA_atoms_per_histone
-    n_dna_atoms = 6*n_bp - 2
+    n_CA_atoms = n_nucl * _n_CA_atoms_per_histone
+    n_dna_atoms = 6 * n_bp - 2
     n_atoms = n_CA_atoms + n_dna_atoms
     bp_id_to_atom_id_dict = {}
     for i in range(n_bp):
@@ -129,16 +129,16 @@ def get_chromatin_rigid_bodies(n_nucl, nrl, n_rigid_bp_per_nucl=73):
         if i == 0:
             bp_id_to_atom_id_dict[i] += (np.arange(2) + n_CA_atoms).tolist()
         else:
-            bp_id_to_atom_id_dict[i] += (np.arange(3) + n_CA_atoms + 3*i - 1).tolist()
+            bp_id_to_atom_id_dict[i] += (np.arange(3) + n_CA_atoms + 3 * i - 1).tolist()
         if i == (n_bp - 1):
-            bp_id_to_atom_id_dict[i] += (np.arange(2) + n_atoms - 3*n_bp + 1).tolist()
+            bp_id_to_atom_id_dict[i] += (np.arange(2) + n_atoms - 3 * n_bp + 1).tolist()
         else:
-            bp_id_to_atom_id_dict[i] += (np.arange(3) + n_atoms - 3*i - 3).tolist()
+            bp_id_to_atom_id_dict[i] += (np.arange(3) + n_atoms - 3 * i - 3).tolist()
     rigid_bodies = []
     for i in range(n_nucl):
         rigid_bodies.append([])
-        rigid_bodies[i] += (_histone_core_atoms + i*_n_CA_atoms_per_histone).tolist()
-        start_bp_id = int((_n_bp_per_nucl - n_rigid_bp_per_nucl)/2) + i*nrl
+        rigid_bodies[i] += (_histone_core_atoms + i * _n_CA_atoms_per_histone).tolist()
+        start_bp_id = int((_n_bp_per_nucl - n_rigid_bp_per_nucl) / 2) + i * nrl
         end_bp_id = start_bp_id + n_rigid_bp_per_nucl - 1
         for j in range(start_bp_id, end_bp_id + 1):
             rigid_bodies[i] += bp_id_to_atom_id_dict[j]

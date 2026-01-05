@@ -23,7 +23,7 @@ The code is adapted from Xinqiang Ding's script.
 """
 
 # set gas constant R
-GAS_CONST_value = GAS_CONST.value_in_unit(unit.kilojoule_per_mole/unit.kelvin)
+GAS_CONST_value = GAS_CONST.value_in_unit(unit.kilojoule_per_mole / unit.kelvin)
 
 class TemperatureReplicaExchange(object):
     """
@@ -164,8 +164,8 @@ class TemperatureReplicaExchange(object):
             Whether to report exchange acceptance ratio and simulation speed. 
          
         """
-        n_iterations = int(n_steps/exchange_interval)
-        n_steps = n_iterations*exchange_interval # reset n_steps in case n_steps % exchange_interval != 0
+        n_iterations = int(n_steps / exchange_interval)
+        n_steps = n_iterations * exchange_interval # reset n_steps in case n_steps % exchange_interval != 0
         n_exchange_attempts = 0
         n_accepted_exchange_attempts = 0
         start_time = time.time()
@@ -174,7 +174,7 @@ class TemperatureReplicaExchange(object):
             state = self.simulation.context.getState(getPositions=True, getEnergy=True, getVelocities=True, 
                                                      enforcePeriodicBox=True)
             positions = torch.from_numpy(np.array(state.getPositions().value_in_unit(unit.nanometer)))
-            velocities = torch.from_numpy(np.array(state.getVelocities().value_in_unit(unit.nanometer/unit.picosecond)))
+            velocities = torch.from_numpy(np.array(state.getVelocities().value_in_unit(unit.nanometer / unit.picosecond)))
             potential_energy = torch.tensor([state.getPotentialEnergy().value_in_unit(unit.kilojoule_per_mole)])
             gathered_positions = [torch.zeros_like(positions) for _ in range(self.n_replicas)]
             gathered_velocities = [torch.zeros_like(velocities) for _ in range(self.n_replicas)]
@@ -187,12 +187,12 @@ class TemperatureReplicaExchange(object):
                 for j in range(self.n_replicas - 1):
                     n_exchange_attempts += 1
                     delta_potential_energy = gathered_potential_energy[j] - gathered_potential_energy[j + 1]
-                    delta_beta = (1/self.temperatures[j] - 1/self.temperatures[j + 1])/GAS_CONST_value
-                    if np.random.uniform(0, 1) < math.exp(delta_beta*delta_potential_energy):
+                    delta_beta = (1 / self.temperatures[j] - 1 / self.temperatures[j + 1]) / GAS_CONST_value
+                    if np.random.uniform(0, 1) < math.exp(delta_beta * delta_potential_energy):
                         n_accepted_exchange_attempts += 1
                         gathered_positions[j], gathered_positions[j + 1] = gathered_positions[j + 1], gathered_positions[j]
-                        alpha = (self.temperatures[j]/self.temperatures[j + 1])**0.5
-                        gathered_velocities[j], gathered_velocities[j + 1] = alpha*gathered_velocities[j + 1], gathered_velocities[j]/alpha
+                        alpha = (self.temperatures[j] / self.temperatures[j + 1])**0.5
+                        gathered_velocities[j], gathered_velocities[j + 1] = alpha * gathered_velocities[j + 1], gathered_velocities[j] / alpha
                         gathered_potential_energy[j], gathered_potential_energy[j + 1] = gathered_potential_energy[j + 1], gathered_potential_energy[j]
             else:
                 gathered_positions = None
@@ -203,10 +203,10 @@ class TemperatureReplicaExchange(object):
             self.simulation.context.setVelocities(velocities.numpy())
         end_time = time.time()
         if (self.rank == 0) and verbose:
-            acceptance_ratio = n_accepted_exchange_attempts/n_exchange_attempts
+            acceptance_ratio = n_accepted_exchange_attempts / n_exchange_attempts
             print(f'Replica exchange acceptance ratio is {acceptance_ratio}.')
             timestep = self.integrator.getStepSize().value_in_unit(unit.nanosecond)
-            speed_ns_per_day = (24*3600/(end_time - start_time))*(timestep*n_steps)
+            speed_ns_per_day = (24 * 3600 / (end_time - start_time)) * (timestep * n_steps)
             print(f'Simulation speed is {speed_ns_per_day} ns/day')
 
 

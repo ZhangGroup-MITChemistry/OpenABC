@@ -33,8 +33,8 @@ for i in range(n_lines):
         if (atom_type1 in _mpipi_type_to_name_dict) and (atom_type2 in _mpipi_type_to_name_dict):
             atom_name1 = _mpipi_type_to_name_dict[atom_type1]
             atom_name2 = _mpipi_type_to_name_dict[atom_type2]
-            epsilon = float(elements[4])*_kcal_to_kj
-            sigma = float(elements[5])*_angstrom_to_nm
+            epsilon = float(elements[4]) * _kcal_to_kj
+            sigma = float(elements[5]) * _angstrom_to_nm
             if (atom_name1 == 'ILE') and (atom_name2 == 'ILE'):
                 mu = 11
             elif set([atom_name1, atom_name2]) == {'VAL', 'ILE'}:

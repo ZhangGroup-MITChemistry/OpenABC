@@ -202,7 +202,7 @@ class MOFFParser(object):
         for i in range(dihedrals.shape[0]):
             row = dihedrals[i].tolist() + [1, phi[i] + np.pi, 3.0]
             self.protein_dihedrals.loc[len(self.protein_dihedrals.index)] = row
-            row = dihedrals[i].tolist() + [3, 3*(phi[i] + np.pi), 1.5]
+            row = dihedrals[i].tolist() + [3, 3 * (phi[i] + np.pi), 1.5]
             self.protein_dihedrals.loc[len(self.protein_dihedrals.index)] = row
         # set native pairs
         if get_native_pairs:

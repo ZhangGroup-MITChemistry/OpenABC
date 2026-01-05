@@ -143,8 +143,8 @@ def class2_bond_term(df_bonds, use_pbc, force_group=1):
     return bonds
 
 
-def ddd_dh_elec_switch_bond_term(df_bonds, use_pbc, salt_conc=150.0*unit.millimolar, temperature=300.0*unit.kelvin, 
-                                 cutoff1=1.2*unit.nanometer, cutoff2=1.5*unit.nanometer, 
+def ddd_dh_elec_switch_bond_term(df_bonds, use_pbc, salt_conc=150.0 * unit.millimolar, temperature=300.0 * unit.kelvin, 
+                                 cutoff1=1.2 * unit.nanometer, cutoff2=1.5 * unit.nanometer, 
                                  switch_coeff=[1, 0, 0, -10, 15, -6], force_group=6):
     """
     A bonded form of Debye-Huckel potential with distance-dependent dielectric and a switch function. 
@@ -176,15 +176,15 @@ def ddd_dh_elec_switch_bond_term(df_bonds, use_pbc, salt_conc=150.0*unit.millimo
         Force group. 
     
     """
-    alpha = NA*EC**2/(4*np.pi*VEP)
-    gamma = VEP*kB*temperature/(2.0*NA*salt_conc*EC**2)
+    alpha = NA * EC**2 / (4 * np.pi * VEP)
+    gamma = VEP * kB * temperature / (2.0 * NA * salt_conc * EC**2)
     # use a distance-dependent relative permittivity (dielectric)
     dielectric_water = 78.4
     A = -8.5525
     kappa = 7.7839
     B = dielectric_water - A
     zeta = 0.03627
-    alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole*unit.nanometer)
+    alpha_value = alpha.value_in_unit(unit.kilojoule_per_mole * unit.nanometer)
     cutoff1_value = cutoff1.value_in_unit(unit.nanometer)
     cutoff2_value = cutoff2.value_in_unit(unit.nanometer)
     gamma_value = gamma.value_in_unit(unit.nanometer**2)
@@ -210,7 +210,7 @@ def ddd_dh_elec_switch_bond_term(df_bonds, use_pbc, salt_conc=150.0*unit.millimo
         q1 = float(row['q1'])
         q2 = float(row['q2'])
         if (q1 != 0) and (q2 != 0):
-            bonds.addBond(a1, a2, [q1*q2])
+            bonds.addBond(a1, a2, [q1 * q2])
     bonds.setUsesPeriodicBoundaryConditions(use_pbc)
     bonds.setForceGroup(force_group)
     return bonds

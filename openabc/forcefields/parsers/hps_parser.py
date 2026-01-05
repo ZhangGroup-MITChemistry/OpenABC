@@ -98,7 +98,7 @@ class HPSParser(object):
         bonds = np.array(bonds)
         self.protein_bonds = pd.DataFrame(bonds, columns=['a1', 'a2'])
         self.protein_bonds.loc[:, 'r0'] = 0.38
-        self.protein_bonds.loc[:, 'k_bond'] = 2000*_kcal_to_kj
+        self.protein_bonds.loc[:, 'k_bond'] = 2000 * _kcal_to_kj
         if exclude12:
             self.exclusions = self.protein_bonds[['a1', 'a2']].copy()
         else:

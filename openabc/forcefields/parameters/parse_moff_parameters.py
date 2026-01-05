@@ -27,7 +27,7 @@ for i in range(start_line_index, end_line_index + 1):
         atom_type2 = elements[1]
         epsilon = float(elements[3])
         alpha = float(elements[4])
-        sigma = (alpha/abs(epsilon))**(1/12)
+        sigma = (alpha / abs(epsilon))**(1 / 12)
         df_MOFF_parameters.loc[len(df_MOFF_parameters.index)] = [atom_type1, atom_type2, alpha, epsilon, sigma]
 
 df_MOFF_parameters.to_csv('MOFF_contact_parameters.csv', index=False)

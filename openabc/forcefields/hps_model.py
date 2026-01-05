@@ -37,10 +37,15 @@ class HPSModel(CGModel):
         
         """
         print('Add protein bonds.')
-        force = functional_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
+        force = functional_terms.harmonic_bond_term(
+            df_bonds=self.protein_bonds,
+            use_pbc=self.use_pbc,
+            force_group=force_group,
+        )
         self.system.addForce(force)
     
-    def add_contacts(self, hydropathy_scale='Urry', epsilon=0.2*_kcal_to_kj, mu=1, delta=0.08, force_group=2):
+    def add_contacts(self, hydropathy_scale='Urry', epsilon=0.2 * _kcal_to_kj, mu=1,
+                     delta=0.08, force_group=2):
         """
         Add nonbonded contacts. 
         
@@ -84,12 +89,20 @@ class HPSModel(CGModel):
             lambda_ah_map[atom_type1, atom_type2] = row['lambda']
             lambda_ah_map[atom_type2, atom_type1] = row['lambda']
         print(f'Scale factor mu = {mu} and shift delta = {delta}.')
-        lambda_ah_map = mu*lambda_ah_map - delta
-        force = functional_terms.ashbaugh_hatch_term(atom_types, self.exclusions, self.use_pbc, epsilon, 
-                                                    sigma_ah_map, lambda_ah_map, force_group)
+        lambda_ah_map = mu * lambda_ah_map - delta
+        force = functional_terms.ashbaugh_hatch_term(
+            atom_types=atom_types,
+            df_exclusions=self.exclusions,
+            use_pbc=self.use_pbc,
+            epsilon=epsilon, 
+            sigma_ah_map=sigma_ah_map,
+            lambda_ah_map=lambda_ah_map,
+            force_group=force_group,
+        )
         self.system.addForce(force)
     
-    def add_dh_elec(self, ldby=1*unit.nanometer, dielectric_water=80.0, cutoff=3.5*unit.nanometer, force_group=3):
+    def add_dh_elec(self, ldby=1 * unit.nanometer, dielectric_water=80.0,
+                    cutoff=3.5 * unit.nanometer, force_group=3):
         """
         Add Debye-Huckel electrostatic interactions. 
         
@@ -112,8 +125,15 @@ class HPSModel(CGModel):
         print(f'Set Debye length as {ldby.value_in_unit(unit.nanometer)} nm.')
         print(f'Set water dielectric as {dielectric_water}.')
         charges = self.atoms['charge'].tolist()
-        force = functional_terms.dh_elec_term(charges, self.exclusions, self.use_pbc, ldby, dielectric_water, 
-                                              cutoff, force_group)
+        force = functional_terms.dh_elec_term(
+            charges=charges,
+            df_exclusions=self.exclusions,
+            use_pbc=self.use_pbc,
+            ldby=ldby,
+            dielectric_water=dielectric_water, 
+            cutoff=cutoff,
+            force_group=force_group,
+        )
         self.system.addForce(force)
 
     def add_all_default_forces(self):

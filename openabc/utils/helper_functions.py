@@ -213,9 +213,9 @@ def build_straight_CA_chain(sequence, r0=0.38):
     df_atoms['resSeq'] = list(range(1, n_atoms + 1))
     df_atoms.loc[:, 'x'] = 0
     df_atoms.loc[:, 'y'] = 0
-    z = r0*np.arange(n_atoms)
+    z = r0 * np.arange(n_atoms)
     z -= np.mean(z)
-    df_atoms['z'] = z*10 # convert nm to angstroms
+    df_atoms['z'] = z * 10 # convert nm to angstroms
     df_atoms['z'] = df_atoms['z'].round(3)
     return df_atoms
 
@@ -252,9 +252,9 @@ def build_straight_chain(n_atoms, chainID, r0):
     df_atoms['resSeq'] = list(range(1, n_atoms + 1))
     df_atoms.loc[:, 'x'] = 0
     df_atoms.loc[:, 'y'] = 0
-    z = r0*np.arange(n_atoms)
+    z = r0 * np.arange(n_atoms)
     z -= np.mean(z)
-    df_atoms['z'] = z*10 # convert nm to angstroms
+    df_atoms['z'] = z * 10 # convert nm to angstroms
     df_atoms['z'] = df_atoms['z'].round(3)
     return df_atoms
 
@@ -296,17 +296,17 @@ def make_mol_whole(coord, box_a, box_b, box_c):
             r1 = coord[i]
             delta_r = r1 - r0
             delta_x, delta_y, delta_z = delta_r[0], delta_r[1], delta_r[2]
-            while delta_x < -0.5*box_a:
+            while delta_x < -0.5 * box_a:
                 delta_x += box_a
-            while delta_x >= 0.5*box_a:
+            while delta_x >= 0.5 * box_a:
                 delta_x -= box_a
-            while delta_y < -0.5*box_b:
+            while delta_y < -0.5 * box_b:
                 delta_y += box_b
-            while delta_y >= 0.5*box_b:
+            while delta_y >= 0.5 * box_b:
                 delta_y -= box_b
-            while delta_z < -0.5*box_c:
+            while delta_z < -0.5 * box_c:
                 delta_z += box_c
-            while delta_z >= 0.5*box_c:
+            while delta_z >= 0.5 * box_c:
                 delta_z -= box_c
             new_coord[i] = r0 + np.array([delta_x, delta_y, delta_z])
     return new_coord
@@ -344,17 +344,17 @@ def move_atoms_to_closest_pbc_image(coord, ref_point, box_a, box_b, box_c):
     for i in range(n_atoms):
         delta_r = coord[i] - ref_point
         delta_x, delta_y, delta_z = delta_r[0], delta_r[1], delta_r[2]
-        while delta_x < -0.5*box_a:
+        while delta_x < -0.5 * box_a:
             delta_x += box_a
-        while delta_x >= 0.5*box_a:
+        while delta_x >= 0.5 * box_a:
             delta_x -= box_a
-        while delta_y < -0.5*box_b:
+        while delta_y < -0.5 * box_b:
             delta_y += box_b
-        while delta_y >= 0.5*box_b:
+        while delta_y >= 0.5 * box_b:
             delta_y -= box_b
-        while delta_z < -0.5*box_c:
+        while delta_z < -0.5 * box_c:
             delta_z += box_c
-        while delta_z >= 0.5*box_c:
+        while delta_z >= 0.5 * box_c:
             delta_z -= box_c
         new_coord[i] = ref_point + np.array([delta_x, delta_y, delta_z])
     return new_coord
@@ -378,7 +378,7 @@ def compute_rg(coord, mass):
         Radius of gyration. 
     
     """
-    weights = mass/np.sum(mass)
+    weights = mass / np.sum(mass)
     r_COM = np.average(coord, axis=0, weights=weights)
     rg_square = np.average(np.sum((coord - r_COM)**2, axis=1), weights=weights)
     rg = rg_square**0.5

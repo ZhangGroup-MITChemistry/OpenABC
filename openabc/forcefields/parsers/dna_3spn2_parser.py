@@ -91,7 +91,7 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
             pair_s = pair.loc[s, ['shear', 'stretch', 'stagger', 'buckle', 'propeller', 'opening']]
             # use "if _s is None" for clarity
             if _s is None:
-                step_s = (step.loc['AA', ['shift', 'slide', 'rise', 'tilt', 'roll', 'twist']] + 100)*0
+                step_s = (step.loc['AA', ['shift', 'slide', 'rise', 'tilt', 'roll', 'twist']] + 100) * 0
             else:
                 step_s = step.loc[_s + s, ['shift', 'slide', 'rise', 'tilt', 'roll', 'twist']]
             data += [pd.concat([pd.Series([f'{s}-{_dna_WC_pair_dict[s]}'], index=['Sequence']), pair_s, step_s])]
@@ -156,7 +156,7 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
         template_sequence = dna_temp.get_sequence()
         n1 = len(target_sequence)
         n2 = len(template_sequence)
-        assert ((n1 == n2) or (2*n1 == n2))
+        assert ((n1 == n2) or (2 * n1 == n2))
         assert template_sequence[:n1] == target_sequence
         
         # merge x3dna template structure with the original structure
@@ -240,7 +240,7 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
             # read r0 from template and save r0 in unit nm
             x1 = self.temp_atoms.loc[self.dna_bonds['a1'], ['x', 'y', 'z']].to_numpy().astype(np.float64)
             x2 = self.temp_atoms.loc[self.dna_bonds['a2'], ['x', 'y', 'z']].to_numpy().astype(np.float64)
-            self.dna_bonds['r0'] = np.linalg.norm(x1 - x2, axis=1)*_angstrom_to_nm
+            self.dna_bonds['r0'] = np.linalg.norm(x1 - x2, axis=1) * _angstrom_to_nm
         
         # set angles
         angle_data = []
@@ -282,9 +282,9 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
             x1 = self.temp_atoms.loc[self.dna_angles['a1'], ['x', 'y', 'z']].to_numpy().astype(np.float64)
             x2 = self.temp_atoms.loc[self.dna_angles['a2'], ['x', 'y', 'z']].to_numpy().astype(np.float64)
             x3 = self.temp_atoms.loc[self.dna_angles['a3'], ['x', 'y', 'z']].to_numpy().astype(np.float64)
-            v1 = (x1 - x2)/np.linalg.norm(x1 - x2, axis=1, keepdims=True)
-            v2 = (x3 - x2)/np.linalg.norm(x3 - x2, axis=1, keepdims=True)
-            self.dna_angles['theta0'] = np.arccos(np.sum(v1*v2, axis=1))
+            v1 = (x1 - x2) / np.linalg.norm(x1 - x2, axis=1, keepdims=True)
+            v2 = (x3 - x2) / np.linalg.norm(x3 - x2, axis=1, keepdims=True)
+            self.dna_angles['theta0'] = np.arccos(np.sum(v1 * v2, axis=1))
         
         # set stackings
         stacking_data = []
@@ -349,8 +349,8 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
             n2 /= np.linalg.norm(n2, axis=1, keepdims=True)
             v2 /= np.linalg.norm(v2, axis=1, keepdims=True)
             m1 = np.cross(n1, v2) # n1 is orthogonal to v2, n1 and v2 are normalized, so m1 is normalized
-            theta = np.arctan2(np.sum(m1*n2, axis=1), np.sum(n1*n2, axis=1)) # dihedral
-            self.dna_dihedrals['theta0'] = -1*theta
+            theta = np.arctan2(np.sum(m1 * n2, axis=1), np.sum(n1 * n2, axis=1)) # dihedral
+            self.dna_dihedrals['theta0'] = -1 * theta
     
     @staticmethod
     def aa_to_cg(aa_atoms, PSB_order=True):
@@ -400,12 +400,12 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
         mol['mass'] = mol.element.replace(_atom_masses).astype(float)
         coord = mol[['x', 'y', 'z']].to_numpy()
         weight = mol['mass'].to_numpy()
-        mol[['x', 'y', 'z']] = (coord.T*weight).T
+        mol[['x', 'y', 'z']] = (coord.T * weight).T
         mol = mol[mol['element'] != 'H'].copy()  # Exclude hydrogens
         cg_atoms = mol.groupby(['chainID', 'resSeq', 'resname', 'group']).sum(numeric_only=True).reset_index()
         coord = cg_atoms[['x', 'y', 'z']].to_numpy()
         weight = cg_atoms['mass'].to_numpy()
-        cg_atoms[['x', 'y', 'z']] = (coord.T/weight).T
+        cg_atoms[['x', 'y', 'z']] = (coord.T / weight).T
         
         # Set pdb columns
         cg_atoms.loc[:, 'recname'] = 'ATOM'

@@ -35,10 +35,10 @@ for i in range(len(_amino_acids)):
         atom_type_j = _amino_acids[j]
         sigma_i = _HPS_amino_acid_sigma_dict[atom_type_i]
         sigma_j = _HPS_amino_acid_sigma_dict[atom_type_j]
-        sigma_ij = 0.5*(sigma_i + sigma_j)
+        sigma_ij = 0.5 * (sigma_i + sigma_j)
         lambda_i = _normalized_KR_hydropathy_scale[atom_type_i]
         lambda_j = _normalized_KR_hydropathy_scale[atom_type_j]
-        lambda_ij = 0.5*(lambda_i + lambda_j)
+        lambda_ij = 0.5 * (lambda_i + lambda_j)
         df_KR_scale.loc[len(df_KR_scale.index)] = [atom_type_i, atom_type_j, sigma_ij, lambda_ij]
 df_KR_scale['sigma'] = df_KR_scale['sigma'].round(4)
 df_KR_scale['lambda'] = df_KR_scale['lambda'].round(7)
@@ -51,10 +51,10 @@ for i in range(len(_amino_acids)):
         atom_type_j = _amino_acids[j]
         sigma_i = _HPS_amino_acid_sigma_dict[atom_type_i]
         sigma_j = _HPS_amino_acid_sigma_dict[atom_type_j]
-        sigma_ij = 0.5*(sigma_i + sigma_j)
+        sigma_ij = 0.5 * (sigma_i + sigma_j)
         lambda_i = _normalized_Urry_hydropathy_scale[atom_type_i]
         lambda_j = _normalized_Urry_hydropathy_scale[atom_type_j]
-        lambda_ij = 0.5*(lambda_i + lambda_j)
+        lambda_ij = 0.5 * (lambda_i + lambda_j)
         df_Urry_scale.loc[len(df_Urry_scale.index)] = [atom_type_i, atom_type_j, sigma_ij, lambda_ij]
 df_Urry_scale['sigma'] = df_Urry_scale['sigma'].round(4)
 df_Urry_scale['lambda'] = df_Urry_scale['lambda'].round(7)

@@ -79,7 +79,7 @@ class Mixin3SPN2ConfigParser(object):
         flag = (self.bond_definition['DNA'] == 'B_curved')
         self.bond_definition.loc[flag, 'r0'] = np.nan # will be set based on the reference structure
         # angle definition
-        self.angle_definition['k_angle'] = self.angle_definition['epsilon']*2
+        self.angle_definition['k_angle'] = self.angle_definition['epsilon'] * 2
         self.angle_definition = self.angle_definition.rename(columns={'t0': 'theta0'})
         flag1 = (self.angle_definition['DNA'].isin(['A', 'B']))
         flag2 = (self.angle_definition['DNA'] == 'B_curved')
@@ -93,7 +93,7 @@ class Mixin3SPN2ConfigParser(object):
         flag1 = (self.dihedral_definition['DNA'].isin(['A', 'B']))
         flag2 = (self.dihedral_definition['DNA'] == 'B_curved')
         x = self.dihedral_definition.loc[flag1, 'theta0']
-        self.dihedral_definition.loc[flag1, 'theta0'] = _deg_to_rad*(x + 180)
+        self.dihedral_definition.loc[flag1, 'theta0'] = _deg_to_rad * (x + 180)
         self.dihedral_definition.loc[flag2, 'theta0'] = np.nan # will be set based on the reference structure
         # base pair definition
         self.pair_definition['torsion'] *= _deg_to_rad

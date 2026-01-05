@@ -183,25 +183,25 @@ class SMOGParser(object):
         traj = mdtraj.load_pdb(self.pdb)
         self.protein_bonds = pd.DataFrame(bonds, columns=['a1', 'a2'])
         self.protein_bonds['r0'] = mdtraj.compute_distances(traj, bonds, periodic=use_pbc)[frame]
-        self.protein_bonds.loc[:, 'k_bond'] = 20000*bonded_energy_scale
+        self.protein_bonds.loc[:, 'k_bond'] = 20000 * bonded_energy_scale
         self.protein_angles = pd.DataFrame(angles, columns=['a1', 'a2', 'a3'])
         self.protein_angles['theta0'] = mdtraj.compute_angles(traj, angles, periodic=use_pbc)[frame]
-        self.protein_angles.loc[:, 'k_angle'] = 40*bonded_energy_scale
+        self.protein_angles.loc[:, 'k_angle'] = 40 * bonded_energy_scale
         self.protein_dihedrals = pd.DataFrame(columns=['a1', 'a2', 'a3', 'a4', 'periodicity', 'phi0', 'k_dihedral'])
         phi = mdtraj.compute_dihedrals(traj, dihedrals, periodic=use_pbc)[frame]
         for i in range(dihedrals.shape[0]):
-            row = dihedrals[i].tolist() + [1, phi[i] + np.pi, 1.0*bonded_energy_scale]
+            row = dihedrals[i].tolist() + [1, phi[i] + np.pi, 1.0 * bonded_energy_scale]
             self.protein_dihedrals.loc[len(self.protein_dihedrals.index)] = row
-            row = dihedrals[i].tolist() + [3, 3*(phi[i] + np.pi), 0.5*bonded_energy_scale]
+            row = dihedrals[i].tolist() + [3, 3 * (phi[i] + np.pi), 0.5 * bonded_energy_scale]
             self.protein_dihedrals.loc[len(self.protein_dihedrals.index)] = row
         # set native pairs
         if get_native_pairs:
             print('Get native pairs with shadow algorithm.')
             self.native_pairs = find_ca_pairs_from_atomistic_pdb(self.atomistic_pdb, frame, radius, bonded_radius, 
                                                                  cutoff, box, use_pbc)
-            self.native_pairs.loc[:, 'epsilon_G'] = 1.0*bonded_energy_scale
+            self.native_pairs.loc[:, 'epsilon_G'] = 1.0 * bonded_energy_scale
             self.native_pairs.loc[:, 'sigma_G'] = 0.05
-            self.native_pairs.loc[:, 'alpha_G'] = 1.6777216e-5*bonded_energy_scale
+            self.native_pairs.loc[:, 'alpha_G'] = 1.6777216e-5 * bonded_energy_scale
         # set exclusions
         self.parse_exclusions(exclude12, exclude13, exclude14, exclude_native_pairs) 
         # set mass and charge

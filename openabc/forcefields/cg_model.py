@@ -145,9 +145,9 @@ class CGModel(object):
         self.use_pbc = use_pbc
         self.system = mm.System()
         if self.use_pbc:
-            box_vec_a = np.array([box_a, 0, 0])*unit.nanometer
-            box_vec_b = np.array([0, box_b, 0])*unit.nanometer
-            box_vec_c = np.array([0, 0, box_c])*unit.nanometer
+            box_vec_a = np.array([box_a, 0, 0]) * unit.nanometer
+            box_vec_b = np.array([0, box_b, 0]) * unit.nanometer
+            box_vec_c = np.array([0, 0, box_c]) * unit.nanometer
             self.system.setDefaultPeriodicBoxVectors(box_vec_a, box_vec_b, box_vec_c)
         mass = self.atoms['mass'].tolist()
         for each in mass:
@@ -293,15 +293,15 @@ class CGModel(object):
         for i in range(n_atoms):
             mass.append(self.system.getParticleMass(i).value_in_unit(unit.dalton))
         mass = np.array(mass)
-        weights = mass/np.sum(mass)
+        weights = mass / np.sum(mass)
         box_vec_a, box_vec_b, box_vec_c = self.system.getDefaultPeriodicBoxVectors()
         box_vec_a = np.array(box_vec_a.value_in_unit(unit.nanometer))
         box_vec_b = np.array(box_vec_b.value_in_unit(unit.nanometer))
         box_vec_c = np.array(box_vec_c.value_in_unit(unit.nanometer))
-        box_center = 0.5*(box_vec_a + box_vec_b + box_vec_c)
+        box_center = 0.5 * (box_vec_a + box_vec_b + box_vec_c)
         center_of_mass = np.average(positions, axis=0, weights=weights)
         positions = positions - center_of_mass + box_center
-        self.simulation.context.setPositions(positions*unit.nanometer)
+        self.simulation.context.setPositions(positions * unit.nanometer)
     
     def add_reporters(self, report_interval, output_dcd='output.dcd', report_dcd=True, report_state_data=True):
         """
@@ -326,9 +326,17 @@ class CGModel(object):
             dcd_reporter = app.DCDReporter(output_dcd, report_interval, enforcePeriodicBox=self.use_pbc)
             self.simulation.reporters.append(dcd_reporter)
         if report_state_data:
-            state_data_reporter = app.StateDataReporter(sys.stdout, report_interval, step=True, time=True, 
-                                                        potentialEnergy=True, kineticEnergy=True, totalEnergy=True, 
-                                                        temperature=True, speed=True)
+            state_data_reporter = app.StateDataReporter(
+                sys.stdout,
+                report_interval,
+                step=True,
+                time=True, 
+                potentialEnergy=True,
+                kineticEnergy=True,
+                totalEnergy=True,
+                temperature=True,
+                speed=True,
+            )
             self.simulation.reporters.append(state_data_reporter)
         
     

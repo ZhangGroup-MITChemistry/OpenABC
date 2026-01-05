@@ -87,13 +87,21 @@ class MpipiModel(CGModel):
             mu_wf_map[a2, a1] = float(row['mu'])
             nu_wf_map[a1, a2] = float(row['nu'])
             nu_wf_map[a2, a1] = float(row['nu'])
-        force = functional_terms.wang_frenkel_term(atom_types, self.exclusions, self.use_pbc, epsilon_wf_map, 
-                                                  sigma_wf_map, mu_wf_map, nu_wf_map, cutoff_to_sigma_ratio, 
-                                                  force_group)
+        force = functional_terms.wang_frenkel_term(
+            atom_types=atom_types,
+            df_exclusions=self.exclusions,
+            use_pbc=self.use_pbc,
+            epsilon_wf_map=epsilon_wf_map, 
+            sigma_wf_map=sigma_wf_map,
+            mu_wf_map=mu_wf_map,
+            nu_wf_map=nu_wf_map,
+            cutoff_to_sigma_ratio=cutoff_to_sigma_ratio, 
+            force_group=force_group,
+        )
         self.system.addForce(force)
     
-    def add_dh_elec(self, ldby=(1/1.26)*unit.nanometer, dielectric_water=80.0, cutoff=3.5*unit.nanometer, 
-                    force_group=4):
+    def add_dh_elec(self, ldby=(1 / 1.26) * unit.nanometer, dielectric_water=80.0,
+                    cutoff=3.5 * unit.nanometer, force_group=4):
         """
         Add Debye-Huckel electrostatic interactions. 
         
@@ -116,8 +124,15 @@ class MpipiModel(CGModel):
         print(f'Set Debye length as {ldby.value_in_unit(unit.nanometer)} nm.')
         print(f'Set water dielectric as {dielectric_water}.')
         charges = self.atoms['charge'].tolist()
-        force = functional_terms.dh_elec_term(charges, self.exclusions, self.use_pbc, ldby, dielectric_water, 
-                                              cutoff, force_group)
+        force = functional_terms.dh_elec_term(
+            charges=charges,
+            df_exclusions=self.exclusions,
+            use_pbc=self.use_pbc,
+            ldby=ldby,
+            dielectric_water=dielectric_water,
+            cutoff=cutoff,
+            force_group=force_group,
+        )
         self.system.addForce(force)
 
 

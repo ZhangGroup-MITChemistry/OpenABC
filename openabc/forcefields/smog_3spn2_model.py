@@ -317,7 +317,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             for j in donors1.index:
                 c, r = j[0], j[1]
                 max_delta_r = 2
-                for delta_r in range(-1*max_delta_r, max_delta_r + 1):
+                for delta_r in range(-max_delta_r, max_delta_r + 1):
                     k = (c, r + delta_r, base2)
                     if k in acceptors1.index:
                         force.addExclusion(int(donors1.loc[j, 'donor_id']), int(acceptors1.loc[k, 'acceptor_id']))
@@ -401,7 +401,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             max_delta_resSeq = 2
             for i in donors.index:
                 donor_id = int(donors.loc[i, 'donor_id'])
-                for delta_resSeq in range(-1*max_delta_resSeq, max_delta_resSeq + 1):
+                for delta_resSeq in range(-max_delta_resSeq, max_delta_resSeq + 1):
                     j = (i[0], i[1] + delta_resSeq, 'B')
                     if j in acceptors.index:
                         acceptor_id = int(acceptors.loc[j, 'acceptor_id'])
@@ -488,7 +488,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             max_delta_resSeq = 2
             for i in donors.index:
                 donor_id = int(donors.loc[i, 'donor_id'])
-                for delta_resSeq in range(-1*max_delta_resSeq, max_delta_resSeq + 1):
+                for delta_resSeq in range(-max_delta_resSeq, max_delta_resSeq + 1):
                     j = (i[0], i[1] + delta_resSeq, 'B')
                     if j in acceptors.index:
                         acceptor_id = int(acceptors.loc[j, 'acceptor_id'])
@@ -497,7 +497,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             self.system.addForce(force1)
             self.system.addForce(force2)
     
-    def add_all_vdwl(self, param_PP_MJ_path=f'{__location__}/parameters/pp_MJ.csv', cutoff_PD=1.425*unit.nanometer, 
+    def add_all_vdwl(self, param_PP_MJ_path=f'{__location__}/parameters/pp_MJ.csv', cutoff_PD=1.425 * unit.nanometer, 
                      force_group=11):
         """
         Add all the nonbonded Van der Waals interactions. 
@@ -521,8 +521,8 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
         force = functional_terms.all_smog_MJ_3spn2_term(self, param_PP_MJ, cutoff_PD, force_group)
         self.system.addForce(force)
     
-    def add_all_elec(self, salt_conc=150*unit.millimolar, temperature=300*unit.kelvin, 
-                     elec_DD_charge_scale=0.6, cutoff_DD=5*unit.nanometer, cutoff_PP_PD=3.141504539*unit.nanometer, 
+    def add_all_elec(self, salt_conc=150 * unit.millimolar, temperature=300 * unit.kelvin, 
+                     elec_DD_charge_scale=0.6, cutoff_DD=5 * unit.nanometer, cutoff_PP_PD=3.141504539 * unit.nanometer, 
                      dielectric_PP_PD=78, force_group=12):
         """
         Add all the electrostatic interactions. 
