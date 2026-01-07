@@ -12,6 +12,7 @@ archive/
 slurm-output/
 REMO/
 backup/
+*tmp*/
 
 examples/minimal-example/
 

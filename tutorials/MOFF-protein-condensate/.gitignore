@@ -3,4 +3,5 @@ run_NPT.slurm
 slab_NVT_relaxed.pdb
 slab_NVT_relaxed_AA.pdb
 start.pdb
+hp1alpha_100_dimers_AA.pdb
 

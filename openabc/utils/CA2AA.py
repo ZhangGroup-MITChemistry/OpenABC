@@ -49,7 +49,7 @@ def split_protein(input_pdbfile, num_chains, num_residues, output_path):
     os.makedirs(f'{output_path}', exist_ok=True)
     for i in range(protein_types):
         for j in range(num_chains[i]):
-            pdb_i_j = pdb[current_index: current_index + num_residues[i]]
+            pdb_i_j = pdb[current_index : current_index + num_residues[i]]
             write_pdb(pdb_i_j, f'{output_path}/protein_{i}_chain_{j}.pdb')
             current_index += num_residues[i]
     if current_index != len(pdb):
