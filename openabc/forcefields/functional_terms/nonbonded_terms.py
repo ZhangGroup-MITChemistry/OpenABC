@@ -108,6 +108,51 @@ def ashbaugh_hatch_term(atom_types, df_exclusions, use_pbc, epsilon, sigma_ah_ma
     return contacts
 
 
+def ashbaugh_hatch_cutoff_term(atom_types, df_exclusions, use_pbc, epsilon, 
+                               sigma_ah_map, lambda_ah_map, cutoff=2.0 * unit.nanometer, 
+                               force_group=2):
+    """
+    Ashbaugh-Hatch potential with cutoff as an input parameter. 
+    """
+    cutoff_value = cutoff.value_in_unit(unit.nanometer)
+    contacts = mm.CustomNonbondedForce(f'''energy;
+               energy=(f1+f2-offset)*step(4*sigma_ah-r);
+               offset=lambda_ah*lj_at_cutoff;
+               lj_at_cutoff=4*{epsilon}*((sigma_ah/{cutoff_value})^12-(sigma_ah/{cutoff_value})^6);
+               f1=(lj+(1-lambda_ah)*{epsilon})*step(2^(1/6)*sigma_ah-r);
+               f2=lambda_ah*lj*step(r-2^(1/6)*sigma_ah);
+               lj=4*{epsilon}*((sigma_ah/r)^12-(sigma_ah/r)^6);
+               sigma_ah=sigma_ah_map(atom_type1, atom_type2);
+               lambda_ah=lambda_ah_map(atom_type1, atom_type2);
+               ''')
+    n_atom_types = sigma_ah_map.shape[0]
+    # sigma_ah_map and lambda_ah_map are symmetric
+    discrete_2d_sigma_ah_map = mm.Discrete2DFunction(
+        n_atom_types,
+        n_atom_types, 
+        sigma_ah_map.flatten(order='F').tolist(),
+    )
+    discrete_2d_lambda_ah_map = mm.Discrete2DFunction(
+        n_atom_types,
+        n_atom_types, 
+        lambda_ah_map.flatten(order='F').tolist(),
+    )
+    contacts.addTabulatedFunction('sigma_ah_map', discrete_2d_sigma_ah_map)
+    contacts.addTabulatedFunction('lambda_ah_map', discrete_2d_lambda_ah_map)
+    contacts.addPerParticleParameter('atom_type')
+    for each in atom_types:
+        contacts.addParticle([each])
+    for _, row in df_exclusions.iterrows():
+        contacts.addExclusion(int(row['a1']), int(row['a2']))
+    if use_pbc:
+        contacts.setNonbondedMethod(contacts.CutoffPeriodic)
+    else:
+        contacts.setNonbondedMethod(contacts.CutoffNonPeriodic)
+    contacts.setCutoffDistance(cutoff)
+    contacts.setForceGroup(force_group)
+    return contacts
+
+
 def ddd_dh_elec_term(charges, df_exclusions, use_pbc, salt_conc=150.0 * unit.millimolar, 
                      temperature=300.0 * unit.kelvin, cutoff=4.0 * unit.nanometer, force_group=6):
     """
