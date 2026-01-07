@@ -319,8 +319,15 @@ def find_ca_pairs_from_atomistic_pdb(atomistic_pdb, frame=0, radius=0.1, bonded_
         Pandas DataFrame including CA atom pair indices and distances. 
     
     '''
-    res_pairs, df_atoms = find_res_pairs_from_atomistic_pdb(atomistic_pdb, frame, radius, bonded_radius, cutoff, 
-                                                            box, use_pbc)
+    res_pairs, df_atoms = find_res_pairs_from_atomistic_pdb(
+        atomistic_pdb=atomistic_pdb,
+        frame=frame,
+        radius=radius,
+        bonded_radius=bonded_radius,
+        cutoff=cutoff,
+        box=box,
+        use_pbc=use_pbc
+    )
     # pick out CA atoms for each residue
     dict_res_CA = {}
     for i, row in df_atoms.iterrows():

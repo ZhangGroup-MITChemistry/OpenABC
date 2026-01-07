@@ -4,6 +4,8 @@
 **/*.tar.gz
 **/*.npy
 
+.vscode/
+
 __pycache__/
 my-tests/
 archive/

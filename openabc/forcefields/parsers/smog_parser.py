@@ -197,13 +197,25 @@ class SMOGParser(object):
         # set native pairs
         if get_native_pairs:
             print('Get native pairs with shadow algorithm.')
-            self.native_pairs = find_ca_pairs_from_atomistic_pdb(self.atomistic_pdb, frame, radius, bonded_radius, 
-                                                                 cutoff, box, use_pbc)
+            self.native_pairs = find_ca_pairs_from_atomistic_pdb(
+                atomistic_pdb=self.atomistic_pdb,
+                frame=frame,
+                radius=radius,
+                bonded_radius=bonded_radius,
+                cutoff=cutoff,
+                box=box,
+                use_pbc=use_pbc,
+            )
             self.native_pairs.loc[:, 'epsilon_G'] = 1.0 * bonded_energy_scale
             self.native_pairs.loc[:, 'sigma_G'] = 0.05
             self.native_pairs.loc[:, 'alpha_G'] = 1.6777216e-5 * bonded_energy_scale
         # set exclusions
-        self.parse_exclusions(exclude12, exclude13, exclude14, exclude_native_pairs) 
+        self.parse_exclusions(
+            exclude12=exclude12,
+            exclude13=exclude13,
+            exclude14=exclude14,
+            exclude_native_pairs=exclude_native_pairs,
+        ) 
         # set mass and charge
         for i, row in self.atoms.iterrows():
             self.atoms.loc[i, 'mass'] = mass_dict[row['resname']]

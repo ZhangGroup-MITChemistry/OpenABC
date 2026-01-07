@@ -40,6 +40,8 @@ class MOFFMRGModel(CGModel):
             print('Add protein bonds.')
             force = functional_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
+        else:
+            print('No protein bonds found, skip adding protein bonds.')
 
     def add_protein_angles(self, threshold=130 * np.pi / 180, clip=False, force_group=2, verbose=True):
         """
@@ -83,6 +85,8 @@ class MOFFMRGModel(CGModel):
                 self.protein_angles.loc[self.protein_angles['theta0'] > threshold, 'theta0'] = threshold
             force = functional_terms.harmonic_angle_term(self.protein_angles, self.use_pbc, force_group)
             self.system.addForce(force)
+        else:
+            print('No protein angles found, skip adding protein angles.')
     
     def add_protein_dihedrals(self, force_group=3):
         """
@@ -98,6 +102,8 @@ class MOFFMRGModel(CGModel):
             print('Add protein dihedrals.')
             force = functional_terms.periodic_dihedral_term(self.protein_dihedrals, self.use_pbc, force_group)
             self.system.addForce(force)
+        else:
+            print('No protein dihedrals found, skip adding protein dihedrals.')
     
     def add_native_pairs(self, force_group=4):
         """
@@ -113,6 +119,8 @@ class MOFFMRGModel(CGModel):
             print('Add native pairs.')
             force = functional_terms.native_pair_12_10_term(self.native_pairs, self.use_pbc, force_group)
             self.system.addForce(force)
+        else:
+            print('No native pairs found, skip adding native pairs.')
 
     def add_dna_bonds(self, force_group=5):
         """
@@ -128,6 +136,8 @@ class MOFFMRGModel(CGModel):
             print('Add DNA bonds.')
             force = functional_terms.class2_bond_term(self.dna_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
+        else:
+            print('No DNA bonds found, skip adding DNA bonds.')
     
     def add_dna_angles(self, force_group=6):
         """
@@ -143,6 +153,8 @@ class MOFFMRGModel(CGModel):
             print('Add DNA angles.')
             force = functional_terms.class2_angle_term(self.dna_angles, self.use_pbc, force_group)
             self.system.addForce(force)
+        else:
+            print('No DNA angles found, skip adding DNA angles.')
         
     def add_dna_fan_bonds(self, force_group=7):
         """
@@ -158,6 +170,8 @@ class MOFFMRGModel(CGModel):
             print('Add DNA fan bonds.')
             force = functional_terms.class2_bond_term(self.dna_fan_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
+        else:
+            print('No DNA fan bonds found, skip adding DNA fan bonds.')
     
     def add_contacts(self, eta=0.7 / unit.angstrom, r0=8 * unit.angstrom, cutoff=2.0 * unit.nanometer, 
                      alpha_protein_dna=1.6264e-3, alpha_dna_dna=1.678e-5, epsilon_protein_dna=0, epsilon_dna_dna=0, 
@@ -167,7 +181,7 @@ class MOFFMRGModel(CGModel):
         
         For amino acids, the CA atom type indices are 0-19, and CG nucleotide atom type index is 20. 
         
-        The potential expression is: alpha/r^12 - 0.5*epsilon*(1 + tanh(eta*(r0 - r)))
+        The potential expression is: alpha / r^12 - 0.5 * epsilon * (1 + tanh(eta * (r0 - r)))
         
         Parameters
         ----------
@@ -220,8 +234,17 @@ class MOFFMRGModel(CGModel):
         epsilon_map[:20, 20] = epsilon_protein_dna
         epsilon_map[20, :20] = epsilon_protein_dna
         epsilon_map[20, 20] = epsilon_dna_dna
-        force = functional_terms.moff_mrg_contact_term(atom_types, self.exclusions, self.use_pbc, alpha_map, 
-                                                       epsilon_map, eta, r0, cutoff, force_group)
+        force = functional_terms.moff_mrg_contact_term(
+            atom_types=atom_types,
+            df_exclusions=self.exclusions,
+            use_pbc=self.use_pbc,
+            alpha_map=alpha_map,
+            epsilon_map=epsilon_map,
+            eta=eta,
+            r0=r0,
+            cutoff=cutoff,
+            force_group=force_group,
+        )
         self.system.addForce(force)
     
     def add_elec_switch(self, salt_conc=150.0 * unit.millimolar, temperature=300.0 * unit.kelvin, 
@@ -258,8 +281,17 @@ class MOFFMRGModel(CGModel):
         """
         print('Add protein and DNA electrostatic interactions with distance-dependent dielectric and switch.')
         charges = self.atoms['charge'].tolist()
-        force1 = functional_terms.ddd_dh_elec_switch_term(charges, self.exclusions, self.use_pbc, salt_conc, 
-                                                          temperature, cutoff1, cutoff2, switch_coeff, force_group)
+        force1 = functional_terms.ddd_dh_elec_switch_term(
+            charges=charges,
+            df_exclusions=self.exclusions,
+            use_pbc=self.use_pbc,
+            salt_conc=salt_conc,
+            temperature=temperature,
+            cutoff1=cutoff1,
+            cutoff2=cutoff2,
+            switch_coeff=switch_coeff,
+            force_group=force_group,
+        )
         self.system.addForce(force1)
         if add_native_pair_elec and hasattr(self, 'native_pairs'):
             print('Add electrostatic interactions between native pair atoms.')
@@ -269,9 +301,16 @@ class MOFFMRGModel(CGModel):
                 q1, q2 = float(charges[a1]), float(charges[a2])
                 if (q1 != 0) and (q2 != 0):
                     df_charge_bonds.loc[len(df_charge_bonds.index)] = [a1, a2, q1, q2]
-            force2 = functional_terms.ddd_dh_elec_switch_bond_term(df_charge_bonds, self.use_pbc, salt_conc, 
-                                                                   temperature, cutoff1, cutoff2, switch_coeff, 
-                                                                   force_group)
+            force2 = functional_terms.ddd_dh_elec_switch_bond_term(
+                df_bonds=df_charge_bonds,
+                use_pbc=self.use_pbc,
+                salt_conc=salt_conc,
+                temperature=temperature,
+                cutoff1=cutoff1,
+                cutoff2=cutoff2,
+                switch_coeff=switch_coeff, 
+                force_group=force_group,
+            )
             self.system.addForce(force2)
         else:
             print('Do not add electrostatic interactions between native pair atoms.')

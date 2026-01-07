@@ -126,11 +126,11 @@ def align_protein(input_pdbfile, reference_pdbfile, output_pdbfile, reference_at
     ref_pdb_CA_index= ref_pdb.top.select(f'name=={reference_atoms}')
     assert len(input_pdb_CA_index) == len(ref_pdb_CA_index)
     input_pdb_aligned = input_pdb.superpose(
-                                            ref_pdb, 
-                                            frame=0, 
-                                            atom_indices=input_pdb_CA_index, 
-                                            ref_atom_indices=ref_pdb_CA_index
-                                            )
+        ref_pdb, 
+        frame=0, 
+        atom_indices=input_pdb_CA_index, 
+        ref_atom_indices=ref_pdb_CA_index,
+    )
     output_pdbfile_path = '/'.join(output_pdbfile.split('/')[:-1])
     os.makedirs(output_pdbfile_path, exist_ok=True)
     input_pdb_aligned.save(output_pdbfile)
@@ -195,13 +195,13 @@ def multiple_chains_CA2AA(input_pdbfile, num_chains, num_residues, REMO_path, de
                 input_pdbfile=f'{pdb_name}/ca_splitted/protein_{i}_chain_{j}.pdb', 
                 output_pdbfile=f'{pdb_name}/aa_splitted_noaligned/protein_{i}_chain_{j}.pdb', 
                 REMO_path=REMO_path, 
-                debug=debug
+                debug=debug,
             )
             align_protein(
                 input_pdbfile=f'{pdb_name}/aa_splitted_noaligned/protein_{i}_chain_{j}.pdb', 
                 reference_pdbfile=f'{pdb_name}/ca_splitted/protein_{i}_chain_{j}.pdb', 
                 output_pdbfile=f'{pdb_name}/aa_splitted_aligned/protein_{i}_chain_{j}.pdb', 
-                reference_atoms='CA'
+                reference_atoms='CA',
             )
             aligned_protein_list.append(f'{pdb_name}/aa_splitted_aligned/protein_{i}_chain_{j}.pdb')
     combine_proteins(aligned_protein_list, f'{pdb_name}_AA.pdb')
@@ -223,5 +223,11 @@ if __name__ == '__main__':
     num_residues = args.number_of_residues
     REMO_path = args.REMO_path
     debug = args.debug
-    multiple_chains_CA2AA(protein_ca, num_chains, num_residues, REMO_path, debug)
+    multiple_chains_CA2AA(
+        input_pdbfile=protein_ca,
+        num_chains=num_chains,
+        num_residues=num_residues,
+        REMO_path=REMO_path,
+        debug=debug,
+    )
 

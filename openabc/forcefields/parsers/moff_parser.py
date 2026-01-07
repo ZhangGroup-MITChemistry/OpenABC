@@ -207,8 +207,15 @@ class MOFFParser(object):
         # set native pairs
         if get_native_pairs:
             print('Get native pairs with shadow algorithm.')
-            self.native_pairs = find_ca_pairs_from_atomistic_pdb(self.atomistic_pdb, frame, radius, bonded_radius, 
-                                                                 cutoff, box, use_pbc)
+            self.native_pairs = find_ca_pairs_from_atomistic_pdb(
+                atomistic_pdb=self.atomistic_pdb,
+                frame=frame,
+                radius=radius,
+                bonded_radius=bonded_radius, 
+                cutoff=cutoff,
+                box=box,
+                use_pbc=use_pbc,
+            )
             self.native_pairs.loc[:, 'epsilon'] = 3.0  
             if ss is not None:
                 assert n_atoms == len(ss) # the length of ss should be equal to the number of CA atoms
@@ -228,7 +235,12 @@ class MOFFParser(object):
                             new_native_pairs.loc[len(new_native_pairs.index)] = row
                 self.native_pairs = new_native_pairs
         # set exclusions
-        self.parse_exclusions(exclude12, exclude13, exclude14, exclude_native_pairs) 
+        self.parse_exclusions(
+            exclude12=exclude12,
+            exclude13=exclude13,
+            exclude14=exclude14,
+            exclude_native_pairs=exclude_native_pairs,
+        ) 
         # set mass and charge
         for i, row in self.atoms.iterrows():
             self.atoms.loc[i, 'mass'] = mass_dict[row['resname']]

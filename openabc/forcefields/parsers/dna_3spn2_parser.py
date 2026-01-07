@@ -148,8 +148,11 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
         
         # parse x3dna template
         # from_atomistic_pdb is a class method, so dna_temp is a class object
-        dna_temp = self.from_atomistic_pdb(f'{temp_name}_template.pdb', f'cg_{temp_name}_template.pdb', 
-                                           default_parse=False)
+        dna_temp = self.from_atomistic_pdb(
+            atomistic_pdb=f'{temp_name}_template.pdb',
+            cg_pdb=f'cg_{temp_name}_template.pdb', 
+            default_parse=False,
+        )
         # check sequence
         # the target sequence is equal to the template sequence or the first half of template sequence
         target_sequence = self.get_sequence()

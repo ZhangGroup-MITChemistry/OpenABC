@@ -169,8 +169,16 @@ def insert_molecules(new_pdb, output_pdb, n_mol, radius=0.5, existing_pdb=None, 
         existing_atoms = None
     else:
         existing_atoms = parse_pdb(existing_pdb)
-    atoms = insert_molecules_dataframe(new_atoms, n_mol, radius, existing_atoms, max_n_attempts, 
-                                       box, method, reset_serial)
+    atoms = insert_molecules_dataframe(
+        new_atoms=new_atoms,
+        n_mol=n_mol,
+        radius=radius,
+        existing_atoms=existing_atoms,
+        max_n_attempts=max_n_attempts,
+        box=box,
+        method=method,
+        reset_serial=reset_serial,
+    )
     # write the final pdb
     write_pdb(atoms, output_pdb)
 
