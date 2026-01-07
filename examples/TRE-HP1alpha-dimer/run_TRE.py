@@ -12,7 +12,7 @@ import sys
 import os
 
 __location__ = os.path.dirname(os.path.abspath(__file__))
-sys.path.append('../..')
+sys.path.insert(0, '../..')
 from openabc.utils.replica_exchange import TemperatureReplicaExchange
 
 """

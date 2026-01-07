@@ -13,7 +13,7 @@ import sys
 import os
 
 __location__ = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(f'{__location__}/../..')
+sys.path.insert(0, f'{__location__}/../..')
 from openabc.forcefields.hps_zero_offset_model import HPSZeroOffsetModel
 from openabc.forcefields.parsers import HPSParser
 

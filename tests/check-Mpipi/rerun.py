@@ -12,7 +12,7 @@ import mdtraj
 import sys
 import os
 
-sys.path.append('../..')
+sys.path.insert(0, '../..')
 from openabc.forcefields.parsers import MpipiProteinParser, MpipiRNAParser
 from openabc.forcefields.mpipi_zero_offset_model import MpipiZeroOffsetModel
 import openabc.utils.helper_functions as helper_functions

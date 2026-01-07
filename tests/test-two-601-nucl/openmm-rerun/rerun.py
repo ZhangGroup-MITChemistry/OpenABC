@@ -12,7 +12,7 @@ except ImportError:
     import simtk.unit as unit
 import mdtraj
 
-sys.path.append('../../..')
+sys.path.insert(0, '../../..')
 
 from openabc.forcefields.parsers import SMOGParser, DNA3SPN2Parser
 from openabc.forcefields import SMOG3SPN2Model

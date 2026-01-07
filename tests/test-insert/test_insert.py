@@ -4,7 +4,7 @@ import sys
 import os
 import time
 
-sys.path.append('../..')
+sys.path.insert(0, '../..')
 from openabc.utils.insert import insert_molecules
 
 n_mol = 100

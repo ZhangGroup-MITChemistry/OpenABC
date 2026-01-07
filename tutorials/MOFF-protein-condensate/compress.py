@@ -11,7 +11,7 @@ except ImportError:
     import simtk.openmm.app as app
     import simtk.unit as unit
 
-sys.path.append('../../')
+sys.path.insert(0, '../../')
 from openabc.forcefields.parsers import MOFFParser
 from openabc.forcefields import MOFFMRGModel
 

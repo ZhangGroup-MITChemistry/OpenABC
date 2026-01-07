@@ -13,7 +13,7 @@ import networkx as nx
 import sys
 import os
 
-sys.path.append('../..')
+sys.path.insert(0, '../..')
 from openabc.utils.helper_functions import make_mol_whole, move_atoms_to_closest_pbc_image
 
 input_dcd = sys.argv[1]

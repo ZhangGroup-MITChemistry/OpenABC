@@ -3,7 +3,7 @@ import pandas as pd
 import sys
 import os
 
-sys.path.append('../../..')
+sys.path.insert(0, '../../..')
 import openabc.utils.helper_functions as helper_functions
 from openabc.lib import _amino_acids, _dna_nucleotides
 

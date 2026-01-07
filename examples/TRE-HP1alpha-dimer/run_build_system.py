@@ -9,7 +9,7 @@ except ImportError:
 import sys
 import os
 
-sys.path.append('../..')
+sys.path.insert(0, '../..')
 from openabc.forcefields import MOFFMRGModel
 from openabc.forcefields.parsers import MOFFParser
 

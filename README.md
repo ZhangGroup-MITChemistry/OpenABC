@@ -86,7 +86,7 @@ pip install -U openabc
 
 ## Usage
 
-If openabc is not within the default python module searching paths, please add it to the searching paths. One way is to use `sys.path.append(dir_path)`, and replace `dir_path` with the directory path where openabc is saved. 
+If openabc is not within the default python module searching paths, please add it to the searching paths. One way is to use `sys.path.append(dir_path)` or `sys.path.insert(0, dir_path)`, and replace `dir_path` with the directory path where openabc is saved. 
 
 Here is an example of setting up a MOFF system composed of 100 copies of proteins. 
 
@@ -160,7 +160,6 @@ Here are the references for the force fields and tools included in OpenABC. Plea
 - 3SPN2 model: (1) Hinckley, Daniel M., et al. "An experimentally-informed coarse-grained 3-site-per-nucleotide model of DNA: Structure, thermodynamics, and dynamics of hybridization." The Journal of chemical physics 139.14 (2013). (2) Freeman, Gordon S., et al. "Coarse-grained modeling of DNA curvature." The Journal of chemical physics 141.16 (2014).
 
 - Open3SPN2 model: Lu, Wei, et al. "OpenAWSEM with Open3SPN2: A fast, flexible, and accessible framework for large-scale coarse-grained biomolecular simulations." PLoS computational biology 17.2 (2021): e1008308.
-
 
 
 
