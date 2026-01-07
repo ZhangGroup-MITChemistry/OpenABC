@@ -1,8 +1,17 @@
 import numpy as np
 import pandas as pd
-from MDAnalysis.lib.nsgrid import FastNS
-from MDAnalysis.lib.distances import distance_array
-from scipy.spatial.transform import Rotation as R
+try:
+    from MDAnalysis.lib.nsgrid import FastNS
+    _HAS_MDANALYSIS = True
+except ImportError:
+    FastNS = None
+    _HAS_MDANALYSIS = False
+try:
+    from scipy.spatial.transform import Rotation as R
+    _HAS_SCIPY = True
+except ImportError:
+    R = None
+    _HAS_SCIPY = False
 from openabc.utils import parse_pdb, write_pdb
 
 __author__ = 'Andrew Latham'
@@ -57,6 +66,12 @@ def insert_molecules_dataframe(new_atoms, n_mol, radius=0.5, existing_atoms=None
         Output atoms.
     
     """
+    if not _HAS_MDANALYSIS:
+        raise ImportError('MDAnalysis is required for using insert_molecules_dataframe function.')
+    
+    if not _HAS_SCIPY:
+        raise ImportError('scipy is required for using insert_molecules_dataframe function.')
+    
     new_coord = new_atoms[['x', 'y', 'z']].to_numpy()
     new_coord -= np.mean(new_coord, axis=0)
     if existing_atoms is None:

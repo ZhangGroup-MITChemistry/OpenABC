@@ -46,10 +46,10 @@ protein_rna.create_system(top, box_a=10, box_b=10, box_c=10)
 protein_rna.add_protein_bonds(force_group=1)
 protein_rna.add_rna_bonds(force_group=2)
 protein_rna.add_contacts(force_group=3)
-protein_rna.add_dh_elec(ldby=(1/1.26)*unit.nanometer, force_group=4)
-temperature = 300*unit.kelvin
-friction_coeff = 1/unit.picosecond
-timestep = 10*unit.femtosecond
+protein_rna.add_dh_elec(ldby=(1 / 1.26) * unit.nanometer, force_group=4)
+temperature = 300 * unit.kelvin
+friction_coeff = 1 / unit.picosecond
+timestep = 10 * unit.femtosecond
 integrator = mm.LangevinMiddleIntegrator(temperature, friction_coeff, timestep)
 protein_rna.set_simulation(integrator, platform_name='CPU')
 

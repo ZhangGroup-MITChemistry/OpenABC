@@ -1,7 +1,12 @@
 import numpy as np
 import pandas as pd
 import mdtraj
-from MDAnalysis.lib.nsgrid import FastNS
+try:
+    from MDAnalysis.lib.nsgrid import FastNS
+    _HAS_MDANALYSIS = True
+except ImportError:
+    FastNS = None
+    _HAS_MDANALYSIS = False
 from openabc.lib import _amino_acids
 import networkx as nx
 import math
@@ -60,6 +65,8 @@ def get_neighbor_pairs_and_distances(coord, cutoff=0.6, box=None, use_pbc=False)
     https://docs.mdanalysis.org/1.1.1/documentation_pages/lib/nsgrid.html
     
     '''
+    if not _HAS_MDANALYSIS:
+        raise ImportError('MDAnalysis is required for using get_neighbor_pairs_and_distances function.')
     if use_pbc:
         grid_search = FastNS(cutoff, coord.astype(np.float32), box.astype(np.float32), use_pbc)
     else:

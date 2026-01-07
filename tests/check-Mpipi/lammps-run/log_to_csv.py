@@ -17,7 +17,7 @@ data = pd.DataFrame(columns=['sum', 'bond', 'contact', 'elec'])
 for i in range(start_line_id, end_line_id + 1):
     line_i = log_lammps_lines[i]
     row = line_i.split()
-    row = [_kcal_to_kj*float(x) for x in row][1:]
+    row = [_kcal_to_kj * float(x) for x in row][1:]
     data.loc[len(data.index)] = row
 
 data = data[['bond', 'contact', 'elec']].copy()

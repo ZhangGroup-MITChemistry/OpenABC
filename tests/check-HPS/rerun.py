@@ -33,7 +33,7 @@ protein.add_protein_bonds(force_group=1)
 protein.add_contacts('Urry', mu=1, delta=0.08, force_group=2)
 protein.add_contacts('KR', mu=1, delta=0, force_group=3)
 protein.add_dh_elec(force_group=4)
-integrator = mm.NoseHooverIntegrator(300*unit.kelvin, 1/unit.picosecond, 10*unit.femtosecond)
+integrator = mm.NoseHooverIntegrator(300 * unit.kelvin, 1 / unit.picosecond, 10 * unit.femtosecond)
 protein.set_simulation(integrator)
 simulation = protein.simulation
 

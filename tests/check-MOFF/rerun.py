@@ -33,8 +33,8 @@ hp1alpha_dimer.append_mol(hp1alpha_dimer_parser)
 hp1alpha_dimer.native_pairs.loc[:, 'epsilon'] = 6.0
 top = app.PDBFile('hp1alpha_dimer_CA.pdb').getTopology()
 hp1alpha_dimer.create_system(top, box_a=200, box_b=200, box_c=200)
-salt_conc = 82*unit.millimolar
-temperature = 300*unit.kelvin
+salt_conc = 82 * unit.millimolar
+temperature = 300 * unit.kelvin
 hp1alpha_dimer.add_protein_bonds(force_group=1)
 hp1alpha_dimer.add_protein_angles(force_group=2, verbose=False)
 hp1alpha_dimer.add_protein_dihedrals(force_group=3)
@@ -42,8 +42,8 @@ hp1alpha_dimer.add_native_pairs(force_group=4)
 hp1alpha_dimer.add_contacts(force_group=5)
 hp1alpha_dimer.add_elec_switch(salt_conc, temperature, force_group=6)
 #hp1alpha_dimer.save_system('system.xml')
-collision = 1/unit.picosecond
-timestep = 10*unit.femtosecond
+collision = 1 / unit.picosecond
+timestep = 10 * unit.femtosecond
 integrator = mm.NoseHooverIntegrator(temperature, collision, timestep)
 platform_name = 'CPU'
 hp1alpha_dimer.set_simulation(integrator, platform_name, init_coord=None)

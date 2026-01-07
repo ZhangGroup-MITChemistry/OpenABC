@@ -31,8 +31,8 @@ new_native_pairs = pd.DataFrame(columns=old_native_pairs.columns)
 cd1 = np.arange(16, 72)
 csd1 = np.arange(114, 176)
 n_atoms_per_hp1alpha_dimer = len(hp1alpha_dimer_parser.atoms.index)
-cd2 = cd1 + int(n_atoms_per_hp1alpha_dimer/2)
-csd2 = csd1 + int(n_atoms_per_hp1alpha_dimer/2)
+cd2 = cd1 + int(n_atoms_per_hp1alpha_dimer / 2)
+csd2 = csd1 + int(n_atoms_per_hp1alpha_dimer / 2)
 for i, row in old_native_pairs.iterrows():
     a1, a2 = int(row['a1']), int(row['a2'])
     if a1 > a2:
@@ -60,19 +60,19 @@ top = app.PDBFile('start.pdb').getTopology()
 box_a, box_b, box_c = 50, 50, 50
 multi_dimers.create_system(top, box_a=box_a, box_b=box_b, box_c=box_c)
 
-salt_conc = 82*unit.millimolar
-temperature = 150*unit.kelvin
+salt_conc = 82 * unit.millimolar
+temperature = 150 * unit.kelvin
 multi_dimers.add_protein_bonds(force_group=1)
 multi_dimers.add_protein_angles(force_group=2)
 multi_dimers.add_protein_dihedrals(force_group=3)
 multi_dimers.add_native_pairs(force_group=4)
 multi_dimers.add_contacts(force_group=5)
-multi_dimers.add_elec_switch(salt_conc, 300*unit.kelvin, force_group=6)
-pressure = 1*unit.bar
+multi_dimers.add_elec_switch(salt_conc, 300 * unit.kelvin, force_group=6)
+pressure = 1 * unit.bar
 multi_dimers.system.addForce(mm.MonteCarloBarostat(pressure, temperature))
 
-friction_coeff = 1/unit.picosecond
-timestep = 10*unit.femtosecond
+friction_coeff = 1 / unit.picosecond
+timestep = 10 * unit.femtosecond
 integrator = mm.LangevinMiddleIntegrator(temperature, friction_coeff, timestep)
 multi_dimers.set_simulation(integrator, platform_name, init_coord=init_coord)
 simulation = multi_dimers.simulation
@@ -88,8 +88,14 @@ simulation.step(2000000)
 print('NPT compression is finished.')
 
 # print final box vectors
-state = simulation.context.getState(getPositions=True, getVelocities=True, getForces=True, getEnergy=True,
-                                    getParameters=True, enforcePeriodicBox=True)
+state = simulation.context.getState(
+    getPositions=True,
+    getVelocities=True,
+    getForces=True,
+    getEnergy=True,
+    getParameters=True,
+    enforcePeriodicBox=True,
+)
 box_vec = state.getPeriodicBoxVectors(asNumpy=True)
 print('Final box vectors:')
 print(box_vec)

@@ -86,9 +86,9 @@ two_nucl.parse_all_exclusions()
 two_nucl.add_all_vdwl(force_group=11)
 two_nucl.add_all_elec(force_group=12)
 
-temperature = 300*unit.kelvin
-friction_coeff = 0.01/unit.picosecond
-timestep = 10*unit.femtosecond
+temperature = 300 * unit.kelvin
+friction_coeff = 0.01 / unit.picosecond
+timestep = 10 * unit.femtosecond
 integrator = mm.LangevinMiddleIntegrator(temperature, friction_coeff, timestep)
 two_nucl.set_simulation(integrator, platform_name=platform_name, init_coord=init_coord)
 simulation = two_nucl.simulation
