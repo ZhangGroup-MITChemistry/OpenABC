@@ -134,9 +134,17 @@ class TemperatureReplicaExchange(object):
         """
         use_pbc = self.system.usesPeriodicBoundaryConditions()
         if report_state:
-            state_data_reporter = app.StateDataReporter(sys.stdout, report_interval, step=True, time=True, 
-                                                        potentialEnergy=True, kineticEnergy=True, totalEnergy=True, 
-                                                        temperature=True, speed=True)
+            state_data_reporter = app.StateDataReporter(
+                sys.stdout,
+                report_interval,
+                step=True,
+                time=True, 
+                potentialEnergy=True,
+                kineticEnergy=True,
+                totalEnergy=True, 
+                temperature=True,
+                speed=True,
+            )
             self.simulation.reporters.append(state_data_reporter)
         if report_dcd:
             if output_dcd is None:
@@ -171,8 +179,12 @@ class TemperatureReplicaExchange(object):
         start_time = time.time()
         for i in range(n_iterations):
             self.simulation.step(exchange_interval)
-            state = self.simulation.context.getState(getPositions=True, getEnergy=True, getVelocities=True, 
-                                                     enforcePeriodicBox=True)
+            state = self.simulation.context.getState(
+                getPositions=True,
+                getEnergy=True,
+                getVelocities=True, 
+                enforcePeriodicBox=True,
+            )
             positions = torch.from_numpy(np.array(state.getPositions().value_in_unit(unit.nanometer)))
             velocities = torch.from_numpy(np.array(state.getVelocities().value_in_unit(unit.nanometer / unit.picosecond)))
             potential_energy = torch.tensor([state.getPotentialEnergy().value_in_unit(unit.kilojoule_per_mole)])

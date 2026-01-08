@@ -38,7 +38,7 @@ def insert_molecules_dataframe(new_atoms, n_mol, radius=0.5, existing_atoms=None
     
     radius : float or int
         Radius for each atom in unit nm. 
-        Insertion ensures the distance between any two atoms are larger than 2*radius under periodic boundary condition. 
+        Insertion ensures the distance between any two atoms are larger than 2 * radius under periodic boundary condition. 
     
     existing_atoms : None or pd.DataFrame
         Existing atoms.
@@ -156,7 +156,7 @@ def insert_molecules(new_pdb, output_pdb, n_mol, radius=0.5, existing_pdb=None, 
     
     radius : float or int
         Radius for each atom in unit nm. 
-        Insertion ensures the distance between any two atoms are larger than 2*radius under periodic boundary condition. 
+        Insertion ensures the distance between any two atoms are larger than 2 * radius under periodic boundary condition. 
     
     existing_pdb : None or str
         Path of an existing pdb file. 

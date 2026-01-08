@@ -651,7 +651,6 @@ def dh_elec_term_map(mol, salt_conc=150.0 * unit.millimolar, temperature=300.0 *
             if (idx == 0 and jdx == 0):
                 manning_coeff_map[idx, jdx] = 1.0
             elif (idx == 1 and jdx == 1):
-
                 manning_coeff_map[idx, jdx] = manning_scalar
             else:
                 manning_coeff_map[idx, jdx] = 1.0
@@ -669,7 +668,13 @@ def dh_elec_term_map(mol, salt_conc=150.0 * unit.millimolar, temperature=300.0 *
         energy += f'''dielectric={dielectric_water};'''
 
     elec = mm.CustomNonbondedForce(energy)
-    elec.addTabulatedFunction('manning_coeff_map', mm.Discrete2DFunction(n_atom_types, n_atom_types, manning_coeff_map))
+    elec.addTabulatedFunction(
+        'manning_coeff_map',
+        mm.Discrete2DFunction(
+            n_atom_types,
+            n_atom_types,
+            manning_coeff_map),
+    )
     elec.addPerParticleParameter('atom_type')
     elec.addPerParticleParameter('q')
 

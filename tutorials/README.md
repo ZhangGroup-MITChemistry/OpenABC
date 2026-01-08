@@ -5,7 +5,7 @@ This folder provides tutorials for setting up and performing simulations with MO
 - MOFF-protein-condensate explains 
     1. setting simulations of a protein with both folded and disordered domains using MOFF; 
     2. setting up condensate simulations with MOFF; 
-    3. converting coarse-grained configurations with only alpha carbons to atomistic structures;
+    3. converting coarse-grained configurations with only alpha carbons to atomistic structures (with REMO or pdbfixer);
     4. analyzing slab simulation trajectories to compute density profiles. 
 
 - HPS-protein-condensate explains

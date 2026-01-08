@@ -598,7 +598,11 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
         self.atoms = cg_atoms
         if default_parse:
             self.parse_config_file()
-            self.parse_mol(temp_from_x3dna=temp_from_x3dna, temp_name=temp_name, input_temp=input_temp)
+            self.parse_mol(
+                temp_from_x3dna=temp_from_x3dna,
+                temp_name=temp_name,
+                input_temp=input_temp,
+            )
         return self
         
         

@@ -1,20 +1,24 @@
 import pandas as pd
 
-df_ion_template = pd.DataFrame(dict(recname=['ATOM'], 
-                                    serial=[0], 
-                                    name=[None], 
-                                    altLoc=[''], 
-                                    resname=[None], 
-                                    chainID=['X'], 
-                                    resSeq=[0], 
-                                    iCode=[''], 
-                                    x=[0.0], 
-                                    y=[0.0], 
-                                    z=[0.0], 
-                                    occupancy=[0.0], 
-                                    tempFactor=[0.0], 
-                                    element=[None], 
-                                    charge=[None]))
+df_ion_template = pd.DataFrame(
+    dict(
+        recname=['ATOM'], 
+        serial=[0], 
+        name=[None], 
+        altLoc=[''], 
+        resname=[None], 
+        chainID=['X'], 
+        resSeq=[0], 
+        iCode=[''], 
+        x=[0.0], 
+        y=[0.0], 
+        z=[0.0], 
+        occupancy=[0.0], 
+        tempFactor=[0.0], 
+        element=[None], 
+        charge=[None],
+    )
+)
 
 # sodium ion
 df_sodium_ion = df_ion_template.copy()

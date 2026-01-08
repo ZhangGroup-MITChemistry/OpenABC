@@ -11,18 +11,24 @@ except ImportError:
 import mdtraj
 import warnings
 try:
-    import pdbfixer
+    from pdbfixer import PDBFixer
+    _HAS_PDBFIXER = True
 except ImportError:
-    pdbfixer = None
+    PDBFixer = None
+    _HAS_PDBFIXER = False
 try:
     import openmm.unit as unit
 except ImportError:
     import simtk.unit as unit
 import sys
 import os
-from openabc.lib import (_amino_acids, _amino_acid_1_letter_to_3_letters_dict, 
-                         _dna_nucleotides, _dna_WC_pair_dict, 
-                         _rna_nucleotides)
+from openabc.lib import (
+    _amino_acids,
+    _amino_acid_1_letter_to_3_letters_dict, 
+    _dna_nucleotides,
+    _dna_WC_pair_dict, 
+    _rna_nucleotides,
+)
 
 """
 Some code is adapted from Open3SPN2. 
@@ -205,8 +211,18 @@ def build_straight_CA_chain(sequence, r0=0.38):
     data = []
     for i in range(n_atoms):
         resname = _amino_acid_1_letter_to_3_letters_dict[sequence[i]]
-        atom_i_dict = {'recname': 'ATOM', 'name': 'CA', 'altLoc': '', 'resname': resname, 'chainID': 'A', 
-                       'iCode': '', 'occupancy': 1.0, 'tempFactor': 1.0, 'element': 'C', 'charge': ''}
+        atom_i_dict = {
+            'recname': 'ATOM',
+            'name': 'CA',
+            'altLoc': '',
+            'resname': resname,
+            'chainID': 'A', 
+            'iCode': '',
+            'occupancy': 1.0,
+            'tempFactor': 1.0,
+            'element': 'C',
+            'charge': '',
+        }
         data.append(atom_i_dict)
     df_atoms = pd.DataFrame(data)
     df_atoms['serial'] = list(range(1, n_atoms + 1))
@@ -244,8 +260,18 @@ def build_straight_chain(n_atoms, chainID, r0):
     """
     data = []
     for i in range(n_atoms):
-        atom_i_dict = {'recname': 'ATOM', 'name': '', 'altLoc': '', 'resname': '', 'chainID': chainID, 
-                       'iCode': '', 'occupancy': 1.0, 'tempFactor': 1.0, 'element': '', 'charge': ''}
+        atom_i_dict = {
+            'recname': 'ATOM',
+            'name': '',
+            'altLoc': '',
+            'resname': '',
+            'chainID': chainID, 
+            'iCode': '',
+            'occupancy': 1.0,
+            'tempFactor': 1.0,
+            'element': '',
+            'charge': '',
+        }
         data.append(atom_i_dict)
     df_atoms = pd.DataFrame(data)
     df_atoms['serial'] = list(range(1, n_atoms + 1))
@@ -387,7 +413,7 @@ def compute_rg(coord, mass):
 
 def fix_pdb(pdb_file):
     """
-    Fix pdb file with pdbfixer. The fixed structure is output as pandas dataframe. 
+    Fix pdb file with pdbfixer.PDBFixer. The fixed structure is output as pandas dataframe. 
     This function is adapted from open3SPN2.
     
     Parameters
@@ -401,8 +427,9 @@ def fix_pdb(pdb_file):
         Output fixed structure. 
 
     """
-    assert pdbfixer is not None, 'pdbfixer is not installed.'
-    fixer = pdbfixer.PDBFixer(filename=pdb_file)
+    if not _HAS_PDBFIXER:
+        raise ImportError('pdbfixer is not installed. Please install it to use this function.')
+    fixer = PDBFixer(filename=pdb_file)
     fixer.findMissingResidues()
     chains = list(fixer.topology.chains())
     keys = fixer.missingResidues.keys()
@@ -416,7 +443,7 @@ def fix_pdb(pdb_file):
     fixer.removeHeterogens(keepWater=False)
     fixer.findMissingAtoms()
     fixer.addMissingAtoms()
-    fixer.addMissingHydrogens(7.0)
+    fixer.addMissingHydrogens(pH=7.0)
     
     columns = ['recname', 'serial', 'name', 'altLoc',
                'resname', 'chainID', 'resSeq', 'iCode',
