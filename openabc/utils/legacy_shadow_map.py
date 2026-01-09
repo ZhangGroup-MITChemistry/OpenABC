@@ -3,8 +3,7 @@ import pandas as pd
 import mdtraj
 from MDAnalysis.lib.nsgrid import FastNS
 from openabc.lib import _amino_acids
-import MDAnalysis
-import networkx as nx
+import warnings
 import math
 import sys
 import os
@@ -149,7 +148,7 @@ def legacy_find_res_pairs_from_atomistic_pdb(atomistic_pdb, frame=0, radius=0.1,
         d12 = dist_matrix[a1, a2]
         assert d12 > 0
         if d12 < radius:
-            print(f'Distance between atom {a1} and {a2} is {d12} nm, which is smaller than the radius ({radius} nm), so we ignore this atom pair. This means maybe the radius is too large or atoms {a1} and {a2} are too close.')
+            warnings.warn(f'Atom pair {a1}-{a2} distance ({d12} nm) < radius ({radius} nm). Skipping pair.')
             continue
         r1, r2 = radius, radius
         flag = True

@@ -328,6 +328,9 @@ def wang_frenkel_term(atom_types, df_exclusions, use_pbc, epsilon_wf_map, sigma_
     cutoff_to_sigma_ratio : float or int
         The ratio of cutoff to sigma. 
     
+    force_group : int
+        Force group.
+    
     """
     contacts = mm.CustomNonbondedForce(f'''energy;
                energy=epsilon_wf*alpha_wf*g1*g2*step({cutoff_to_sigma_ratio}*sigma_wf-r);
@@ -673,7 +676,8 @@ def dh_elec_term_map(mol, salt_conc=150.0 * unit.millimolar, temperature=300.0 *
         mm.Discrete2DFunction(
             n_atom_types,
             n_atom_types,
-            manning_coeff_map),
+            manning_coeff_map,
+        ),
     )
     elec.addPerParticleParameter('atom_type')
     elec.addPerParticleParameter('q')

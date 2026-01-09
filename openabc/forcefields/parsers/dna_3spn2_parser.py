@@ -4,6 +4,7 @@ from openabc.utils import get_WC_paired_sequence, fix_pdb, write_pdb
 from openabc.forcefields.parameters import Mixin3SPN2ConfigParser
 from openabc.lib import _dna_nucleotides, _dna_WC_pair_dict, _angstrom_to_nm
 import subprocess
+import warnings
 import sys
 import os
 
@@ -125,7 +126,7 @@ class DNA3SPN2Parser(Mixin3SPN2ConfigParser):
             except subprocess.CalledProcessError as e:
                 attempt += 1
                 if attempt == max_attempts:
-                    print(f"subprocess.CalledProcessError failed {max_attempts} times {e.args[0]}: {e.args[1]}")
+                    warnings.warn(f"subprocess.CalledProcessError failed {max_attempts} times {e.args[0]}: {e.args[1]}")
     
         # update {temp_name}_template.pdb file so that atoms with serial number larger than 99999 is converted to "*****" (formatting issue)
         # rewrite the code for this part

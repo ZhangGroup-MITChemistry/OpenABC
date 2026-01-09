@@ -137,24 +137,24 @@ def align_protein(input_pdbfile, reference_pdbfile, output_pdbfile, reference_at
     return
 
 
-def combine_proteins(pdbfile_lis, output_pdbflie):
+def combine_proteins(pdbfile_list, output_pdbfile):
     """
     Merge multiple pdb files into a single pdb file.
     
     Parameters
     ----------
-    pdbfile_lis : str
+    pdbfile_list : str
         List that contains name of pdb files to be merged. 
     
     output_pdbfile : str
         Merged pdb file.
         
     """
-    pdb_list = [mdtraj.load(i) for i in pdbfile_lis]
+    pdb_list = [mdtraj.load(i) for i in pdbfile_list]
     pdb_combined = pdb_list[0]
     for i in range(len(pdb_list) - 1):
         pdb_combined = pdb_combined.stack(pdb_list[i + 1])
-    pdb_combined.save(output_pdbflie)
+    pdb_combined.save(output_pdbfile)
     return
 
 
@@ -212,10 +212,14 @@ def multiple_chains_CA2AA(input_pdbfile, num_chains, num_residues, REMO_path, de
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--input_file', type=str, help='A string that represents the path to the input protein PDB file')
-    parser.add_argument('-N', '--number_of_chains', nargs='+', type=int, help='A list of integers, where each element represents the number of chains for a particular protein type')
-    parser.add_argument('-n', '--number_of_residues', nargs='+', type=int, help='A list of integers, where each element represents the number of residues for a particular protein type')
-    parser.add_argument('-d', '--debug', action='store_true', help='A boolen variable that has a default value of False. By default this script does not store temporary files')
+    parser.add_argument('-i', '--input_file', type=str, 
+                        help='A string that represents the path to the input protein PDB file')
+    parser.add_argument('-N', '--number_of_chains', nargs='+', type=int, 
+                        help='A list of integers, where each element represents the number of chains for a particular protein type')
+    parser.add_argument('-n', '--number_of_residues', nargs='+', type=int,
+                        help='A list of integers, where each element represents the number of residues for a particular protein type')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='A boolen variable that has a default value of False. By default this script does not store temporary files')
     parser.add_argument('-r', '--REMO_path', type=str, help='REMO path')
     args = parser.parse_args()
     protein_ca = args.input_file

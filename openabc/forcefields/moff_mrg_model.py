@@ -41,7 +41,7 @@ class MOFFMRGModel(CGModel):
             force = functional_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No protein bonds found, skip adding protein bonds.')
+            warnings.warn('No protein bonds found, skip adding protein bonds.')
 
     def add_protein_angles(self, threshold=130 * np.pi / 180, clip=False, force_group=2, verbose=True):
         """
@@ -79,15 +79,15 @@ class MOFFMRGModel(CGModel):
                     warnings.warn(f'Warning: angle composed of atom ({a1}, {a2}, {a3}) has theta0 equal to {theta0}, which is larger than the threshold value equal to {threshold}!')
                     any_theta0_beyond_threshold = True
             if clip and any_theta0_beyond_threshold:
-                print(f'Decrease all the theta0 values larger than {threshold} to {threshold}.')
+                warnings.warn(f'Decrease all the theta0 values larger than {threshold} to {threshold}.')
                 # set threshold as np.float32(threshold) to avoid warnings
                 threshold = np.float32(threshold)
                 self.protein_angles.loc[self.protein_angles['theta0'] > threshold, 'theta0'] = threshold
             force = functional_terms.harmonic_angle_term(self.protein_angles, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No protein angles found, skip adding protein angles.')
-    
+            warnings.warn('No protein angles found, skip adding protein angles.')
+
     def add_protein_dihedrals(self, force_group=3):
         """
         Add protein dihedrals. 
@@ -103,8 +103,8 @@ class MOFFMRGModel(CGModel):
             force = functional_terms.periodic_dihedral_term(self.protein_dihedrals, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No protein dihedrals found, skip adding protein dihedrals.')
-    
+            warnings.warn('No protein dihedrals found, skip adding protein dihedrals.')
+
     def add_native_pairs(self, force_group=4):
         """
         Add native pairs. 
@@ -120,7 +120,7 @@ class MOFFMRGModel(CGModel):
             force = functional_terms.native_pair_12_10_term(self.native_pairs, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No native pairs found, skip adding native pairs.')
+            warnings.warn('No native pairs found, skip adding native pairs.')
 
     def add_dna_bonds(self, force_group=5):
         """
@@ -137,8 +137,8 @@ class MOFFMRGModel(CGModel):
             force = functional_terms.class2_bond_term(self.dna_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No DNA bonds found, skip adding DNA bonds.')
-    
+            warnings.warn('No DNA bonds found, skip adding DNA bonds.')
+
     def add_dna_angles(self, force_group=6):
         """
         Add DNA angles. 
@@ -154,8 +154,8 @@ class MOFFMRGModel(CGModel):
             force = functional_terms.class2_angle_term(self.dna_angles, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No DNA angles found, skip adding DNA angles.')
-        
+            warnings.warn('No DNA angles found, skip adding DNA angles.')
+
     def add_dna_fan_bonds(self, force_group=7):
         """
         Add DNA fan bonds. 
@@ -171,8 +171,8 @@ class MOFFMRGModel(CGModel):
             force = functional_terms.class2_bond_term(self.dna_fan_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No DNA fan bonds found, skip adding DNA fan bonds.')
-    
+            warnings.warn('No DNA fan bonds found, skip adding DNA fan bonds.')
+
     def add_contacts(self, eta=0.7 / unit.angstrom, r0=8 * unit.angstrom, cutoff=2.0 * unit.nanometer, 
                      alpha_protein_dna=1.6264e-3, alpha_dna_dna=1.678e-5, epsilon_protein_dna=0, epsilon_dna_dna=0, 
                      force_group=8):

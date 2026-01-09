@@ -8,6 +8,7 @@ from openabc.forcefields.cg_model import CGModel
 from openabc.forcefields import functional_terms
 from openabc.forcefields.parameters import Mixin3SPN2ConfigParser
 from openabc.lib import _dna_nucleotides, _dna_WC_pair_dict
+import warnings
 import sys
 import os
 
@@ -152,7 +153,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             force = functional_terms.harmonic_bond_term(self.protein_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No protein bonds found, skip adding protein bonds.')
+            warnings.warn('No protein bonds found, skip adding protein bonds.')
     
     def add_protein_angles(self, force_group=2):
         """
@@ -169,7 +170,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             force = functional_terms.harmonic_angle_term(self.protein_angles, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No protein angles found, skip adding protein angles.')
+            warnings.warn('No protein angles found, skip adding protein angles.')
 
     def add_protein_dihedrals(self, force_group=3):
         """
@@ -186,7 +187,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             force = functional_terms.periodic_dihedral_term(self.protein_dihedrals, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No protein dihedrals found, skip adding protein dihedrals.')
+            warnings.warn('No protein dihedrals found, skip adding protein dihedrals.')
 
     def add_native_pairs(self, force_group=4):
         """
@@ -203,7 +204,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             force = functional_terms.native_pair_gaussian_term(self.native_pairs, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No native pairs found, skip adding native pairs.')
+            warnings.warn('No native pairs found, skip adding native pairs.')
     
     def add_dna_bonds(self, force_group=5):
         """
@@ -220,7 +221,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             force = functional_terms.class2_bond_term(self.dna_bonds, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No DNA bonds found, skip adding DNA bonds.')
+            warnings.warn('No DNA bonds found, skip adding DNA bonds.')
         
     def add_dna_angles(self, force_group=6):
         """
@@ -237,7 +238,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             force = functional_terms.harmonic_angle_term(self.dna_angles, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No DNA angles found, skip adding DNA angles.')
+            warnings.warn('No DNA angles found, skip adding DNA angles.')
         
     def add_dna_stackings(self, force_group=7):
         """
@@ -254,7 +255,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             force = functional_terms.dna_3spn2_stacking_term(self.dna_stackings, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No DNA stackings found, skip adding DNA stackings.')
+            warnings.warn('No DNA stackings found, skip adding DNA stackings.')
     
     def add_dna_dihedrals(self, force_group=8):
         """
@@ -271,7 +272,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
             force = functional_terms.dna_3spn2_dihedral_term(self.dna_dihedrals, self.use_pbc, force_group)
             self.system.addForce(force)
         else:
-            print('No DNA dihedrals found, skip adding DNA dihedrals.')
+            warnings.warn('No DNA dihedrals found, skip adding DNA dihedrals.')
     
     def add_dna_base_pairs(self, cutoff=1.8, force_group=9):
         """
@@ -522,7 +523,7 @@ class SMOG3SPN2Model(CGModel, Mixin3SPN2ConfigParser):
         
         Parameters
         ----------
-        param_PP_MJ : str
+        param_PP_MJ_path : str
             Protein-protein MJ potential parameter file path. 
         
         cutoff_PD : Quantity

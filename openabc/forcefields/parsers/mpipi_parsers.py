@@ -180,8 +180,8 @@ class MpipiRNAParser(object):
         mass_dict : dict
             Mass dictionary. 
         
-        charge : float or int
-            Nucleotide charge. 
+        charge_dict : dict
+            Nucleotide charge dictionary. 
         
         """
         bonds = []

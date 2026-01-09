@@ -60,6 +60,11 @@ class MpipiModel(CGModel):
         
         Parameters
         ----------
+        cutoff_to_sigma_ratio : float
+            Cutoff to sigma ratio.
+        
+        force_group : int
+            Force group.
         
         """
         print('Add nonbonded contacts.')

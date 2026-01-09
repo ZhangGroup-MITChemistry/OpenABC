@@ -108,8 +108,8 @@ def get_chromatin_rigid_bodies(n_nucl, nrl, n_rigid_bp_per_nucl=73):
     nrl : int
         Nucleosome repeat length. 
     
-    n_flexible_bp_per_nucl : int
-        The number of flexible nucleosomal base pairs for each nucleosome. 
+    n_rigid_bp_per_nucl : int
+        The number of rigid nucleosomal base pairs for each nucleosome. 
     
     Returns
     -------

@@ -63,14 +63,17 @@ class TemperatureReplicaExchange(object):
         
         positions : np.ndarray, shape is (n_atoms, 3) or (n_replicas, n_atoms, 3)
             The initial coordinates. 
-            If shape is (n_atoms, 3), then each replica starts from the same initial coordinates. 
+            If shape is (n_atoms, 3), then all replicas start from the same initial coordinates. 
             If shape is (n_replicas, n_atoms, 3), then the i-th replica starts from initial coordinate positions[i]. 
         
         top: OpenMM Topology
             The OpenMM topology. 
         
         system: OpenMM System
-            The OpenMM system. 
+            The OpenMM system.
+        
+        temperatures: array-like of numbers or quantities, shape is (n_replicas,)
+            The temperatures for all replicas.
         
         integrator: OpenMM Integrator
             The OpenMM integrator. 
@@ -91,11 +94,21 @@ class TemperatureReplicaExchange(object):
         self.n_replicas = n_replicas
         assert self.n_replicas == int(os.environ['WORLD_SIZE'])
         self.rank = rank
-        torch.distributed.init_process_group(backend, world_size=self.n_replicas, rank=self.rank)
+        torch.distributed.init_process_group(
+            backend,
+            world_size=self.n_replicas,
+            rank=self.rank,
+        )
         self.top = top
         self.system = system
-        assert n_replicas == len(temperatures)
-        self.temperatures = temperatures
+        assert len(temperatures) == n_replicas
+        
+        def _temperature_to_float(t):
+            if unit.is_quantity(t):
+                return t.value_in_unit(unit.kelvin)
+            else:
+                return float(t)
+        self.temperatures = [_temperature_to_float(t) for t in temperatures]
         self.integrator = integrator
         self.integrator.setTemperature(self.temperatures[self.rank]) # reset temperature to ensure it is at the target temperature
         platform = mm.Platform.getPlatformByName(platform_name)
@@ -173,9 +186,9 @@ class TemperatureReplicaExchange(object):
          
         """
         n_iterations = int(n_steps / exchange_interval)
-        n_steps = n_iterations * exchange_interval # reset n_steps in case n_steps % exchange_interval != 0
-        n_exchange_attempts = 0
-        n_accepted_exchange_attempts = 0
+        n_steps = n_iterations * exchange_interval # reset n_steps based on interval
+        n_attempts = 0
+        n_accepted_attempts = 0
         start_time = time.time()
         for i in range(n_iterations):
             self.simulation.step(exchange_interval)
@@ -185,37 +198,37 @@ class TemperatureReplicaExchange(object):
                 getVelocities=True, 
                 enforcePeriodicBox=True,
             )
-            positions = torch.from_numpy(np.array(state.getPositions().value_in_unit(unit.nanometer)))
-            velocities = torch.from_numpy(np.array(state.getVelocities().value_in_unit(unit.nanometer / unit.picosecond)))
-            potential_energy = torch.tensor([state.getPotentialEnergy().value_in_unit(unit.kilojoule_per_mole)])
-            gathered_positions = [torch.zeros_like(positions) for _ in range(self.n_replicas)]
-            gathered_velocities = [torch.zeros_like(velocities) for _ in range(self.n_replicas)]
-            gathered_potential_energy = [torch.zeros(1) for _ in range(self.n_replicas)]
-            torch.distributed.all_gather(gathered_positions, positions)
-            torch.distributed.all_gather(gathered_velocities, velocities)
-            torch.distributed.all_gather(gathered_potential_energy, potential_energy)
-            gathered_potential_energy = torch.stack(gathered_potential_energy).reshape(-1)
+            pos = torch.from_numpy(np.array(state.getPositions().value_in_unit(unit.nanometer)))
+            vel = torch.from_numpy(np.array(state.getVelocities().value_in_unit(unit.nanometer / unit.picosecond)))
+            pe = torch.tensor([state.getPotentialEnergy().value_in_unit(unit.kilojoule_per_mole)])
+            all_pos = [torch.zeros_like(pos) for _ in range(self.n_replicas)]
+            all_vel = [torch.zeros_like(vel) for _ in range(self.n_replicas)]
+            all_pe = [torch.zeros(1) for _ in range(self.n_replicas)]
+            torch.distributed.all_gather(all_pos, pos)
+            torch.distributed.all_gather(all_vel, vel)
+            torch.distributed.all_gather(all_pe, pe)
+            all_pe = torch.stack(all_pe).reshape(-1)
             if self.rank == 0:
                 for j in range(self.n_replicas - 1):
-                    n_exchange_attempts += 1
-                    delta_potential_energy = gathered_potential_energy[j] - gathered_potential_energy[j + 1]
+                    n_attempts += 1
+                    delta_pe = all_pe[j] - all_pe[j + 1]
                     delta_beta = (1 / self.temperatures[j] - 1 / self.temperatures[j + 1]) / GAS_CONST_value
-                    if np.random.uniform(0, 1) < math.exp(delta_beta * delta_potential_energy):
-                        n_accepted_exchange_attempts += 1
-                        gathered_positions[j], gathered_positions[j + 1] = gathered_positions[j + 1], gathered_positions[j]
+                    if np.random.uniform(0, 1) < math.exp(delta_beta * delta_pe):
+                        n_accepted_attempts += 1
+                        all_pos[j], all_pos[j + 1] = all_pos[j + 1], all_pos[j]
                         alpha = (self.temperatures[j] / self.temperatures[j + 1])**0.5
-                        gathered_velocities[j], gathered_velocities[j + 1] = alpha * gathered_velocities[j + 1], gathered_velocities[j] / alpha
-                        gathered_potential_energy[j], gathered_potential_energy[j + 1] = gathered_potential_energy[j + 1], gathered_potential_energy[j]
+                        all_vel[j], all_vel[j + 1] = alpha * all_vel[j + 1], all_vel[j] / alpha
+                        all_pe[j], all_pe[j + 1] = all_pe[j + 1], all_pe[j]
             else:
-                gathered_positions = None
-                gathered_velocities = None
-            torch.distributed.scatter(positions, gathered_positions, src=0)
-            torch.distributed.scatter(velocities, gathered_velocities, src=0)
-            self.simulation.context.setPositions(positions.numpy())
-            self.simulation.context.setVelocities(velocities.numpy())
+                all_pos = None
+                all_vel = None
+            torch.distributed.scatter(pos, all_pos, src=0)
+            torch.distributed.scatter(vel, all_vel, src=0)
+            self.simulation.context.setPositions(pos.numpy())
+            self.simulation.context.setVelocities(vel.numpy())
         end_time = time.time()
         if (self.rank == 0) and verbose:
-            acceptance_ratio = n_accepted_exchange_attempts / n_exchange_attempts
+            acceptance_ratio = n_accepted_attempts / n_attempts
             print(f'Replica exchange acceptance ratio is {acceptance_ratio}.')
             timestep = self.integrator.getStepSize().value_in_unit(unit.nanosecond)
             speed_ns_per_day = (24 * 3600 / (end_time - start_time)) * (timestep * n_steps)

@@ -28,14 +28,24 @@ with open('hp1alpha_dimer_system.xml', 'r') as f:
 backend = 'gloo'
 n_replicas = 6
 rank = int(os.environ['SLURM_PROCID'])
-temperatures = 1/np.linspace(1/300, 1/400, n_replicas)
+temperatures = 1 / np.linspace(1 / 300, 1 / 400, n_replicas)
 print(f'Replica {rank} uses temperature {temperatures[rank]} K. ')
-friction_coeff = 1/unit.picosecond
-timestep = 10*unit.femtosecond
-integrator = mm.LangevinMiddleIntegrator(temperatures[rank]*unit.kelvin, friction_coeff, timestep)
+friction_coeff = 1 / unit.picosecond
+timestep = 10 * unit.femtosecond
+integrator = mm.LangevinMiddleIntegrator(temperatures[rank] * unit.kelvin, friction_coeff, timestep)
 top = app.PDBFile('hp1alpha_dimer_CA.pdb').getTopology()
 positions = app.PDBFile('hp1alpha_dimer_CA.pdb').getPositions()
-replica_exchange = TemperatureReplicaExchange(backend, n_replicas, rank, positions, top, system, temperatures, integrator, platform_name='CUDA')
+replica_exchange = TemperatureReplicaExchange(
+    backend=backend,
+    n_replicas=n_replicas,
+    rank=rank,
+    positions=positions,
+    top=top,
+    system=system,
+    temperatures=temperatures,
+    integrator=integrator,
+    platform_name='CUDA',
+)
 replica_exchange.add_reporters(report_interval=10000, output_dcd=f'output-dcd/output.{rank}.dcd')
 n_steps = 1000000
 exchange_interval = 1000

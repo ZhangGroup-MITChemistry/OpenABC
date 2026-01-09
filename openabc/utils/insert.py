@@ -13,6 +13,7 @@ except ImportError:
     R = None
     _HAS_SCIPY = False
 from openabc.utils import parse_pdb, write_pdb
+import warnings
 
 __author__ = 'Andrew Latham'
 
@@ -79,7 +80,7 @@ def insert_molecules_dataframe(new_atoms, n_mol, radius=0.5, existing_atoms=None
     else:
         atoms = existing_atoms.copy()
     if method != 'FastNS':
-        print('Currently only FastNS is supported. Use FastNS method to check contacts.')
+        warnings.warn('Currently only FastNS is supported. Use FastNS method to check contacts.')
         method = 'FastNS'
     assert method == 'FastNS'
     box_a, box_b, box_c = 10 * box[0], 10 * box[1], 10 * box[2] # convert nm to angstrom
@@ -124,14 +125,14 @@ def insert_molecules_dataframe(new_atoms, n_mol, radius=0.5, existing_atoms=None
     if count_n_mol == n_mol:
         print(f'Successfully inserted {n_mol} molecules.')
     else:
-        print(f'Could not successfully insert {n_mol} molecules in {count_n_attempts} attempts.')
-        print(f'Only added {count_n_mol} molecules. Try increasing the box size or the max number of attempts.')
+        warnings.warn(f'Could not successfully insert {n_mol} molecules in {count_n_attempts} attempts.')
+        warnings.warn(f'Only added {count_n_mol} molecules. Try increasing the box size or the max number of attempts.')
     
     if reset_serial:
         # reset serial
         n_atoms = len(atoms.index)
         if n_atoms > 1000000:
-            print(f'Too many atoms. Cannot reset serial as 0, 1, ..., N - 1. Serial remains unchanged.')
+            warnings.warn(f'Too many atoms. Cannot reset serial as 0, 1, ..., N - 1. Serial remains unchanged.')
         else:
             atoms['serial'] = list(range(len(atoms.index)))
     return atoms
