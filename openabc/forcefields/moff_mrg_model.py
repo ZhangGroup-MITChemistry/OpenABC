@@ -75,9 +75,10 @@ class MOFFMRGModel(CGModel):
                 a2 = int(row['a2'])
                 a3 = int(row['a3'])
                 theta0 = float(row['theta0'])
-                if (theta0 > threshold) and verbose:
-                    warnings.warn(f'Warning: angle composed of atom ({a1}, {a2}, {a3}) has theta0 equal to {theta0}, which is larger than the threshold value equal to {threshold}!')
+                if theta0 > threshold:
                     any_theta0_beyond_threshold = True
+                    if verbose:
+                        warnings.warn(f'Warning: angle composed of atom ({a1}, {a2}, {a3}) has theta0 equal to {theta0}, which is larger than the threshold value equal to {threshold}!')
             if clip and any_theta0_beyond_threshold:
                 warnings.warn(f'Decrease all the theta0 values larger than {threshold} to {threshold}.')
                 # set threshold as np.float32(threshold) to avoid warnings
