@@ -85,7 +85,7 @@ def convert_to_pdb_fmt(table,entries,keymap):
         table[k].append(e)
     return table
 
-def process_loop_block(line:str) -> tuple[str,str|None]:
+def process_loop_block(line: str):
     if line[0] != "_":
         return 'fr',None
 

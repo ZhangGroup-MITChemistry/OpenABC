@@ -23,7 +23,9 @@ dependencies = [
     "mdtraj", 
     "MDAnalysis", 
     "OpenMM", 
-	  "networkx",
+    "networkx",
+    "biopython",
+    "PeptideBuilder"
 ]
 
 [tool.setuptools]

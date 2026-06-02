@@ -1,0 +1,8 @@
+#res_group_mapping="hydrophobic_polar_positive_negative"
+res_group_mapping="default"
+
+#sbatch run_step2_multi_group_ah_density_spl_Evo.slurm ${res_group_mapping}
+#sbatch run_step2_multi_group_ah_density_spl_ext_OPs.slurm ${res_group_mapping}
+#sbatch run_step2_multi_group_ah_density_spl_IDPs_robustelli2018developing.slurm ${res_group_mapping}
+sbatch run_step2_multi_group_ah_density_spl_MDPs.slurm ${res_group_mapping}
+sbatch run_step2_multi_group_ah_density_spl_OPs.slurm ${res_group_mapping}
