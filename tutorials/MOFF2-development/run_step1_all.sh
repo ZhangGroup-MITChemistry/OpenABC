@@ -1,0 +1,4 @@
+sbatch run_step1_Evo.slurm
+sbatch run_step1_IDPs_robustelli2018developing.slurm
+sbatch run_step1_OPs.slurm
+
