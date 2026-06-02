@@ -20,7 +20,7 @@ Before running scripts directly from this repository, make sure the repository
 root is on `PYTHONPATH`, or install OpenABC in editable mode.
 
 ```bash
-export PYTHONPATH=/path/to/git_openabc_moff2:$PYTHONPATH
+export PYTHONPATH=/path/to/openabc:$PYTHONPATH
 ```
 
 ## Requirements
@@ -40,31 +40,24 @@ simulation stack used by the scripts:
 - `seaborn`
 - `tqdm`
 
-GPU support is used in the CL and FEP stages. `step3_train_CL.py` currently
+GPU support is used in the Potential Contrasting training `step3_train_pc.py` and FEP/ESS fine-tuning stages `step5_ess_ah_gau_density_all_idp_mdp_op.py`.  currently
 expects two GPUs on one node.
 
-## Important Path Configuration
+Required input files include:
 
-Several scripts still contain absolute paths to the original cluster data
-locations, for example paths under:
+reference CA trajectories;
+noise simulations;
+training-input/;
+parameters/; # CSV files such as raw_MJ.csv and HPS_Urry_parameters.csv;
+simulation outputs used for FEP refinement.
 
-```text
-/orcd/data/binz/001/congwang/TW-PCCG-develop/TW-PCCG-develop/
-/home/gridsan/sliu/Projects/TW-PCCG-develop/
-/home/yumzhang/orcd/pool/work/4-idpcg/
-```
-
-Before rerunning the workflow in a new location, update these path variables to
-point to the local locations of:
+MOFF2 was trained on files below: 
 
 - reference CA trajectories;
 - noise simulations;
-- `training-input/`;
-- parameter CSV files such as `raw_MJ.csv` and `HPS_Urry_parameters.csv`;
-- simulation outputs used for FEP refinement.
+- `parameters/`; parameters used as starting point for MOFF2.
+- simulation outputs used for FEP/ESS refinement.
 
-The Python import path no longer depends on these absolute paths; they are only
-data/output locations.
 
 ## Stage 1: Build Mixed Noise/Data Ensembles
 
@@ -205,22 +198,22 @@ The pickle contains the arrays used by CL training, including:
 - density spline metadata
 - Gaussian parameters
 
-## Stage 3: Contrastive-Learning Training
+## Stage 3: Potential-Contrastive Training
 
 Script:
 
 ```text
-step3_train_CL.py
+step3_train_pc.py
 ```
 
 Purpose:
 
-This step trains the global MOFF2 energy model by contrastive learning across
+This step trains the global MOFF2 energy model by potential contrasting training across
 IDPs, OPs, and MDPs. The optimized parameters include:
 
 - 210 AH pair coefficients;
 - 210 Gaussian amplitudes;
-- residue/group-dependent density spline coefficients.
+- 240 residue/group-dependent density spline coefficients.
 
 The model initializes the AH coefficients from a scaled Miyazawa-Jernigan
 matrix and initializes Gaussian coefficients to zero.
@@ -228,7 +221,7 @@ matrix and initializes Gaussian coefficients to zero.
 Example:
 
 ```bash
-python -u step3_train_CL.py \
+python -u step3_train_pc.py \
   --n_epochs 10000 \
   --lr 0.5 \
   --MJ_min 0.0 \
@@ -264,7 +257,7 @@ results/group_<group>_IDP_w_<...>_OP_w_<...>_MDP_w_<...>_<knots>_zeta_<zeta1>_<z
   tests/
 ```
 
-`results.pkl` is the main CL-trained parameter file. It contains:
+`results.pkl` is the main potential-contrastive trained parameter file. It contains:
 
 - `hydrophobic_scale`
 - `gauss_coeffs`
@@ -276,7 +269,7 @@ results/group_<group>_IDP_w_<...>_OP_w_<...>_MDP_w_<...>_<knots>_zeta_<zeta1>_<z
 The script also performs a reweighting-based validation at the end and writes
 the results into the `tests/` subdirectory.
 
-## Stage 4: Prepare FEP Inputs
+## Stage 4: Prepare FEP/ESS fine-tuning Inputs
 
 Script:
 
@@ -286,7 +279,7 @@ step4_prepare_fep_AH_gau_torch.py
 
 Purpose:
 
-This step converts simulation trajectories generated with a CL-trained model
+This step converts simulation trajectories generated with a pc-trained model
 into compact FEP input pickles. These files are used by Stage 5 to refine the
 parameters without rerunning simulations at every optimization step.
 
@@ -307,7 +300,7 @@ Each protein simulation directory should contain:
   "protein": "A1-LCD+12E",
   "temperature": 298.0,
   "ionic_strength": 150.0,
-  "results_pkl": "/path/to/CL/results.pkl"
+  "results_pkl": "/path/to/pc/results.pkl"
 }
 ```
 
@@ -337,10 +330,9 @@ Output keys include:
 - `u1_gauss_basis`
 - `u1_density_spl_basis`
 - `rg`
-- simulation metadata
 - `results_pkl_used`
 
-## Stage 5: ESS-Constrained FEP Refinement
+## Stage 5: FEP/ESS-Constrained FEP Refinement
 
 Script:
 
@@ -350,7 +342,7 @@ step5_ess_ah_gau_density_all_idp_mdp_op.py
 
 Purpose:
 
-This step locally refines the CL-trained model using ensemble-averaged target
+This step locally refines the pc-trained model using ensemble-averaged target
 observables, currently radius of gyration. The optimization uses FEP weights
 from the CL reference ensemble and an effective-sample-size penalty to prevent
 updates that rely on too few configurations.
@@ -359,7 +351,7 @@ Example:
 
 ```bash
 python step5_ess_ah_gau_density_all_idp_mdp_op.py \
-  --results_pkl /path/to/CL/results.pkl \
+  --results_pkl /path/to/pc/results.pkl \
   --fep_input_root /path/to/fep_AH_gau_inputs \
   --exp_csv exp_plus_sim_a1_ref.csv \
   --output_pkl ess_optimize/results.pkl \
@@ -431,16 +423,6 @@ Treat these as templates. Before submission, check that:
 - paths to data and simulation folders are updated;
 - the script names match the current canonical names.
 
-In particular, some legacy wrappers may still refer to older local names such
-as `train_model_gau.py`, `s4_prepare_fep_AH_gau_torch.py`, or
-`s5_ess_ah_gau_density_all_idp_mdp_op.py`. In this folder, the canonical names
-are:
-
-```text
-step3_train_CL.py
-step4_prepare_fep_AH_gau_torch.py
-step5_ess_ah_gau_density_all_idp_mdp_op.py
-```
 
 ## End-to-End Summary
 
@@ -481,23 +463,6 @@ python step5_ess_ah_gau_density_all_idp_mdp_op.py \
   --device cuda
 ```
 
-## Notes for OpenABC Upload
+## Additional Notes 
 
-The training code now uses `openabc.forcefields.MOFF2` imports. For a clean
-OpenABC pull request, keep the MOFF2 package source under:
-
-```text
-openabc/forcefields/MOFF2/
-```
-
-Do not include generated files such as:
-
-```text
-__pycache__/
-.DS_Store
-._*
-```
-
-Large datasets, trajectories, intermediate training inputs, and result folders
-should usually remain outside the package repository and be documented as
-external inputs.
+Trajectories and intermediate training inputs are available upon request. 

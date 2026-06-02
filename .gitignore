@@ -21,3 +21,13 @@ openabc.egg-info/
 
 .ipynb_checkpoints/
 
+
+# Local/cache files
+__pycache__/
+*__pycache__/
+.___pycache__
+._*
+
+# Local MOFF2 test outputs
+tutorials/MOFF2-IDP-LLPS/output/
+tutorials/MOFF2-simulations/outputs/
