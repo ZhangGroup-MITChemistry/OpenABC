@@ -1,0 +1,15 @@
+result,name,class,ref_rg,sim_rg_mean,sim_rg_std,n_residues,delta_rg
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,ChiAM,mdp_KL_long,4.73,2.6777450405731886,0.13271744548214442,682,-2.052254959426812
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,TIA1,mdp_KL_long,2.75,2.6887542087392826,0.4402334283139419,275,-0.061245791260717386
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,hSUMO_hnRNPA1S,mdp_KL_long,3.37,4.064842882674333,0.6805813800633937,433,0.6948428826743331
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,NiV_V,mdp_KL_long,6.97,6.198032353321093,1.3821081220927385,457,-0.7719676466789069
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,GS24,mdp_KL_long,3.57,3.651133118356731,0.8317901687364991,518,0.08113311835673098
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,H46,mdp_KL_long,4.15,4.405126241998021,0.7903137861649804,381,0.2551262419980205
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,GS48,mdp_KL_long,4.11,4.676390348787798,0.9917438511674141,566,0.5663903487877979
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,HeV_V,mdp_KL_long,6.86,6.325604594044755,1.55785545325805,458,-0.5343954059552454
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,D14,mdp_KL_long,3.9,4.415101573764236,0.8662708430561427,483,0.5151015737642362
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,PCPE,mdp_KL_long,4.04,3.977853536289337,0.8494515131892098,424,-0.062146463710663014
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,S4FL,mdp_KL_long,4.7,6.175063284044848,1.8761450312770926,552,1.4750632840448477
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,Ubq4,mdp_KL_long,3.19,3.1264458728865234,0.4401256560186887,304,-0.06355412711347652
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,GS32,mdp_KL_long,3.75,3.9163727723645856,0.852092415593718,534,0.16637277236458559
+group_default_IDP_w_0.5_OP_w_1.0_MDP_w_1.0_10_zeta_1.0_0.005_gauss_delta_mu_0.25_gauss_width_0.1,GS0,mdp_KL_long,3.2,3.1299472208989787,0.6375488368563947,470,-0.07005277910102148

@@ -31,3 +31,4 @@ __pycache__/
 # Local MOFF2 test outputs
 tutorials/MOFF2-IDP-LLPS/output/
 tutorials/MOFF2-simulations/outputs/
+.DS_Store
