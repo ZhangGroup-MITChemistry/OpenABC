@@ -1,0 +1,22 @@
+name,Rg (nm),temperature (K),ionic strength (mM),pH,reference
+IBB,3.2,300,163,7.4,fuertes2017decoupling
+N49,1.59,300,163,7.4,fuertes2017decoupling
+NUS,2.49,300,163,7.4,fuertes2017decoupling
+NUL,3.0,300,163,7.4,fuertes2017decoupling
+NLS,2.4,300,159,7.4,fuertes2017decoupling
+K18,3.8,288,168,7.4,mylonas2008domain
+K19,3.5,288,168,7.4,mylonas2008domain
+K25,4.1,288,168,7.4,mylonas2008domain
+Hst5,1.38,293,150,7.5,jephthah2019temperature
+SH4UD,2.82,293,230,7.5,arbesu2017unique
+A1_no_NLS,2.76,298,153,7.0,bremer2022deciphering
+A1_12F_to_12Y,2.604,298,153,7.0,bremer2022deciphering
+A1_10R_to_10K,2.849,298,153,7.0,bremer2022deciphering
+A1_7Y_to_7F,2.718,298,153,7.0,bremer2022deciphering
+A1_add_7R,2.709,298,153,7.0,bremer2022deciphering
+A1_add_12D,2.801,298,153,7.0,bremer2022deciphering
+A1_add_12E,2.852,298,153,7.0,bremer2022deciphering
+A1_add_7K_12D,2.921,298,153,7.0,bremer2022deciphering
+A1_6R_to_6K,2.787,298,153,7.0,bremer2022deciphering
+Hst5_2,1.87,298,168,7.0,fagerberg2020effects
+p53_NTD,2.39,277,99,7.0,zhao2021egcg
