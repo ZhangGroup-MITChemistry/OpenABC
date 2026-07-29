@@ -21,12 +21,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sequence-a", default="0010010010001")
     parser.add_argument("--sequence-b", default="0100100100100")
-    parser.add_argument("--n-a", type=int, default=4, help="Number of A-component chains.")
-    parser.add_argument("--n-b", type=int, default=4, help="Number of B-component chains.")
-    parser.add_argument("--box-length", type=float, default=40.0, help="Initial cubic box length in nm.")
+    parser.add_argument("--n-a", type=int, default=10, help="Number of A-component chains.")
+    parser.add_argument("--n-b", type=int, default=10, help="Number of B-component chains.")
+    parser.add_argument("--box-length", type=float, default=30.0, help="Initial cubic box length in nm.")
     parser.add_argument("--temperature", type=float, default=1.0, help="Reduced STARS temperature.")
-    parser.add_argument("--friction", type=float, default=1.0, help="Langevin friction in ps^-1.")
-    parser.add_argument("--timestep", type=float, default=2.0, help="Integration timestep in fs.")
+    parser.add_argument("--friction", type=float, default=0.1, help="Langevin friction in ps^-1.")
+    parser.add_argument("--timestep", type=float, default=1.0, help="Integration timestep in fs.")
     parser.add_argument("--steps", type=int, default=1000)
     parser.add_argument("--report-interval", type=int, default=100)
     parser.add_argument("--aa-strength", type=float, default=-1.0, help="A-A sticker attraction in kBT.")
@@ -63,13 +63,15 @@ def main():
         temperature=args.temperature,
         friction_coeff=args.friction,
         timestep=args.timestep,
+        cutoff_distance=2**(1/6),
         include_hbonds=args.include_hbonds,
-        kr=-4.0,
-        ka=-1.0,
-        r0=1.0,
+        kr=-2.0,
+        ka=-5.0,
+        r0=0.0,
         kaa=args.aa_strength,
         kab=args.ab_strength,
         kbb=args.bb_strength,
+        alpha=4.5,
         initial_box=args.box_length,
         platform_name=args.platform,
     )
