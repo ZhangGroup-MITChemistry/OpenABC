@@ -13,3 +13,6 @@ __all__ = [
     "STARS_2comp",
     "STARS_2comp_from_npy",
 ]
+
+from .generalized import STARS, STARS_from_npy
+__all__ += ["STARS", "STARS_from_npy"]

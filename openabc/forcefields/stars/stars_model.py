@@ -422,3 +422,7 @@ def STARS_2comp_from_npy(
     sim.context.setPositions(vecs)
 
     return sim
+
+
+# Generalized constructors; legacy one/two-component entry points remain above.
+from .generalized import STARS, STARS_from_npy
