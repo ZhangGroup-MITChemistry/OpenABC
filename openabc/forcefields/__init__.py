@@ -5,3 +5,5 @@ from .mpipi_model import MpipiModel
 from .smog_3spn2_model import SMOG3SPN2Model
 from .calvados_model import CALVADOSModel
 from .stars import STARS_1comp, STARS_1comp_from_npy, STARS_2comp, STARS_2comp_from_npy
+
+from .stars import STARS, STARS_from_npy

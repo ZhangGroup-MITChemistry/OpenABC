@@ -1,0 +1,19 @@
+# Same-component sticker strengths
+sticker_strengths[0, 0] = -15.0   # A–A
+sticker_strengths[1, 1] = -8.0    # B–B
+sticker_strengths[2, 2] = 0.0     # Disable C–C sticker attraction
+
+# Cross-component sticker strengths
+sticker_strengths[0, 1] = -17.0   # A–B
+sticker_strengths[0, 2] = -12.0   # A–C
+
+# Same-component spacer interactions
+spacer_means[0, 0] = -0.2        # A–A mean
+spacer_stds[0, 0] = 0.1          # A–A standard deviation
+
+spacer_means[1, 1] = -0.5        # B–B mean
+spacer_stds[1, 1] = 0.0          # Uniform B–B interaction
+
+# Cross-component spacer interactions
+spacer_means[1, 2] = -0.5        # B–C mean
+spacer_stds[1, 2] = 0.0          # Uniform B–C interaction
