@@ -143,10 +143,9 @@ rules or sides select all stickers. Numeric `0` is not a valid stride.
 Let $E_0 = 1\ \mathrm{kJ\ mol^{-1}}$ and $\sigma = 1\ \mathrm{nm}$ be the
 fixed reference energy and length. The total potential is
 
-$$
+```math
 U = U_{\mathrm{bond}} + U_{\mathrm{EV}} + U_{\mathrm{st-st}} + U_{\mathrm{sp-sp}}.
-$$
-
+```
 The terms below describe the implemented potential, including its truncations
 and pair-counting conventions. Setting `include_hbonds=False` or
 `include_spacers=False` omits the corresponding force objects.
@@ -156,12 +155,11 @@ and pair-counting conventions. Setting `include_hbonds=False` or
 Every pair of adjacent backbone beads and every parent–sticker pair is connected
 by a class-2 bond [4]:
 
-$$
+```math
 U_{\mathrm{bond}} = \sum_{\langle a,b\rangle}
 \left[k_2(r_{ab}-\ell_0)^2 + k_3(r_{ab}-\ell_0)^3
 + k_4(r_{ab}-\ell_0)^4\right].
-$$
-
+```
 The OpenMM `CustomBondForce` expression is
 
 ```text
@@ -180,15 +178,14 @@ These constants are not exposed by `STARS`; custom system assembly can use
 Nonbonded backbone–backbone and backbone–sticker pairs interact through the
 repulsive Weeks–Chandler–Andersen potential [5]:
 
-$$
+```math
 U_{\mathrm{EV}}(r)=
 \begin{cases}
 4E_0\left[(\sigma/r)^{12}-(\sigma/r)^6\right]+E_0,
 & r < r_{\mathrm{cut}}^{\mathrm{EV}},\\
 0, & r\ge r_{\mathrm{cut}}^{\mathrm{EV}}.
 \end{cases}
-$$
-
+```
 The default cutoff is $r_{\mathrm{cut}}^{\mathrm{EV}}=2^{1/6}\sigma$, the
 Lennard-Jones minimum. The added $E_0$ makes the energy zero at this cutoff,
 so the default potential is continuous and purely repulsive. OpenMM uses
@@ -212,12 +209,11 @@ Each of the six component pairs has its own `CustomHbondForce` when
 `include_hbonds=True`. For a participating donor sticker $a$ and acceptor
 sticker $b$, the energy is
 
-$$
+```math
 u_{ab}^{(i,j)} = K_{ij}\exp\left[
  k_r(r_{ab}-r_0)^2 + k_\theta(\theta_1-\pi)^2
  + k_\theta(\theta_2-\pi)^2\right],
-$$
-
+```
 where $K_{ij}$ is `sticker_strengths[i, j]` in units of $E_0$,
 $k_r$ is `kr`, and $k_\theta$ is `ka`. The angles are defined by
 (parent of donor, donor sticker, parent of acceptor) and
@@ -248,12 +244,11 @@ do not imply equal pair well depths.
 
 The radial cutoff is
 
-$$
+```math
 r_{\mathrm{cut}}^{\mathrm{st}} = r_0 +
 \sqrt{\frac{\ln(\gamma_{\mathrm{st}})}{k_r}},
 \qquad \gamma_{\mathrm{st}}=\texttt{hbond\_gamma}.
-$$
-
+```
 At the default `hbond_gamma=1e-6`, the cutoff is about 2.628 nm and the radial
 factor has decayed to $10^{-6}$. The sticker potential is truncated without an
 energy shift, leaving a small residual at the cutoff. This tolerance is
@@ -265,24 +260,25 @@ zero-strength channels remain present but energetically inert.
 For nonbonded backbone beads $a,b$ belonging to components $i,j$, a quenched
 pair strength is sampled at construction:
 
-$$
+```math
 \epsilon_{ab}/E_0 \sim
 \mathcal{N}\left(\mu_{ij},\Delta_{ij}^{\,2}\right),
-$$
-
-where $\mu_{ij}=\texttt{spacer\_means[i,j]}$ and
-$\Delta_{ij}=\texttt{spacer\_stds[i,j]}$ is the standard deviation.
+```
+where $\mu_{ij}$ is `spacer_means[i, j]` and $\Delta_{ij}$ is
+`spacer_stds[i, j]`, the standard deviation.
 The finite-range potential [1] is
 
-$$
+```math
 u_{ab}^{\mathrm{sp}}(r)=
-\begin{cases}
 \frac{\epsilon_{ab}}{2}
-\left[1+\tanh\bigl(\alpha(\tau-r)\bigr)-2\gamma\right],
-& r<r_{\mathrm{cut}}^{\mathrm{sp}},\\
-0, & r\ge r_{\mathrm{cut}}^{\mathrm{sp}}.
-\end{cases}
-$$
+\left[1+\tanh\bigl(\alpha(\tau-r)\bigr)-2\gamma\right]
+\quad\text{for } r<r_{\mathrm{cut}}^{\mathrm{sp}}.
+```
+
+```math
+u_{ab}^{\mathrm{sp}}(r)=0
+\quad\text{for } r\ge r_{\mathrm{cut}}^{\mathrm{sp}}.
+```
 
 OpenMM implements this as a `CustomNonbondedForce` with a tabulated strength:
 
@@ -300,11 +296,10 @@ redrawn at each time step.
 
 The subtraction of `2*gamma` makes the potential zero at
 
-$$
+```math
 r_{\mathrm{cut}}^{\mathrm{sp}} = \tau -
-\frac{1}{\alpha}\operatorname{atanh}(2\gamma-1).
-$$
-
+\frac{1}{\alpha}\mathrm{atanh}(2\gamma-1).
+```
 For `tau=1.5`, `alpha=4.5`, and `gamma=1e-4`, this is about 2.523 nm.
 The energy is continuous there; the implementation does not additionally
 smooth the force to zero at the cutoff.
